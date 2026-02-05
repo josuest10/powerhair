@@ -1,5 +1,5 @@
  import { Star, Heart, ShoppingBag } from "lucide-react";
-import { Zap, Shield, Truck, Clock } from "lucide-react";
+import { Shield, Truck, CreditCard } from "lucide-react";
  import { Button } from "@/components/ui/button";
  import { Input } from "@/components/ui/input";
  import { Badge } from "@/components/ui/badge";
@@ -40,63 +40,52 @@ import { Zap, Shield, Truck, Clock } from "lucide-react";
      <div className="space-y-6">
        {/* Badges */}
        <div className="flex flex-wrap gap-2">
-        <Badge className="bg-accent text-accent-foreground animate-pulse">
+        <Badge className="bg-primary text-primary-foreground">
            {discount}% OFF
          </Badge>
-        <Badge variant="outline" className="border-success text-success">
-          🔥 Mais Vendido
-         </Badge>
-         <Badge variant="outline" className="border-success text-success">
-          🚚 Frete Grátis
-        </Badge>
-        <Badge variant="outline" className="border-primary text-primary">
-          ✨ Resultado em 30 dias
-         </Badge>
+        <Badge variant="secondary">Mais Vendido</Badge>
+        <Badge variant="secondary">Frete Grátis</Badge>
        </div>
  
        {/* Rating */}
        <div className="flex items-center gap-2">
-         <div className="flex items-center gap-1 px-3 py-1 rounded-full border border-border">
+        <div className="flex items-center gap-1">
            {[...Array(5)].map((_, i) => (
              <Star
                key={i}
                className={`w-4 h-4 ${i < rating ? "fill-rating text-rating" : "text-border"}`}
              />
            ))}
-          <span className="text-sm text-muted-foreground ml-1">({reviewCount} avaliações)</span>
          </div>
-        <span className="text-xs text-success font-medium">98% recomendam</span>
+        <span className="text-sm text-muted-foreground">({reviewCount} avaliações)</span>
        </div>
  
        {/* Title and Brand */}
        <div className="flex items-start justify-between gap-4">
          <div>
-           <h1 className="text-xl md:text-2xl font-medium text-foreground leading-tight">
+          <p className="text-sm text-primary font-medium mb-1">{brand}</p>
+          <h1 className="text-xl md:text-2xl font-semibold text-foreground leading-tight">
              {title}
            </h1>
-          <p className="text-2xl md:text-3xl font-bold tracking-[0.15em] mt-3 text-primary">
-             {brand}
-           </p>
-          <p className="text-sm text-muted-foreground mt-1">Tratamento Profissional Fitoterápico</p>
          </div>
-         <Button variant="ghost" size="icon" className="flex-shrink-0">
+        <Button variant="ghost" size="icon" className="flex-shrink-0 hover:text-primary">
            <Heart className="w-6 h-6" />
          </Button>
        </div>
  
        {/* Kit Items */}
        <div>
-         <p className="text-sm font-medium text-foreground mb-3">Itens inclusos neste Kit:</p>
+        <p className="text-sm text-muted-foreground mb-3">Itens do kit:</p>
          <div className="flex gap-3">
            {kitItems.map((item, index) => (
              <div 
                key={index} 
-              className="border border-border rounded-xl p-3 hover:border-primary hover:shadow-lg transition-all cursor-pointer flex-1 bg-card"
+              className="border border-border rounded-lg p-3 hover:border-primary transition-colors cursor-pointer flex-1"
              >
-              <div className="w-full h-20 mb-2 rounded-lg overflow-hidden bg-secondary">
+              <div className="w-full h-16 mb-2">
                  <img src={item.image} alt="" className="w-full h-full object-contain" />
                </div>
-              <p className="text-xs font-semibold text-foreground text-center">{item.name}</p>
+              <p className="text-xs font-medium text-foreground text-center">{item.name}</p>
               <p className="text-xs text-muted-foreground text-center">{item.installments}</p>
              </div>
            ))}
@@ -104,86 +93,50 @@ import { Zap, Shield, Truck, Clock } from "lucide-react";
        </div>
  
        {/* Price Box */}
-      <div className="border-2 border-primary rounded-2xl p-6 space-y-4 bg-gradient-to-br from-primary/5 to-primary/10 relative overflow-hidden">
-        {/* Decorative element */}
-        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-        
-         {/* Original Price */}
-         <div className="flex items-center gap-3">
-           <span className="text-price-old line-through text-lg">
-             De R$ {originalPrice.toFixed(2).replace(".", ",")}
-           </span>
-          <Badge className="bg-accent text-accent-foreground text-xs">
-            Economize R$ {(originalPrice - totalPrice).toFixed(2).replace(".", ",")}
-          </Badge>
-         </div>
- 
-        {/* PIX Price */}
-        <div className="bg-success/10 border border-success/30 rounded-xl p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <Zap className="w-5 h-5 text-success" />
-            <span className="text-sm font-medium text-success">Preço à vista no PIX</span>
-          </div>
-          <p className="text-3xl md:text-4xl font-bold text-success">
+      <div className="space-y-4">
+        {/* Prices */}
+        <div className="space-y-1">
+          <p className="text-sm text-muted-foreground line-through">
+            R$ {originalPrice.toFixed(2).replace(".", ",")}
+          </p>
+          <p className="text-3xl font-bold text-foreground">
             R$ {pixPrice.toFixed(2).replace(".", ",")}
+            <span className="text-sm font-normal text-primary ml-2">no PIX</span>
+          </p>
+          <p className="text-sm text-muted-foreground">
+            ou R$ {totalPrice.toFixed(2).replace(".", ",")} em até {installmentCount}x de R$ {installmentPrice.toFixed(2).replace(".", ",")}
           </p>
         </div>
-
-        {/* Installment Price */}
-        <div className="flex items-center gap-3 pt-2">
-          <div className="w-4 h-4 rounded-full border-4 border-primary" />
-           <div>
-            <p className="text-2xl md:text-3xl font-bold text-foreground">
-               R$ {totalPrice.toFixed(2).replace(".", ",")}
-             </p>
-             <p className="text-sm text-muted-foreground">
-              ou até <span className="font-semibold text-foreground">{installmentCount}x de R$ {installmentPrice.toFixed(2).replace(".", ",")}</span> sem juros
-             </p>
-           </div>
-         </div>
  
-        <Button className="w-full h-14 text-lg font-bold rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-xl hover:shadow-2xl transition-all hover:scale-[1.02]">
-           <ShoppingBag className="w-5 h-5 mr-2" />
-          COMPRAR COM FRETE GRÁTIS
+        <Button className="w-full h-12 text-base font-semibold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground">
+          <ShoppingBag className="w-5 h-5 mr-2" />
+          Comprar agora
          </Button>
  
-        {/* Trust badges */}
-        <div className="grid grid-cols-3 gap-2 pt-2">
-          <div className="flex flex-col items-center text-center">
-            <Shield className="w-5 h-5 text-muted-foreground mb-1" />
-            <span className="text-xs text-muted-foreground">Compra Segura</span>
-          </div>
-          <div className="flex flex-col items-center text-center">
-            <Truck className="w-5 h-5 text-success mb-1" />
-            <span className="text-xs text-success font-medium">Frete Grátis</span>
-          </div>
-          <div className="flex flex-col items-center text-center">
-            <Clock className="w-5 h-5 text-muted-foreground mb-1" />
-            <span className="text-xs text-muted-foreground">Envio Imediato</span>
-          </div>
+        {/* Trust indicators */}
+        <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
+          <span className="flex items-center gap-1">
+            <Shield className="w-4 h-4" /> Compra segura
+          </span>
+          <span className="flex items-center gap-1">
+            <Truck className="w-4 h-4" /> Frete grátis
+          </span>
+          <span className="flex items-center gap-1">
+            <CreditCard className="w-4 h-4" /> Até 12x
+          </span>
         </div>
-       </div>
- 
-       {/* Urgency */}
-      <div className="bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 rounded-xl p-4">
-        <p className="text-sm text-foreground font-medium text-center flex items-center justify-center gap-2 flex-wrap">
-          <span className="inline-block animate-pulse">🔥</span>
-          <span className="text-primary font-bold">Oferta por tempo limitado!</span>
-          <span className="text-muted-foreground">•</span>
-          <span>47 pessoas compraram hoje</span>
-         </p>
        </div>
  
        {/* Shipping Calculator */}
-       <div className="space-y-3">
-         <p className="font-medium text-foreground">Consultar frete e prazo</p>
-         <p className="text-sm text-muted-foreground">
-          <span className="text-success font-medium">✓ Este produto tem frete grátis!</span> Calcule o prazo de entrega para seu CEP.
-         </p>
+      <div className="pt-4 border-t border-border space-y-3">
+        <p className="text-sm font-medium text-foreground">Calcular prazo de entrega</p>
          <div className="flex gap-2">
-          <Input placeholder="Digite seu CEP" className="flex-1 rounded-xl" />
-          <Button variant="outline" className="rounded-xl">Calcular</Button>
+          <Input placeholder="CEP" className="flex-1" />
+          <Button variant="outline">OK</Button>
          </div>
+        <p className="text-xs text-muted-foreground">
+          <a href="#" className="text-primary hover:underline">Não sei meu CEP</a>
+        </p>
        </div>
      </div>
    );
