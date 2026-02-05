@@ -1,6 +1,8 @@
+ import { useEffect } from "react";
  import { Check, Shield, Truck, PartyPopper, Mail, Clock, ArrowLeft, Package } from "lucide-react";
  import { Link, useLocation } from "react-router-dom";
  import { Button } from "@/components/ui/button";
+ import { trackCompletePayment } from "@/lib/tiktok-pixel";
  
  const PowerHairLogo = () => (
    <div className="flex items-center gap-2">
@@ -38,6 +40,15 @@
  
    const orderId = orderDetails?.orderId || `PWH${Date.now().toString().slice(-8)}`;
    const amount = orderDetails?.amount || 92.15;
+ 
+  // Track CompletePayment when page loads
+  useEffect(() => {
+    trackCompletePayment({
+      value: amount,
+      currency: 'BRL',
+      order_id: orderId,
+    });
+  }, [amount, orderId]);
  
    return (
      <div className="min-h-screen bg-background">
