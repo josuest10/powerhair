@@ -1,13 +1,41 @@
  import { Facebook, Instagram, Youtube, Twitter, Mail, Phone, MapPin } from "lucide-react";
  import { Separator } from "@/components/ui/separator";
  
+const PowerHairLogo = () => (
+  <div className="flex items-center gap-2">
+    <div className="relative w-10 h-10">
+      <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+        <path
+          d="M24 4C24 4 8 12 8 28C8 36 14 44 24 44C34 44 40 36 40 28C40 12 24 4 24 4Z"
+          className="fill-primary-foreground"
+        />
+        <path
+          d="M18 20C18 20 20 28 24 32M24 16C24 16 24 26 24 34M30 20C30 20 28 28 24 32"
+          className="stroke-primary"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <circle cx="16" cy="18" r="2" className="fill-primary/40" />
+      </svg>
+    </div>
+    <div className="flex flex-col">
+      <span className="text-lg font-bold tracking-tight text-primary-foreground leading-none">
+        POWER
+      </span>
+      <span className="text-base font-light tracking-widest text-primary-foreground/80 leading-none">
+        HAIR
+      </span>
+    </div>
+  </div>
+);
+
  const Footer = () => {
    const institutionalLinks = [
-     { label: "Sobre a Eudora", href: "#" },
+    { label: "Sobre a Power Hair", href: "#" },
      { label: "Trabalhe Conosco", href: "#" },
      { label: "Política de Privacidade", href: "#" },
      { label: "Termos de Uso", href: "#" },
-     { label: "Responsabilidade Social", href: "#" },
+    { label: "Sustentabilidade", href: "#" },
    ];
  
    const helpLinks = [
@@ -19,11 +47,11 @@
    ];
  
    const categoryLinks = [
-     { label: "Perfumaria", href: "#" },
-     { label: "Maquiagem", href: "#" },
-     { label: "Cabelos", href: "#" },
-     { label: "Corpo e Banho", href: "#" },
-     { label: "Kits e Presentes", href: "#" },
+    { label: "Antiqueda", href: "#" },
+    { label: "Crescimento", href: "#" },
+    { label: "Hidratação", href: "#" },
+    { label: "Fortalecimento", href: "#" },
+    { label: "Kits Completos", href: "#" },
    ];
  
    return (
@@ -42,7 +70,7 @@
                  placeholder="Digite seu e-mail"
                  className="flex-1 md:w-80 px-4 py-2 rounded-md border border-border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                />
-               <button className="px-6 py-2 bg-accent text-accent-foreground rounded-md font-medium hover:bg-accent/90 transition-colors">
+              <button className="px-6 py-2 bg-primary text-primary-foreground rounded-md font-medium hover:bg-primary/90 transition-colors">
                  Cadastrar
                </button>
              </div>
@@ -56,9 +84,11 @@
            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
              {/* Logo and Social */}
              <div className="col-span-2 md:col-span-4 lg:col-span-1">
-               <h2 className="text-2xl font-serif tracking-widest mb-4">EUDORA</h2>
+              <div className="mb-4">
+                <PowerHairLogo />
+              </div>
                <p className="text-sm text-primary-foreground/80 mb-4">
-                 Beleza que transforma, produtos que inspiram.
+                Cabelos fortes, saudáveis e bonitos.
                </p>
                <div className="flex gap-3">
                  <a href="#" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors">
@@ -106,7 +136,7 @@
  
              {/* Categories */}
              <div>
-               <h4 className="font-semibold mb-4">Categorias</h4>
+              <h4 className="font-semibold mb-4">Tratamentos</h4>
                <ul className="space-y-2">
                  {categoryLinks.map((link) => (
                    <li key={link.label}>
@@ -128,7 +158,7 @@
                  </li>
                  <li className="flex items-center gap-2 text-sm text-primary-foreground/80">
                    <Mail className="w-4 h-4" />
-                   contato@eudora.com.br
+                  contato@powerhair.com.br
                  </li>
                  <li className="flex items-start gap-2 text-sm text-primary-foreground/80">
                    <MapPin className="w-4 h-4 mt-0.5" />
@@ -170,7 +200,7 @@
        <div className="bg-primary/80 py-4">
          <div className="container max-w-7xl mx-auto px-4 md:px-6">
            <p className="text-center text-sm text-primary-foreground/60">
-             © 2024 Eudora. Todos os direitos reservados. CNPJ: 00.000.000/0001-00
+            © 2026 Power Hair. Todos os direitos reservados. CNPJ: 00.000.000/0001-00
            </p>
          </div>
        </div>
