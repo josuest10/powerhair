@@ -6,6 +6,7 @@
  import ProductAttributes from "@/components/ProductAttributes";
  import ProductDescription from "@/components/ProductDescription";
  import ProductReviews from "@/components/ProductReviews";
+ import Footer from "@/components/Footer";
  
 const Index = () => {
    const breadcrumbItems = [
@@ -89,6 +90,8 @@ const Index = () => {
          {/* Product Reviews */}
          <ProductReviews />
        </main>
+       
+       <Footer />
      </div>
   );
 };
