@@ -47,8 +47,11 @@ interface OrderData {
      
      console.log('Webhook received:', JSON.stringify(body, null, 2));
  
-     // Podpay sends transaction updates
-     const { id, status, paidAt, paidAmount } = body;
+    // Podpay sends transaction updates - data can be in body directly or in body.data
+    const transactionData = body.data || body;
+    const id = transactionData.id;
+    const status = transactionData.status;
+    const paidAt = transactionData.paidAt;
  
      if (!id) {
        return new Response(
