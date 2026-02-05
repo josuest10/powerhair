@@ -14,7 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      orders: {
+        Row: {
+          amount: number
+          created_at: string
+          customer_cpf: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id: string
+          paid_at: string | null
+          product_name: string
+          shipping_address: string
+          shipping_cep: string
+          shipping_city: string
+          shipping_complement: string | null
+          shipping_neighborhood: string
+          shipping_number: string
+          shipping_state: string
+          status: string
+          transaction_id: string
+          updated_at: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          customer_cpf: string
+          customer_email: string
+          customer_name: string
+          customer_phone: string
+          id?: string
+          paid_at?: string | null
+          product_name: string
+          shipping_address: string
+          shipping_cep: string
+          shipping_city: string
+          shipping_complement?: string | null
+          shipping_neighborhood: string
+          shipping_number: string
+          shipping_state: string
+          status?: string
+          transaction_id: string
+          updated_at?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          customer_cpf?: string
+          customer_email?: string
+          customer_name?: string
+          customer_phone?: string
+          id?: string
+          paid_at?: string | null
+          product_name?: string
+          shipping_address?: string
+          shipping_cep?: string
+          shipping_city?: string
+          shipping_complement?: string | null
+          shipping_neighborhood?: string
+          shipping_number?: string
+          shipping_state?: string
+          status?: string
+          transaction_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

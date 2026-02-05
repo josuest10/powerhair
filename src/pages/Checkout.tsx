@@ -10,6 +10,7 @@
  import { useToast } from "@/hooks/use-toast";
  import { supabase } from "@/integrations/supabase/client";
  import { QRCodeSVG } from "qrcode.react";
+ import { validateCPF } from "@/lib/cpf-validator";
  
  const PowerHairLogo = () => (
    <div className="flex items-center gap-2">
@@ -38,7 +39,9 @@
  const checkoutSchema = z.object({
    name: z.string().min(3, "Nome deve ter pelo menos 3 caracteres").max(100),
    email: z.string().email("E-mail inválido").max(255),
-   cpf: z.string().regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "CPF inválido (use: 000.000.000-00)"),
+  cpf: z.string()
+    .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "CPF inválido (use: 000.000.000-00)")
+    .refine((cpf) => validateCPF(cpf), "CPF inválido. Verifique os números digitados."),
    phone: z.string().regex(/^\(\d{2}\) \d{5}-\d{4}$/, "Telefone inválido (use: (00) 00000-0000)"),
    cep: z.string().regex(/^\d{5}-\d{3}$/, "CEP inválido (use: 00000-000)"),
    address: z.string().min(5, "Endereço deve ter pelo menos 5 caracteres").max(200),
