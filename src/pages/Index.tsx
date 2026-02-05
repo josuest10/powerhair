@@ -9,6 +9,7 @@ import ProductDescription from "@/components/ProductDescription";
 import ProductReviews from "@/components/ProductReviews";
 import Footer from "@/components/Footer";
 import { trackViewContent } from "@/lib/tiktok-pixel";
+import { trackMetaViewContent } from "@/lib/meta-pixel";
  
 const Index = () => {
   const hasTrackedViewContent = useRef(false);
@@ -16,10 +17,18 @@ const Index = () => {
   useEffect(() => {
     if (!hasTrackedViewContent.current) {
       hasTrackedViewContent.current = true;
+      // TikTok ViewContent
       trackViewContent({
         value: 79.90,
         currency: 'BRL',
         content_id: 'kit-sos-crescimento',
+        content_name: 'Kit SOS Crescimento e Antiqueda',
+      });
+      // Meta ViewContent
+      trackMetaViewContent({
+        value: 79.90,
+        currency: 'BRL',
+        content_ids: ['kit-sos-crescimento'],
         content_name: 'Kit SOS Crescimento e Antiqueda',
       });
     }
