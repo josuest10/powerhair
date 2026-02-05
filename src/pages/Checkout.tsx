@@ -2,13 +2,14 @@
  import { z } from "zod";
  import { useForm } from "react-hook-form";
  import { zodResolver } from "@hookform/resolvers/zod";
- import { Copy, Check, Clock, Shield, Truck, Lock, Loader2, AlertCircle } from "lucide-react";
+ import { Copy, Check, Clock, Shield, Truck, Lock, Loader2, AlertCircle, Sparkles, Gift, CheckCircle2 } from "lucide-react";
  import { Link } from "react-router-dom";
  import { Button } from "@/components/ui/button";
  import { Input } from "@/components/ui/input";
  import { Label } from "@/components/ui/label";
  import { useToast } from "@/hooks/use-toast";
  import { supabase } from "@/integrations/supabase/client";
+ import { QRCodeSVG } from "qrcode.react";
  
  const PowerHairLogo = () => (
    <div className="flex items-center gap-2">
@@ -437,71 +438,137 @@
          )}
  
          {step === "pix" && (
-           <div className="max-w-md mx-auto text-center space-y-6">
-             <div>
-               <h1 className="text-2xl font-bold text-foreground">Pagamento PIX</h1>
-               <p className="text-sm text-muted-foreground mt-1">Escaneie o QR Code ou copie o código</p>
+           <div className="max-w-lg mx-auto">
+             {/* Success Header */}
+             <div className="text-center mb-6">
+               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                 <Sparkles className="w-8 h-8 text-primary" />
+               </div>
+               <h1 className="text-2xl font-bold text-foreground">Quase lá! 🎉</h1>
+               <p className="text-muted-foreground mt-2">Escaneie o QR Code ou copie o código para finalizar</p>
              </div>
  
-             {/* Timer */}
-             <div className="flex items-center justify-center gap-2 text-muted-foreground">
-               <Clock className="w-4 h-4" />
-               <span className="text-sm">Expira em: <span className="font-mono font-semibold text-foreground">{formatTime(timeLeft)}</span></span>
-             </div>
+             {/* Main Card */}
+             <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg">
+               {/* Timer Banner */}
+               <div className="bg-primary/10 px-4 py-3 flex items-center justify-center gap-2">
+                 <Clock className="w-4 h-4 text-primary" />
+                 <span className="text-sm font-medium text-primary">
+                   Pague em até <span className="font-mono font-bold">{formatTime(timeLeft)}</span>
+                 </span>
+               </div>
  
-             {/* QR Code */}
-             <div className="bg-white p-6 rounded-lg inline-block mx-auto">
-               {pixData?.qrCodeImage ? (
-                 <img 
-                   src={pixData.qrCodeImage} 
-                   alt="QR Code PIX" 
-                   className="w-48 h-48 object-contain"
-                 />
-               ) : (
-                 <div className="w-48 h-48 bg-secondary flex items-center justify-center rounded">
-                   <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+               {/* QR Code Section */}
+               <div className="p-6 text-center">
+                 <div className="bg-white p-4 rounded-xl inline-block shadow-sm border border-border">
+                   {pixData?.qrCode ? (
+                     <QRCodeSVG 
+                       value={pixData.qrCode} 
+                       size={200}
+                       level="M"
+                       includeMargin={false}
+                       className="rounded"
+                     />
+                   ) : (
+                     <div className="w-[200px] h-[200px] flex items-center justify-center">
+                       <Loader2 className="w-10 h-10 animate-spin text-primary" />
+                     </div>
+                   )}
                  </div>
-               )}
-             </div>
+                 
+                 {/* Amount */}
+                 <div className="mt-6">
+                   <p className="text-sm text-muted-foreground">Valor total</p>
+                   <p className="text-4xl font-bold text-foreground mt-1">
+                     R$ {finalPrice.toFixed(2).replace(".", ",")}
+                   </p>
+                   <div className="flex items-center justify-center gap-2 mt-2">
+                     <Gift className="w-4 h-4 text-primary" />
+                     <span className="text-sm text-primary font-medium">
+                       Você economizou R$ {(originalPrice - finalPrice).toFixed(2).replace(".", ",")}!
+                     </span>
+                   </div>
+                 </div>
+               </div>
  
-             {/* Amount */}
-             <div className="bg-secondary rounded-lg p-4">
-               <p className="text-sm text-muted-foreground">Valor a pagar</p>
-               <p className="text-3xl font-bold text-foreground">R$ {finalPrice.toFixed(2).replace(".", ",")}</p>
-             </div>
- 
-             {/* PIX Code */}
-             <div className="space-y-3">
-               <p className="text-sm text-muted-foreground">Ou copie o código PIX:</p>
-               <div className="bg-secondary rounded-lg p-3 flex items-center gap-2">
-                 <code className="flex-1 text-xs text-muted-foreground truncate">
-                   {pixData?.qrCode || "Carregando..."}
-                 </code>
-                 <Button variant="outline" size="sm" onClick={copyPixCode} disabled={!pixData?.qrCode}>
-                   {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                 </Button>
+               {/* Copy Code Section */}
+               <div className="px-6 pb-6">
+                 <p className="text-sm font-medium text-foreground mb-2 text-center">Ou copie o código PIX:</p>
+                 <div className="bg-secondary rounded-xl p-3 flex items-center gap-3">
+                   <code className="flex-1 text-xs text-muted-foreground truncate font-mono">
+                     {pixData?.qrCode || "Carregando..."}
+                   </code>
+                   <Button 
+                     variant={copied ? "default" : "outline"} 
+                     size="sm" 
+                     onClick={copyPixCode} 
+                     disabled={!pixData?.qrCode}
+                     className={copied ? "bg-primary text-primary-foreground" : ""}
+                   >
+                     {copied ? (
+                       <>
+                         <Check className="w-4 h-4 mr-1" />
+                         Copiado!
+                       </>
+                     ) : (
+                       <>
+                         <Copy className="w-4 h-4 mr-1" />
+                         Copiar
+                       </>
+                     )}
+                   </Button>
+                 </div>
+               </div>
+
+               {/* Instructions */}
+               <div className="bg-secondary/50 px-6 py-4 border-t border-border">
+                 <p className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+                   <CheckCircle2 className="w-4 h-4 text-primary" />
+                   Como pagar:
+                 </p>
+                 <div className="grid gap-2">
+                   <div className="flex items-start gap-3">
+                     <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">1</span>
+                     <span className="text-sm text-muted-foreground">Abra o app do seu banco</span>
+                   </div>
+                   <div className="flex items-start gap-3">
+                     <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">2</span>
+                     <span className="text-sm text-muted-foreground">Escolha pagar com PIX</span>
+                   </div>
+                   <div className="flex items-start gap-3">
+                     <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">3</span>
+                     <span className="text-sm text-muted-foreground">Escaneie o QR Code ou cole o código</span>
+                   </div>
+                   <div className="flex items-start gap-3">
+                     <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">4</span>
+                     <span className="text-sm text-muted-foreground">Confirme e pronto! ✨</span>
+                   </div>
+                 </div>
                </div>
              </div>
- 
-             {/* Instructions */}
-             <div className="text-left bg-secondary rounded-lg p-4 space-y-2">
-               <p className="text-sm font-medium text-foreground">Como pagar:</p>
-               <ol className="text-xs text-muted-foreground space-y-1 list-decimal pl-4">
-                 <li>Abra o app do seu banco</li>
-                 <li>Escolha pagar com PIX usando QR Code ou código</li>
-                 <li>Escaneie o QR Code ou cole o código copiado</li>
-                 <li>Confirme o pagamento</li>
-               </ol>
+
+             {/* Confirm Payment Button */}
+             <div className="mt-6 space-y-3">
+               <Button onClick={simulatePayment} className="w-full h-12 text-base font-semibold">
+                 ✓ Já fiz o pagamento
+               </Button>
+               <p className="text-xs text-center text-muted-foreground">
+                 Após o pagamento, você receberá a confirmação por e-mail automaticamente.
+               </p>
              </div>
- 
-             {/* Simulate Payment Button (for demo) */}
-             <Button onClick={simulatePayment} className="w-full">
-               Já fiz o pagamento
-             </Button>
- 
-             <p className="text-xs text-muted-foreground">
-               Após o pagamento, você receberá a confirmação por e-mail.
-             </p>
+
+             {/* Trust Badges */}
+             <div className="mt-6 flex items-center justify-center gap-4 text-xs text-muted-foreground">
+               <div className="flex items-center gap-1">
+                 <Shield className="w-4 h-4" />
+                 <span>Pagamento Seguro</span>
+               </div>
+               <span>•</span>
+               <div className="flex items-center gap-1">
+                 <Lock className="w-4 h-4" />
+                 <span>Dados Criptografados</span>
+               </div>
+             </div>
            </div>
          )}
  
