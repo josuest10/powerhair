@@ -30,6 +30,15 @@
      state: string;
      zipCode: string;
    };
+  trackingParameters?: {
+    utm_source: string | null;
+    utm_campaign: string | null;
+    utm_medium: string | null;
+    utm_content: string | null;
+    utm_term: string | null;
+    src: string | null;
+    sck: string | null;
+  };
  }
  
  serve(async (req) => {
@@ -169,6 +178,13 @@
          shipping_state: body.shipping.state,
          shipping_cep: body.shipping.zipCode,
          product_name: body.items[0]?.name || 'Produto',
+        utm_source: body.trackingParameters?.utm_source || null,
+        utm_campaign: body.trackingParameters?.utm_campaign || null,
+        utm_medium: body.trackingParameters?.utm_medium || null,
+        utm_content: body.trackingParameters?.utm_content || null,
+        utm_term: body.trackingParameters?.utm_term || null,
+        src: body.trackingParameters?.src || null,
+        sck: body.trackingParameters?.sck || null,
        });
  
      if (insertError) {
