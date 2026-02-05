@@ -81,11 +81,10 @@
          expiresIn: 1800, // 30 minutes
        },
        items: body.items.map(item => ({
-         name: item.name,
-         description: item.description,
+         title: item.name,
          quantity: item.quantity,
-         amount: item.amount,
-         isPhysical: true,
+         unitPrice: item.amount,
+         tangible: true,
        })),
        shipping: {
          name: body.shipping.name,
@@ -97,15 +96,16 @@
          street: body.shipping.address,
          number: body.shipping.number,
          complement: body.shipping.complement || '',
+         fee: 0, // Free shipping
        },
        customer: {
          name: body.customer.name,
          email: body.customer.email,
-         document: body.customer.document.replace(/\D/g, ''),
-         phone: {
-           areaCode: phoneAreaCode,
-           number: phoneNumber,
+         document: {
+           type: 'cpf',
+           number: body.customer.document.replace(/\D/g, ''),
          },
+         phone: phoneDigits,
        },
      };
  
@@ -143,9 +143,9 @@
          transactionId: data.id,
          status: data.status,
          pix: {
-           qrCode: data.pix?.qrCode,
-           qrCodeImage: data.pix?.qrCodeImage,
-           expiresAt: data.pix?.expiresAt,
+           qrCode: data.pix?.qrcode,
+           qrCodeImage: `https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=${encodeURIComponent(data.pix?.qrcode || '')}`,
+           expiresAt: data.pix?.expirationDate,
          },
          amount: data.amount,
        }),
