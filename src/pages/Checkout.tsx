@@ -85,12 +85,22 @@ const getUTMParams = () => {
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const timerRef = useRef<number | null>(null);
    const pollingRef = useRef<number | null>(null);
-   const [paymentStatus, setPaymentStatus] = useState<"waiting" | "checking" | "paid">("waiting");
- 
+  const [paymentStatus, setPaymentStatus] = useState<"waiting" | "checking" | "paid">("waiting");
+  const [selectedShipping, setSelectedShipping] = useState<"free" | "sedex" | "pac">("free");
+  const [showShippingOptions, setShowShippingOptions] = useState(false);
+
+  const shippingOptions = {
+    free: { label: "Frete Grátis", price: 0, days: "5 a 9 dias úteis" },
+    sedex: { label: "Sedex", price: 12.49, days: "3 a 5 dias úteis" },
+    pac: { label: "PAC", price: 15.30, days: "7 a 10 dias úteis" },
+  };
+
   const originalPrice = 149.0;
-   const productPrice = 97.0;
-   const pixDiscount = productPrice * 0.05;
-   const finalPrice = productPrice - pixDiscount;
+  const productPrice = 79.90;
+  const shippingPrice = shippingOptions[selectedShipping].price;
+  const subtotalWithShipping = productPrice + shippingPrice;
+  const pixDiscount = subtotalWithShipping * 0.05;
+  const finalPrice = subtotalWithShipping - pixDiscount;
  
    const {
      register,
@@ -167,6 +177,9 @@ const getUTMParams = () => {
       if (data.bairro) setValue("neighborhood", data.bairro);
       if (data.localidade) setValue("city", data.localidade);
       if (data.uf) setValue("state", data.uf);
+      
+      // Show shipping options after address is filled
+      setShowShippingOptions(true);
       
       // Focus on the number field after auto-fill
       const numberInput = document.getElementById("number");
@@ -549,27 +562,74 @@ const getUTMParams = () => {
                       {errors.state && <p className="text-xs text-destructive mt-1">{errors.state.message}</p>}
                     </div>
                    </div>
-                 </div>
+                
+                  {/* Shipping Options */}
+                  {showShippingOptions && (
+                    <div className="mt-4 pt-4 border-t border-border">
+                      <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                        <Truck className="w-4 h-4 text-primary" />
+                        Opções de Entrega
+                      </h3>
+                      <div className="space-y-2">
+                        {(Object.keys(shippingOptions) as Array<keyof typeof shippingOptions>).map((key) => {
+                          const option = shippingOptions[key];
+                          return (
+                            <label
+                              key={key}
+                              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
+                                selectedShipping === key
+                                  ? "border-primary bg-primary/5"
+                                  : "border-border hover:border-primary/50"
+                              }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <input
+                                  type="radio"
+                                  name="shipping"
+                                  value={key}
+                                  checked={selectedShipping === key}
+                                  onChange={() => setSelectedShipping(key)}
+                                  className="w-4 h-4 text-primary accent-primary"
+                                />
+                                <div>
+                                  <p className="text-sm font-medium text-foreground">{option.label}</p>
+                                  <p className="text-xs text-muted-foreground">{option.days}</p>
+                                </div>
+                              </div>
+                              <span className={`text-sm font-semibold ${option.price === 0 ? "text-primary" : "text-foreground"}`}>
+                                {option.price === 0 ? "Grátis" : `R$ ${option.price.toFixed(2).replace(".", ",")}`}
+                              </span>
+                            </label>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
- 
+
               {/* Summary and Submit */}
               <div className="bg-card border border-border rounded-lg p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span>Subtotal: R$ {productPrice.toFixed(2).replace(".", ",")}</span>
-                      <span className="text-primary">(-5% PIX)</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Truck className="w-4 h-4 text-primary" />
-                      <span className="text-primary font-medium">Frete Grátis</span>
-                    </div>
+                <div className="space-y-2 mb-4">
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>Subtotal</span>
+                    <span>R$ {productPrice.toFixed(2).replace(".", ",")}</span>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs text-muted-foreground">Total</p>
-                    <p className="text-2xl font-bold text-foreground">R$ {finalPrice.toFixed(2).replace(".", ",")}</p>
-                   </div>
-                 </div>
+                  <div className="flex items-center justify-between text-sm text-muted-foreground">
+                    <span>Frete ({shippingOptions[selectedShipping].label})</span>
+                    <span className={shippingPrice === 0 ? "text-primary font-medium" : ""}>
+                      {shippingPrice === 0 ? "Grátis" : `R$ ${shippingPrice.toFixed(2).replace(".", ",")}`}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between text-sm text-primary">
+                    <span>Desconto PIX (5%)</span>
+                    <span>- R$ {pixDiscount.toFixed(2).replace(".", ",")}</span>
+                  </div>
+                  <div className="flex items-center justify-between pt-2 border-t border-border">
+                    <span className="text-base font-semibold text-foreground">Total</span>
+                    <span className="text-2xl font-bold text-foreground">R$ {finalPrice.toFixed(2).replace(".", ",")}</span>
+                  </div>
+                </div>
                 
                 <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={isSubmitting}>
                   {isSubmitting ? (
