@@ -2,14 +2,17 @@
  
  const PromoBanner = () => {
    return (
-     <div className="bg-promo py-3 px-4 text-center">
-       <p className="text-promo-foreground text-sm md:text-base font-medium">
-         Frete Grátis <span className="text-promo-highlight font-bold">+ 15% OFF</span> em itens não promocionados
-         <Badge variant="outline" className="ml-3 border-promo-foreground/50 text-promo-foreground bg-transparent">
-           CUPOM
-         </Badge>
-         <span className="ml-2 font-semibold">BEMVINDA15</span>
-       </p>
+    <div className="bg-promo py-3 px-4 text-center animate-pulse">
+      <p className="text-promo-foreground text-sm md:text-base font-medium flex items-center justify-center gap-2 flex-wrap">
+        <span className="inline-flex items-center gap-1">
+          💸 Pague com <strong>PIX</strong> e ganhe
+        </span>
+        <span className="text-promo-highlight font-bold text-lg">5% de desconto</span>
+        <span className="hidden md:inline">•</span>
+        <span className="inline-flex items-center gap-1">
+          🚚 <strong>Frete Grátis</strong> para todo Brasil
+        </span>
+      </p>
      </div>
    );
  };

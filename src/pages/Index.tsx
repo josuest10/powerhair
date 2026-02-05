@@ -12,42 +12,45 @@ const Index = () => {
    const breadcrumbItems = [
      { label: "Home", href: "#" },
      { label: "Cabelos", href: "#" },
-     { label: "Kits de Tratamento", href: "#" },
-     { label: "Combo Siàge Acelera o Crescimento: Shampoo 250ml + Máscara Capilar 250g + Condicionador 200ml" },
+     { label: "Crescimento Capilar", href: "#" },
+     { label: "Kit SOS Crescimento e Antiqueda | Lizzante Profissional" },
    ];
  
    const productImages = [
-     "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=600&h=600&fit=crop",
-     "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=600&h=600&fit=crop",
-     "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&h=600&fit=crop",
-     "https://images.unsplash.com/photo-1526947425960-945c6e72858f?w=600&h=600&fit=crop",
+     "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg",
+     "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg",
+     "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg",
+     "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--3--ih0818emza-mu3hsn7l0f.jpeg",
    ];
  
    const kitItems = [
      {
-       image: "https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?w=100&h=100&fit=crop",
-       price: 49.99,
-       installments: "3x de R$ 16,66",
+       image: "https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg",
+       price: 69.90,
+       installments: "Shampoo 300ml",
+       name: "Shampoo SOS",
      },
      {
-       image: "https://images.unsplash.com/photo-1556228720-195a672e8a03?w=100&h=100&fit=crop",
-       price: 52.99,
-       installments: "3x de R$ 17,66",
+       image: "https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg",
+       price: 79.90,
+       installments: "Máscara 300g",
+       name: "Máscara SOS",
      },
      {
-       image: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=100&h=100&fit=crop",
-       price: 73.99,
-       installments: "4x de R$ 18,50",
+       image: "https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg",
+       price: 59.90,
+       installments: "Tônico 100ml",
+       name: "Tônico SOS",
      },
    ];
  
    const attributes = [
-     { label: "Categorias", value: "Cabelos > Kits de Tratamento" },
-     { label: "Tipos de Cabelo", value: "Com Queda ou Ralos" },
-     { label: "Condição dos Fios", value: "Prevenção à Queda" },
-     { label: "Desejo de Beleza", value: "Anti-Queda" },
-     { label: "Tamanho", value: "Padrão" },
-     { label: "Propriedades", value: "Cruelty Free" },
+     { label: "Marca", value: "Lizzante Profissional" },
+     { label: "Indicação", value: "Queda e Crescimento Capilar" },
+     { label: "Público", value: "Homens e Mulheres" },
+     { label: "Tratamento", value: "Alopecia e Fortalecimento" },
+     { label: "Origem", value: "Fitoterápico Natural" },
+     { label: "Propriedades", value: "Não Testado em Animais" },
    ];
  
   return (
@@ -62,21 +65,21 @@ const Index = () => {
            <div>
              <ProductGallery 
                images={productImages}
-               productCode="E2023040603"
+               productCode="2SXG7Z3DQ"
              />
            </div>
            
            {/* Right column - Product Info */}
            <div>
              <ProductInfo
-               title="Combo Siàge Acelera o Crescimento: Shampoo 250ml + Máscara Capilar 250g + Condicionador 200ml"
-               brand="SIÀGE"
+               title="Kit SOS Crescimento e Antiqueda: Shampoo 300ml + Máscara 300g + Tônico Fortalecedor 100ml"
+               brand="LIZZANTE"
                rating={5}
-               reviewCount={224}
+               reviewCount={847}
                kitItems={kitItems}
-               totalPrice={167.97}
-               installmentPrice={16.80}
-               installmentCount={10}
+               totalPrice={179.00}
+               installmentPrice={44.75}
+               installmentCount={4}
              />
            </div>
          </div>
