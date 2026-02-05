@@ -56,6 +56,7 @@
    const [copied, setCopied] = useState(false);
    const [timeLeft, setTimeLeft] = useState(1800); // 30 minutes in seconds
  
+  const originalPrice = 149.0;
    const productPrice = 97.0;
    const pixDiscount = productPrice * 0.05;
    const finalPrice = productPrice - pixDiscount;
@@ -162,7 +163,7 @@
                   <p className="text-xs text-muted-foreground">Shampoo + Máscara + Tônico</p>
                 </div>
                 <div className="text-right flex-shrink-0">
-                  <p className="text-xs text-muted-foreground line-through">R$ {productPrice.toFixed(2).replace(".", ",")}</p>
+                 <p className="text-xs text-muted-foreground line-through">R$ {originalPrice.toFixed(2).replace(".", ",")}</p>
                   <p className="text-lg font-bold text-foreground">R$ {finalPrice.toFixed(2).replace(".", ",")}</p>
                   <p className="text-xs text-primary font-medium">5% OFF no PIX</p>
                 </div>
