@@ -114,20 +114,29 @@ const getUTMParams = () => {
   const [cepLoading, setCepLoading] = useState(false);
   const [cepError, setCepError] = useState<string | null>(null);
 
+  // Track InitiateCheckout once on mount with base product price (no shipping variation)
+  const hasTrackedInitiateCheckout = useRef(false);
+  
   useEffect(() => {
-    // Track InitiateCheckout when page loads
-    trackInitiateCheckout({
-      value: finalPrice,
-      currency: 'BRL',
-    });
+    if (!hasTrackedInitiateCheckout.current) {
+      hasTrackedInitiateCheckout.current = true;
+      // Use base product price to avoid variation from shipping options
+      const basePrice = productPrice * 0.95; // Product price with PIX discount
+      trackInitiateCheckout({
+        value: basePrice,
+        currency: 'BRL',
+        content_id: 'kit-sos-crescimento',
+        content_name: 'Kit SOS Crescimento e Antiqueda',
+      });
+    }
 
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
-       if (pollingRef.current) {
-         clearInterval(pollingRef.current);
-       }
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current);
+      }
     };
   }, []);
 
