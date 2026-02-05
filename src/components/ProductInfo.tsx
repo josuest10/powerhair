@@ -1,9 +1,10 @@
- import { Star, Heart, ShoppingBag } from "lucide-react";
+import { Star, Heart, ShoppingBag, Loader2 } from "lucide-react";
 import { Shield, Truck, CreditCard } from "lucide-react";
-import { Link } from "react-router-dom";
- import { Button } from "@/components/ui/button";
- import { Input } from "@/components/ui/input";
- import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
  
  interface KitItem {
    image: string;
@@ -33,19 +34,33 @@ import { Link } from "react-router-dom";
    installmentPrice,
    installmentCount,
  }: ProductInfoProps) => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  
   const originalPrice = 149.90;
-   const discount = Math.round(((originalPrice - totalPrice) / originalPrice) * 100);
+  const discount = Math.round(((originalPrice - totalPrice) / originalPrice) * 100);
   const pixPrice = totalPrice * 0.95;
+
+  const handleBuyClick = () => {
+    setIsLoading(true);
+    // Pequeno delay para garantir que os scripts de rastreamento carreguem
+    setTimeout(() => {
+      navigate("/checkout");
+    }, 800);
+  };
  
    return (
      <div className="space-y-6">
-       {/* Badges */}
-       <div className="flex flex-wrap gap-2">
-        <Badge className="bg-primary text-primary-foreground">
-           {discount}% OFF
-         </Badge>
-        <Badge variant="secondary">Mais Vendido</Badge>
-        <Badge variant="secondary">Frete Grátis</Badge>
+        {/* Badges */}
+        <div className="flex flex-wrap gap-2">
+          <Badge className="bg-destructive text-destructive-foreground animate-pulse">
+            🔥 PROMOÇÃO
+          </Badge>
+          <Badge className="bg-primary text-primary-foreground">
+            {discount}% OFF
+          </Badge>
+          <Badge variant="secondary">Mais Vendido</Badge>
+          <Badge variant="secondary">Frete Grátis</Badge>
        </div>
  
        {/* Rating */}
@@ -109,12 +124,23 @@ import { Link } from "react-router-dom";
           </p>
         </div>
  
-        <Link to="/checkout" className="block mt-6">
-          <Button className="w-full h-12 text-base font-semibold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground">
-            <ShoppingBag className="w-5 h-5 mr-2" />
-            Comprar agora
+          <Button 
+            onClick={handleBuyClick}
+            disabled={isLoading}
+            className="w-full h-12 text-base font-semibold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground mt-6"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                Carregando...
+              </>
+            ) : (
+              <>
+                <ShoppingBag className="w-5 h-5 mr-2" />
+                Comprar agora
+              </>
+            )}
           </Button>
-        </Link>
  
         {/* Trust indicators */}
         <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
