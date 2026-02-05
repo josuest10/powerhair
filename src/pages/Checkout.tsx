@@ -368,23 +368,87 @@ const getUTMParams = () => {
          {step === "form" && (
           <div className="space-y-6">
             {/* Order Summary - Top */}
-            <div className="bg-secondary rounded-lg p-4">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-lg bg-background overflow-hidden flex-shrink-0">
-                  <img
-                    src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg"
-                    alt="Kit SOS Crescimento"
-                    className="w-full h-full object-contain"
-                  />
+            <div className="bg-card border border-border rounded-lg overflow-hidden">
+              <div className="bg-secondary px-4 py-3 border-b border-border">
+                <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <Gift className="w-4 h-4 text-primary" />
+                  Resumo do Pedido
+                </h2>
+              </div>
+              
+              <div className="p-4 space-y-4">
+                {/* Kit Items */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+                      <img
+                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg"
+                        alt="Shampoo SOS"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground">Shampoo SOS Crescimento</p>
+                      <p className="text-xs text-muted-foreground">300ml</p>
+                    </div>
+                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+                      <img
+                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg"
+                        alt="Máscara SOS"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground">Máscara SOS Crescimento</p>
+                      <p className="text-xs text-muted-foreground">300g</p>
+                    </div>
+                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+                      <img
+                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg"
+                        alt="Tônico SOS"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground">Tônico Fortalecedor SOS</p>
+                      <p className="text-xs text-muted-foreground">100ml</p>
+                    </div>
+                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium text-foreground truncate">Kit SOS Crescimento e Antiqueda</p>
-                  <p className="text-xs text-muted-foreground">Shampoo + Máscara + Tônico</p>
+                
+                {/* Price Summary */}
+                <div className="pt-3 border-t border-border">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground line-through">De R$ {originalPrice.toFixed(2).replace(".", ",")}</p>
+                      <p className="text-lg font-bold text-foreground">R$ {productPrice.toFixed(2).replace(".", ",")}</p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      <span className="px-2 py-0.5 bg-primary text-primary-foreground text-xs font-medium rounded">
+                        {Math.round(((originalPrice - productPrice) / originalPrice) * 100)}% OFF
+                      </span>
+                      <span className="text-xs text-primary font-medium">+ 5% OFF no PIX</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-right flex-shrink-0">
-                 <p className="text-xs text-muted-foreground line-through">R$ {originalPrice.toFixed(2).replace(".", ",")}</p>
-                  <p className="text-lg font-bold text-foreground">R$ {finalPrice.toFixed(2).replace(".", ",")}</p>
-                  <p className="text-xs text-primary font-medium">5% OFF no PIX</p>
+                
+                {/* Trust badges */}
+                <div className="flex items-center justify-center gap-4 pt-2 text-xs text-muted-foreground">
+                  <span className="flex items-center gap-1">
+                    <Truck className="w-3.5 h-3.5 text-primary" /> Frete disponível
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <Shield className="w-3.5 h-3.5 text-primary" /> Compra segura
+                  </span>
                 </div>
               </div>
             </div>
@@ -913,21 +977,32 @@ const getUTMParams = () => {
 
               <Separator className="my-6 bg-primary-foreground/20" />
 
-              {/* Security and Payment */}
-              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-                <div className="flex items-center gap-4 text-sm text-primary-foreground/80">
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4" />
-                    <span>Compra Segura</span>
+              {/* Security Badges */}
+              <div className="space-y-4">
+                <p className="text-sm font-medium text-primary-foreground text-center">Compra 100% Segura</p>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="flex flex-col items-center gap-2 p-3 bg-primary-foreground/5 rounded-lg">
+                    <Shield className="w-6 h-6 text-primary-foreground" />
+                    <span className="text-xs text-primary-foreground/80 text-center">Site Seguro</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Lock className="w-4 h-4" />
-                    <span>Dados Criptografados</span>
+                  <div className="flex flex-col items-center gap-2 p-3 bg-primary-foreground/5 rounded-lg">
+                    <Lock className="w-6 h-6 text-primary-foreground" />
+                    <span className="text-xs text-primary-foreground/80 text-center">SSL 256-bit</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-2 p-3 bg-primary-foreground/5 rounded-lg">
+                    <CheckCircle2 className="w-6 h-6 text-primary-foreground" />
+                    <span className="text-xs text-primary-foreground/80 text-center">Compra Verificada</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-2 p-3 bg-primary-foreground/5 rounded-lg">
+                    <Truck className="w-6 h-6 text-primary-foreground" />
+                    <span className="text-xs text-primary-foreground/80 text-center">Entrega Garantida</span>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  {["Visa", "Master", "Pix"].map((method) => (
-                    <span key={method} className="px-2 py-1 bg-primary-foreground/10 rounded text-xs">
+                
+                {/* Payment Methods */}
+                <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                  {["Visa", "Mastercard", "Elo", "Amex", "PIX", "Boleto"].map((method) => (
+                    <span key={method} className="px-3 py-1.5 bg-primary-foreground/10 rounded text-xs font-medium">
                       {method}
                     </span>
                   ))}
@@ -940,7 +1015,7 @@ const getUTMParams = () => {
           <div className="bg-primary/80 py-4">
             <div className="container max-w-4xl mx-auto px-4">
               <p className="text-center text-sm text-primary-foreground/60">
-                © 2026 Power Hair. Todos os direitos reservados.
+                © 2026 Power Hair. Todos os direitos reservados. CNPJ: 00.000.000/0001-00
               </p>
             </div>
           </div>
