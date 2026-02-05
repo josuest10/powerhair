@@ -2,7 +2,7 @@
  import { z } from "zod";
  import { useForm } from "react-hook-form";
  import { zodResolver } from "@hookform/resolvers/zod";
- import { ArrowLeft, Copy, Check, Clock, Shield, QrCode } from "lucide-react";
+import { ArrowLeft, Copy, Check, Clock, Shield, QrCode, Truck } from "lucide-react";
  import { Link } from "react-router-dom";
  import { Button } from "@/components/ui/button";
  import { Input } from "@/components/ui/input";
@@ -149,59 +149,76 @@
  
        <main className="container max-w-4xl mx-auto px-4 py-8">
          {step === "form" && (
-           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-             {/* Form */}
-             <div className="lg:col-span-3 space-y-6">
-               <div>
-                 <h1 className="text-2xl font-bold text-foreground">Finalizar Compra</h1>
-                 <p className="text-sm text-muted-foreground mt-1">Preencha seus dados para continuar</p>
-               </div>
+          <div className="space-y-6">
+            {/* Order Summary - Top */}
+            <div className="bg-secondary rounded-lg p-4">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-lg bg-background overflow-hidden flex-shrink-0">
+                  <img
+                    src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg"
+                    alt="Kit SOS Crescimento"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-foreground truncate">Kit SOS Crescimento e Antiqueda</p>
+                  <p className="text-xs text-muted-foreground">Shampoo + Máscara + Tônico</p>
+                </div>
+                <div className="text-right flex-shrink-0">
+                  <p className="text-xs text-muted-foreground line-through">R$ {productPrice.toFixed(2).replace(".", ",")}</p>
+                  <p className="text-lg font-bold text-foreground">R$ {finalPrice.toFixed(2).replace(".", ",")}</p>
+                  <p className="text-xs text-primary font-medium">5% OFF no PIX</p>
+                </div>
+              </div>
+            </div>
  
-               <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                 {/* Personal Data */}
-                 <div className="space-y-4">
-                   <h2 className="text-lg font-semibold text-foreground">Dados Pessoais</h2>
-                   
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <div className="space-y-2">
-                       <Label htmlFor="name">Nome Completo</Label>
+            {/* Form */}
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              {/* Personal Data */}
+              <div className="bg-card border border-border rounded-lg p-5">
+                <h2 className="text-base font-semibold text-foreground mb-4">Dados Pessoais</h2>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="name" className="text-xs text-muted-foreground">Nome Completo</Label>
+                    <Input
+                      id="name"
+                      placeholder="Seu nome completo"
+                      {...register("name")}
+                      className={`mt-1 ${errors.name ? "border-destructive" : ""}`}
+                    />
+                    {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="email" className="text-xs text-muted-foreground">E-mail</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      {...register("email")}
+                      className={`mt-1 ${errors.email ? "border-destructive" : ""}`}
+                    />
+                    {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label htmlFor="cpf" className="text-xs text-muted-foreground">CPF</Label>
                        <Input
-                         id="name"
-                         placeholder="Seu nome completo"
-                         {...register("name")}
-                         className={errors.name ? "border-destructive" : ""}
+                        id="cpf"
+                        placeholder="000.000.000-00"
+                        {...register("cpf")}
+                        onChange={(e) => {
+                          e.target.value = formatCPF(e.target.value);
+                        }}
+                        className={`mt-1 ${errors.cpf ? "border-destructive" : ""}`}
                        />
-                       {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+                      {errors.cpf && <p className="text-xs text-destructive mt-1">{errors.cpf.message}</p>}
                      </div>
                      
-                     <div className="space-y-2">
-                       <Label htmlFor="email">E-mail</Label>
-                       <Input
-                         id="email"
-                         type="email"
-                         placeholder="seu@email.com"
-                         {...register("email")}
-                         className={errors.email ? "border-destructive" : ""}
-                       />
-                       {errors.email && <p className="text-xs text-destructive">{errors.email.message}</p>}
-                     </div>
-                     
-                     <div className="space-y-2">
-                       <Label htmlFor="cpf">CPF</Label>
-                       <Input
-                         id="cpf"
-                         placeholder="000.000.000-00"
-                         {...register("cpf")}
-                         onChange={(e) => {
-                           e.target.value = formatCPF(e.target.value);
-                         }}
-                         className={errors.cpf ? "border-destructive" : ""}
-                       />
-                       {errors.cpf && <p className="text-xs text-destructive">{errors.cpf.message}</p>}
-                     </div>
-                     
-                     <div className="space-y-2">
-                       <Label htmlFor="phone">Telefone</Label>
+                    <div>
+                      <Label htmlFor="phone" className="text-xs text-muted-foreground">Telefone</Label>
                        <Input
                          id="phone"
                          placeholder="(00) 00000-0000"
@@ -209,161 +226,129 @@
                          onChange={(e) => {
                            e.target.value = formatPhone(e.target.value);
                          }}
-                         className={errors.phone ? "border-destructive" : ""}
+                        className={`mt-1 ${errors.phone ? "border-destructive" : ""}`}
                        />
-                       {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
+                      {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone.message}</p>}
                      </div>
                    </div>
                  </div>
+              </div>
  
-                 <Separator />
- 
-                 {/* Address */}
-                 <div className="space-y-4">
-                   <h2 className="text-lg font-semibold text-foreground">Endereço de Entrega</h2>
-                   
-                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                     <div className="space-y-2">
-                       <Label htmlFor="cep">CEP</Label>
-                       <Input
-                         id="cep"
-                         placeholder="00000-000"
-                         {...register("cep")}
-                         onChange={(e) => {
-                           e.target.value = formatCEP(e.target.value);
-                         }}
-                         className={errors.cep ? "border-destructive" : ""}
-                       />
-                       {errors.cep && <p className="text-xs text-destructive">{errors.cep.message}</p>}
-                     </div>
-                     
-                     <div className="space-y-2 md:col-span-2">
-                       <Label htmlFor="address">Endereço</Label>
-                       <Input
-                         id="address"
-                         placeholder="Rua, Avenida..."
-                         {...register("address")}
-                         className={errors.address ? "border-destructive" : ""}
-                       />
-                       {errors.address && <p className="text-xs text-destructive">{errors.address.message}</p>}
-                     </div>
-                     
-                     <div className="space-y-2">
-                       <Label htmlFor="number">Número</Label>
-                       <Input
-                         id="number"
-                         placeholder="123"
-                         {...register("number")}
-                         className={errors.number ? "border-destructive" : ""}
-                       />
-                       {errors.number && <p className="text-xs text-destructive">{errors.number.message}</p>}
-                     </div>
-                     
-                     <div className="space-y-2 md:col-span-2">
-                       <Label htmlFor="complement">Complemento (opcional)</Label>
-                       <Input
-                         id="complement"
-                         placeholder="Apto, Bloco..."
-                         {...register("complement")}
-                       />
-                     </div>
-                     
-                     <div className="space-y-2">
-                       <Label htmlFor="neighborhood">Bairro</Label>
-                       <Input
-                         id="neighborhood"
-                         placeholder="Seu bairro"
-                         {...register("neighborhood")}
-                         className={errors.neighborhood ? "border-destructive" : ""}
-                       />
-                       {errors.neighborhood && <p className="text-xs text-destructive">{errors.neighborhood.message}</p>}
-                     </div>
-                     
-                     <div className="space-y-2">
-                       <Label htmlFor="city">Cidade</Label>
-                       <Input
-                         id="city"
-                         placeholder="Sua cidade"
-                         {...register("city")}
-                         className={errors.city ? "border-destructive" : ""}
-                       />
-                       {errors.city && <p className="text-xs text-destructive">{errors.city.message}</p>}
-                     </div>
-                     
-                     <div className="space-y-2">
-                       <Label htmlFor="state">Estado</Label>
-                       <Input
-                         id="state"
-                         placeholder="SP"
-                         maxLength={2}
-                         {...register("state")}
-                         onChange={(e) => {
-                           e.target.value = e.target.value.toUpperCase();
-                         }}
-                         className={errors.state ? "border-destructive" : ""}
-                       />
-                       {errors.state && <p className="text-xs text-destructive">{errors.state.message}</p>}
-                     </div>
+              {/* Address */}
+              <div className="bg-card border border-border rounded-lg p-5">
+                <h2 className="text-base font-semibold text-foreground mb-4">Endereço de Entrega</h2>
+                
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="cep" className="text-xs text-muted-foreground">CEP</Label>
+                    <Input
+                      id="cep"
+                      placeholder="00000-000"
+                      {...register("cep")}
+                      onChange={(e) => {
+                        e.target.value = formatCEP(e.target.value);
+                      }}
+                      className={`mt-1 max-w-[140px] ${errors.cep ? "border-destructive" : ""}`}
+                    />
+                    {errors.cep && <p className="text-xs text-destructive mt-1">{errors.cep.message}</p>}
+                  </div>
+                  
+                  <div className="grid grid-cols-4 gap-3">
+                    <div className="col-span-3">
+                      <Label htmlFor="address" className="text-xs text-muted-foreground">Endereço</Label>
+                      <Input
+                        id="address"
+                        placeholder="Rua, Avenida..."
+                        {...register("address")}
+                        className={`mt-1 ${errors.address ? "border-destructive" : ""}`}
+                      />
+                      {errors.address && <p className="text-xs text-destructive mt-1">{errors.address.message}</p>}
+                    </div>
+                    <div>
+                      <Label htmlFor="number" className="text-xs text-muted-foreground">Nº</Label>
+                      <Input
+                        id="number"
+                        placeholder="123"
+                        {...register("number")}
+                        className={`mt-1 ${errors.number ? "border-destructive" : ""}`}
+                      />
+                      {errors.number && <p className="text-xs text-destructive mt-1">{errors.number.message}</p>}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <Label htmlFor="complement" className="text-xs text-muted-foreground">Complemento (opcional)</Label>
+                    <Input
+                      id="complement"
+                      placeholder="Apto, Bloco..."
+                      {...register("complement")}
+                      className="mt-1"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <Label htmlFor="neighborhood" className="text-xs text-muted-foreground">Bairro</Label>
+                      <Input
+                        id="neighborhood"
+                        placeholder="Seu bairro"
+                        {...register("neighborhood")}
+                        className={`mt-1 ${errors.neighborhood ? "border-destructive" : ""}`}
+                      />
+                      {errors.neighborhood && <p className="text-xs text-destructive mt-1">{errors.neighborhood.message}</p>}
+                    </div>
+                    <div>
+                      <Label htmlFor="city" className="text-xs text-muted-foreground">Cidade</Label>
+                      <Input
+                        id="city"
+                        placeholder="Sua cidade"
+                        {...register("city")}
+                        className={`mt-1 ${errors.city ? "border-destructive" : ""}`}
+                      />
+                      {errors.city && <p className="text-xs text-destructive mt-1">{errors.city.message}</p>}
+                    </div>
+                    <div>
+                      <Label htmlFor="state" className="text-xs text-muted-foreground">UF</Label>
+                      <Input
+                        id="state"
+                        placeholder="SP"
+                        maxLength={2}
+                        {...register("state")}
+                        onChange={(e) => {
+                          e.target.value = e.target.value.toUpperCase();
+                        }}
+                        className={`mt-1 ${errors.state ? "border-destructive" : ""}`}
+                      />
+                      {errors.state && <p className="text-xs text-destructive mt-1">{errors.state.message}</p>}
+                    </div>
                    </div>
                  </div>
+              </div>
  
-                 <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={isSubmitting}>
-                   {isSubmitting ? "Processando..." : "Continuar para Pagamento PIX"}
-                 </Button>
-               </form>
-             </div>
- 
-             {/* Order Summary */}
-             <div className="lg:col-span-2">
-               <div className="bg-secondary rounded-lg p-5 sticky top-4">
-                 <h2 className="text-lg font-semibold text-foreground mb-4">Resumo do Pedido</h2>
-                 
-                 <div className="flex gap-3 mb-4">
-                   <div className="w-20 h-20 rounded-lg bg-background overflow-hidden">
-                     <img
-                       src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg"
-                       alt="Kit SOS Crescimento"
-                       className="w-full h-full object-contain"
-                     />
-                   </div>
-                   <div className="flex-1">
-                     <p className="text-sm font-medium text-foreground">Kit SOS Crescimento e Antiqueda</p>
-                     <p className="text-xs text-muted-foreground">Shampoo + Máscara + Tônico</p>
-                     <p className="text-xs text-muted-foreground mt-1">Qtd: 1</p>
+              {/* Summary and Submit */}
+              <div className="bg-card border border-border rounded-lg p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <span>Subtotal: R$ {productPrice.toFixed(2).replace(".", ",")}</span>
+                      <span className="text-primary">(-5% PIX)</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Truck className="w-4 h-4 text-primary" />
+                      <span className="text-primary font-medium">Frete Grátis</span>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-muted-foreground">Total</p>
+                    <p className="text-2xl font-bold text-foreground">R$ {finalPrice.toFixed(2).replace(".", ",")}</p>
                    </div>
                  </div>
- 
-                 <Separator className="my-4" />
- 
-                 <div className="space-y-2 text-sm">
-                   <div className="flex justify-between">
-                     <span className="text-muted-foreground">Subtotal</span>
-                     <span className="text-foreground">R$ {productPrice.toFixed(2).replace(".", ",")}</span>
-                   </div>
-                   <div className="flex justify-between text-primary">
-                     <span>Desconto PIX (5%)</span>
-                     <span>- R$ {pixDiscount.toFixed(2).replace(".", ",")}</span>
-                   </div>
-                   <div className="flex justify-between">
-                     <span className="text-muted-foreground">Frete</span>
-                     <span className="text-primary font-medium">Grátis</span>
-                   </div>
-                 </div>
- 
-                 <Separator className="my-4" />
- 
-                 <div className="flex justify-between items-center">
-                   <span className="font-semibold text-foreground">Total</span>
-                   <span className="text-2xl font-bold text-foreground">R$ {finalPrice.toFixed(2).replace(".", ",")}</span>
-                 </div>
- 
-                 <div className="mt-4 p-3 bg-primary/10 rounded-lg">
-                   <p className="text-xs text-center text-primary font-medium">
-                     🎉 Você está economizando R$ {pixDiscount.toFixed(2).replace(".", ",")} com PIX!
-                   </p>
-                 </div>
+                
+                <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={isSubmitting}>
+                  {isSubmitting ? "Processando..." : "Pagar com PIX"}
+                </Button>
                </div>
-             </div>
+            </form>
            </div>
          )}
  
