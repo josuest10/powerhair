@@ -2,7 +2,7 @@
  import { z } from "zod";
  import { useForm } from "react-hook-form";
  import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Copy, Check, Clock, Shield, QrCode, Truck } from "lucide-react";
+ import { Copy, Check, Clock, Shield, QrCode, Truck, Lock } from "lucide-react";
  import { Link } from "react-router-dom";
  import { Button } from "@/components/ui/button";
  import { Input } from "@/components/ui/input";
@@ -133,16 +133,13 @@ import { ArrowLeft, Copy, Check, Clock, Shield, QrCode, Truck } from "lucide-rea
    return (
      <div className="min-h-screen bg-background">
        {/* Header */}
-       <header className="border-b border-border bg-background py-4">
-         <div className="container max-w-4xl mx-auto px-4 flex items-center justify-between">
-           <Link to="/" className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-             <ArrowLeft className="w-4 h-4" />
-             <span className="text-sm">Voltar</span>
-           </Link>
+       <header className="border-b border-border bg-background py-3">
+         <div className="container max-w-4xl mx-auto px-4 flex items-center justify-center gap-3">
            <PowerHairLogo />
-           <div className="flex items-center gap-1 text-xs text-muted-foreground">
-             <Shield className="w-4 h-4" />
-             <span>Compra Segura</span>
+           <div className="h-4 w-px bg-border"></div>
+           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+             <Lock className="w-3.5 h-3.5 text-primary" />
+             <span>Checkout Seguro</span>
            </div>
          </div>
        </header>
