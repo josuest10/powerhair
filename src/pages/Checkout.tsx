@@ -3,7 +3,7 @@
  import { useForm } from "react-hook-form";
  import { zodResolver } from "@hookform/resolvers/zod";
  import { Copy, Check, Clock, Shield, Truck, Lock, Loader2, AlertCircle, Sparkles, Gift, CheckCircle2, MapPin } from "lucide-react";
- import { Link } from "react-router-dom";
+ import { Link, useNavigate } from "react-router-dom";
  import { Button } from "@/components/ui/button";
  import { Input } from "@/components/ui/input";
  import { Label } from "@/components/ui/label";
@@ -53,6 +53,7 @@
  
  const Checkout = () => {
    const { toast } = useToast();
+   const navigate = useNavigate();
    const [step, setStep] = useState<"form" | "pix" | "success">("form");
    const [copied, setCopied] = useState(false);
    const [timeLeft, setTimeLeft] = useState(1800); // 30 minutes in seconds
@@ -63,6 +64,8 @@
   } | null>(null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const timerRef = useRef<number | null>(null);
+   const pollingRef = useRef<number | null>(null);
+   const [paymentStatus, setPaymentStatus] = useState<"waiting" | "checking" | "paid">("waiting");
  
   const originalPrice = 149.0;
    const productPrice = 97.0;
@@ -86,6 +89,9 @@
       if (timerRef.current) {
         clearInterval(timerRef.current);
       }
+       if (pollingRef.current) {
+         clearInterval(pollingRef.current);
+       }
     };
   }, []);
 
@@ -148,6 +154,46 @@
     }
   };
 
+   // Start polling for payment status
+   const startPaymentPolling = (transactionId: string) => {
+     // Poll every 5 seconds
+     pollingRef.current = window.setInterval(async () => {
+       try {
+         setPaymentStatus("checking");
+         const { data, error } = await supabase.functions.invoke('check-pix-payment', {
+           body: { transactionId },
+         });
+ 
+         if (error) {
+           console.error('Error checking payment:', error);
+           setPaymentStatus("waiting");
+           return;
+         }
+ 
+         if (data?.isPaid) {
+           setPaymentStatus("paid");
+           if (pollingRef.current) {
+             clearInterval(pollingRef.current);
+           }
+           // Auto redirect after 2 seconds
+           setTimeout(() => {
+             navigate('/obrigado', {
+               state: {
+                 orderId: `PWH${transactionId.toString().slice(-8)}`,
+                 amount: finalPrice,
+               }
+             });
+           }, 2000);
+         } else {
+           setPaymentStatus("waiting");
+         }
+       } catch (err) {
+         console.error('Polling error:', err);
+         setPaymentStatus("waiting");
+       }
+     }, 5000);
+   };
+ 
    const onSubmit = async (data: CheckoutFormData) => {
      setPaymentError(null);
      
@@ -202,6 +248,11 @@
        
        setStep("pix");
        
+       // Start polling for payment status
+       if (responseData.transactionId) {
+         startPaymentPolling(responseData.transactionId);
+       }
+       
        timerRef.current = window.setInterval(() => {
          setTimeLeft((prev) => {
            if (prev <= 1) {
@@ -235,8 +286,22 @@
      setTimeout(() => setCopied(false), 3000);
    };
  
-   const simulatePayment = () => {
-     setStep("success");
+  const handlePaymentConfirmed = () => {
+    if (paymentStatus !== "paid") {
+      toast({
+        variant: "destructive",
+        title: "Aguarde o pagamento",
+        description: "O pagamento ainda não foi confirmado. Escaneie o QR Code ou cole o código PIX no seu banco.",
+      });
+      return;
+    }
+    
+    navigate('/obrigado', {
+      state: {
+        orderId: pixData?.transactionId ? `PWH${pixData.transactionId.toString().slice(-8)}` : undefined,
+        amount: finalPrice,
+      }
+    });
    };
  
    const formatTime = (seconds: number) => {
@@ -613,12 +678,43 @@
 
              {/* Confirm Payment Button */}
              <div className="mt-6 space-y-3">
-               <Button onClick={simulatePayment} className="w-full h-12 text-base font-semibold">
-                 ✓ Já fiz o pagamento
+              <Button 
+                onClick={handlePaymentConfirmed} 
+                className="w-full h-12 text-base font-semibold"
+                disabled={paymentStatus === "checking"}
+                variant={paymentStatus === "paid" ? "default" : "outline"}
+              >
+                {paymentStatus === "checking" && (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Verificando pagamento...
+                  </>
+                )}
+                {paymentStatus === "waiting" && (
+                  <>
+                    <Clock className="w-4 h-4 mr-2" />
+                    Aguardando pagamento...
+                  </>
+                )}
+                {paymentStatus === "paid" && (
+                  <>
+                    <Check className="w-4 h-4 mr-2" />
+                    Pagamento Confirmado! Clique para continuar
+                  </>
+                )}
                </Button>
-               <p className="text-xs text-center text-muted-foreground">
-                 Após o pagamento, você receberá a confirmação por e-mail automaticamente.
-               </p>
+              {paymentStatus === "paid" && (
+                <div className="bg-primary/10 rounded-lg p-3 text-center">
+                  <p className="text-sm text-primary font-medium">
+                    🎉 Pagamento detectado! Redirecionando...
+                  </p>
+                </div>
+              )}
+              {paymentStatus === "waiting" && (
+                <p className="text-xs text-center text-muted-foreground">
+                  O status será atualizado automaticamente após o pagamento.
+                </p>
+              )}
              </div>
 
              {/* Trust Badges */}
@@ -636,49 +732,6 @@
            </div>
          )}
  
-         {step === "success" && (
-           <div className="max-w-md mx-auto text-center space-y-6">
-             <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
-               <Check className="w-10 h-10 text-primary" />
-             </div>
- 
-             <div>
-               <h1 className="text-2xl font-bold text-foreground">Pagamento Confirmado!</h1>
-               <p className="text-sm text-muted-foreground mt-1">Seu pedido foi recebido com sucesso</p>
-             </div>
- 
-             <div className="bg-secondary rounded-lg p-5 text-left space-y-3">
-               <div className="flex justify-between">
-                 <span className="text-sm text-muted-foreground">Número do pedido</span>
-                 <span className="text-sm font-medium text-foreground">#PWH{Date.now().toString().slice(-8)}</span>
-               </div>
-               <div className="flex justify-between">
-                 <span className="text-sm text-muted-foreground">Valor pago</span>
-                 <span className="text-sm font-medium text-foreground">R$ {finalPrice.toFixed(2).replace(".", ",")}</span>
-               </div>
-               <div className="flex justify-between">
-                 <span className="text-sm text-muted-foreground">Forma de pagamento</span>
-                 <span className="text-sm font-medium text-foreground">PIX</span>
-               </div>
-               <div className="flex justify-between">
-                 <span className="text-sm text-muted-foreground">Previsão de entrega</span>
-                 <span className="text-sm font-medium text-foreground">5-10 dias úteis</span>
-               </div>
-             </div>
- 
-             <div className="bg-primary/10 rounded-lg p-4">
-               <p className="text-sm text-primary">
-                 📧 Enviamos os detalhes do pedido para o seu e-mail.
-               </p>
-             </div>
- 
-             <Link to="/">
-               <Button variant="outline" className="w-full">
-                 Voltar para a loja
-               </Button>
-             </Link>
-           </div>
-         )}
        </main>
  
        {/* Footer */}
