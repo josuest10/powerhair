@@ -47,6 +47,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+         promo: {
+           DEFAULT: "hsl(var(--promo-bg))",
+           foreground: "hsl(var(--promo-text))",
+           highlight: "hsl(var(--promo-highlight))",
+         },
+         rating: "hsl(var(--rating))",
+         price: {
+           DEFAULT: "hsl(var(--price))",
+           old: "hsl(var(--price-old))",
+         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
