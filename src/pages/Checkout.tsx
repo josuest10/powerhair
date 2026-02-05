@@ -1,14 +1,14 @@
- import { useState } from "react";
+ import { useState, useRef, useEffect } from "react";
  import { z } from "zod";
  import { useForm } from "react-hook-form";
  import { zodResolver } from "@hookform/resolvers/zod";
- import { Copy, Check, Clock, Shield, QrCode, Truck, Lock } from "lucide-react";
+ import { Copy, Check, Clock, Shield, Truck, Lock, Loader2, AlertCircle } from "lucide-react";
  import { Link } from "react-router-dom";
  import { Button } from "@/components/ui/button";
  import { Input } from "@/components/ui/input";
  import { Label } from "@/components/ui/label";
- import { Separator } from "@/components/ui/separator";
  import { useToast } from "@/hooks/use-toast";
+ import { supabase } from "@/integrations/supabase/client";
  
  const PowerHairLogo = () => (
    <div className="flex items-center gap-2">
@@ -55,13 +55,18 @@
    const [step, setStep] = useState<"form" | "pix" | "success">("form");
    const [copied, setCopied] = useState(false);
    const [timeLeft, setTimeLeft] = useState(1800); // 30 minutes in seconds
+  const [pixData, setPixData] = useState<{
+    qrCode: string | null;
+    qrCodeImage: string | null;
+    transactionId: string | null;
+  } | null>(null);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const timerRef = useRef<number | null>(null);
  
   const originalPrice = 149.0;
    const productPrice = 97.0;
    const pixDiscount = productPrice * 0.05;
    const finalPrice = productPrice - pixDiscount;
- 
-   const pixCode = "00020126580014br.gov.bcb.pix0136a1b2c3d4-e5f6-7890-abcd-ef1234567890520400005303986540592.155802BR5925POWER HAIR COMERCIO LTDA6009SAO PAULO62140510PWRHAIR2026630445B2";
  
    const {
      register,
@@ -71,6 +76,14 @@
      resolver: zodResolver(checkoutSchema),
    });
  
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
+
    const formatCPF = (value: string) => {
      const numbers = value.replace(/\D/g, "");
      return numbers
@@ -94,25 +107,84 @@
    };
  
    const onSubmit = async (data: CheckoutFormData) => {
-     // Simulate API call
-     await new Promise((resolve) => setTimeout(resolve, 1000));
-     console.log("Order data:", data);
-     setStep("pix");
+     setPaymentError(null);
      
-     // Start countdown
-     const timer = setInterval(() => {
-       setTimeLeft((prev) => {
-         if (prev <= 1) {
-           clearInterval(timer);
-           return 0;
-         }
-         return prev - 1;
+     try {
+       const amountInCents = Math.round(finalPrice * 100);
+       
+       const payload = {
+         amount: amountInCents,
+         customer: {
+           name: data.name,
+           email: data.email,
+           document: data.cpf,
+           phone: data.phone,
+         },
+         items: [
+           {
+             name: "Kit SOS Crescimento e Antiqueda",
+             description: "Shampoo + Máscara + Tônico",
+             quantity: 1,
+             amount: amountInCents,
+           },
+         ],
+         shipping: {
+           name: data.name,
+           address: data.address,
+           number: data.number,
+           complement: data.complement || "",
+           neighborhood: data.neighborhood,
+           city: data.city,
+           state: data.state,
+           zipCode: data.cep,
+         },
+       };
+       
+       const { data: responseData, error } = await supabase.functions.invoke('create-pix-payment', {
+         body: payload,
        });
-     }, 1000);
+       
+       if (error) {
+         throw new Error(error.message || 'Erro ao processar pagamento');
+       }
+       
+       if (!responseData?.success) {
+         throw new Error(responseData?.error || 'Erro ao criar pagamento PIX');
+       }
+       
+       setPixData({
+         qrCode: responseData.pix?.qrCode || null,
+         qrCodeImage: responseData.pix?.qrCodeImage || null,
+         transactionId: responseData.transactionId || null,
+       });
+       
+       setStep("pix");
+       
+       timerRef.current = window.setInterval(() => {
+         setTimeLeft((prev) => {
+           if (prev <= 1) {
+             if (timerRef.current) clearInterval(timerRef.current);
+             return 0;
+           }
+           return prev - 1;
+         });
+       }, 1000);
+       
+     } catch (err) {
+       console.error('Payment error:', err);
+       const errorMessage = err instanceof Error ? err.message : 'Erro desconhecido';
+       setPaymentError(errorMessage);
+       toast({
+         variant: "destructive",
+         title: "Erro no pagamento",
+         description: errorMessage,
+       });
+     }
    };
  
    const copyPixCode = () => {
-     navigator.clipboard.writeText(pixCode);
+     if (!pixData?.qrCode) return;
+     navigator.clipboard.writeText(pixData.qrCode);
      setCopied(true);
      toast({
        title: "Código copiado!",
@@ -343,8 +415,22 @@
                  </div>
                 
                 <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={isSubmitting}>
-                  {isSubmitting ? "Processando..." : "Pagar com PIX"}
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Gerando PIX...
+                    </>
+                  ) : (
+                    "Pagar com PIX"
+                  )}
                 </Button>
+                
+                {paymentError && (
+                  <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg mt-3">
+                    <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
+                    <p className="text-sm text-destructive">{paymentError}</p>
+                  </div>
+                )}
                </div>
             </form>
            </div>
@@ -365,9 +451,17 @@
  
              {/* QR Code */}
              <div className="bg-white p-6 rounded-lg inline-block mx-auto">
-               <div className="w-48 h-48 bg-secondary flex items-center justify-center rounded">
-                 <QrCode className="w-32 h-32 text-foreground" />
-               </div>
+               {pixData?.qrCodeImage ? (
+                 <img 
+                   src={pixData.qrCodeImage} 
+                   alt="QR Code PIX" 
+                   className="w-48 h-48 object-contain"
+                 />
+               ) : (
+                 <div className="w-48 h-48 bg-secondary flex items-center justify-center rounded">
+                   <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                 </div>
+               )}
              </div>
  
              {/* Amount */}
@@ -380,8 +474,10 @@
              <div className="space-y-3">
                <p className="text-sm text-muted-foreground">Ou copie o código PIX:</p>
                <div className="bg-secondary rounded-lg p-3 flex items-center gap-2">
-                 <code className="flex-1 text-xs text-muted-foreground truncate">{pixCode}</code>
-                 <Button variant="outline" size="sm" onClick={copyPixCode}>
+                 <code className="flex-1 text-xs text-muted-foreground truncate">
+                   {pixData?.qrCode || "Carregando..."}
+                 </code>
+                 <Button variant="outline" size="sm" onClick={copyPixCode} disabled={!pixData?.qrCode}>
                    {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                  </Button>
                </div>
@@ -400,7 +496,7 @@
  
              {/* Simulate Payment Button (for demo) */}
              <Button onClick={simulatePayment} className="w-full">
-               Simular Pagamento Confirmado
+               Já fiz o pagamento
              </Button>
  
              <p className="text-xs text-muted-foreground">
