@@ -1,14 +1,30 @@
- import PromoBanner from "@/components/PromoBanner";
- import Header from "@/components/Header";
- import Breadcrumb from "@/components/Breadcrumb";
- import ProductGallery from "@/components/ProductGallery";
- import ProductInfo from "@/components/ProductInfo";
- import ProductAttributes from "@/components/ProductAttributes";
- import ProductDescription from "@/components/ProductDescription";
- import ProductReviews from "@/components/ProductReviews";
- import Footer from "@/components/Footer";
+import { useEffect, useRef } from "react";
+import PromoBanner from "@/components/PromoBanner";
+import Header from "@/components/Header";
+import Breadcrumb from "@/components/Breadcrumb";
+import ProductGallery from "@/components/ProductGallery";
+import ProductInfo from "@/components/ProductInfo";
+import ProductAttributes from "@/components/ProductAttributes";
+import ProductDescription from "@/components/ProductDescription";
+import ProductReviews from "@/components/ProductReviews";
+import Footer from "@/components/Footer";
+import { trackViewContent } from "@/lib/tiktok-pixel";
  
 const Index = () => {
+  const hasTrackedViewContent = useRef(false);
+  
+  useEffect(() => {
+    if (!hasTrackedViewContent.current) {
+      hasTrackedViewContent.current = true;
+      trackViewContent({
+        value: 79.90,
+        currency: 'BRL',
+        content_id: 'kit-sos-crescimento',
+        content_name: 'Kit SOS Crescimento e Antiqueda',
+      });
+    }
+  }, []);
+
    const breadcrumbItems = [
      { label: "Home", href: "#" },
      { label: "Cabelos", href: "#" },
