@@ -33,14 +33,14 @@ const PowerHairLogo = () => (
    const institutionalLinks = [
     { label: "Sobre a Power Hair", href: "#" },
      { label: "Trabalhe Conosco", href: "#" },
-     { label: "Política de Privacidade", href: "#" },
-     { label: "Termos de Uso", href: "#" },
+    { label: "Política de Privacidade", href: "/politica-de-privacidade" },
+    { label: "Termos de Uso", href: "/termos-de-uso" },
     { label: "Sustentabilidade", href: "#" },
    ];
  
    const helpLinks = [
      { label: "Central de Ajuda", href: "#" },
-     { label: "Trocas e Devoluções", href: "#" },
+    { label: "Trocas e Devoluções", href: "/trocas-e-devolucoes" },
      { label: "Formas de Pagamento", href: "#" },
      { label: "Prazo de Entrega", href: "#" },
      { label: "Fale Conosco", href: "#" },
