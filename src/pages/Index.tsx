@@ -77,9 +77,9 @@ const Index = () => {
                rating={5}
                reviewCount={847}
                kitItems={kitItems}
-               totalPrice={179.00}
-               installmentPrice={44.75}
-               installmentCount={4}
+              totalPrice={97.00}
+              installmentPrice={24.25}
+              installmentCount={4}
              />
            </div>
          </div>
