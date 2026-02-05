@@ -38,6 +38,32 @@
      defer
    ></script>
    <!-- UTMify Script End -->
+
+   <!-- Back Redirect Script Start -->
+   <script>
+     (function() {
+       function setBackRedirect() {
+         var url = window.location.href;
+         
+         history.pushState({}, '', location.href);
+         history.pushState({}, '', location.href);
+         history.pushState({}, '', location.href);
+
+         window.addEventListener('popstate', function() {
+           setTimeout(function() {
+             location.href = url;
+           }, 1);
+         });
+       }
+       
+       if (document.readyState === 'complete') {
+         setBackRedirect();
+       } else {
+         window.addEventListener('load', setBackRedirect);
+       }
+     })();
+   </script>
+   <!-- Back Redirect Script End -->
   </head>
 
   <body>
