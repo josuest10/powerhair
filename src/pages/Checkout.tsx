@@ -11,6 +11,7 @@
  import { supabase } from "@/integrations/supabase/client";
  import { QRCodeSVG } from "qrcode.react";
  import { validateCPF } from "@/lib/cpf-validator";
+ import { trackInitiateCheckout, identifyUser } from "@/lib/tiktok-pixel";
  
  const PowerHairLogo = () => (
    <div className="flex items-center gap-2">
@@ -88,6 +89,12 @@
   const [cepError, setCepError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Track InitiateCheckout when page loads
+    trackInitiateCheckout({
+      value: finalPrice,
+      currency: 'BRL',
+    });
+
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
