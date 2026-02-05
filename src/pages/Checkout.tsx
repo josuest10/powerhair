@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { QRCodeSVG } from "qrcode.react";
 import { validateCPF } from "@/lib/cpf-validator";
 import { trackInitiateCheckout, identifyUser } from "@/lib/tiktok-pixel";
+import { trackMetaInitiateCheckout } from "@/lib/meta-pixel";
 import CheckoutReviews from "@/components/CheckoutReviews";
 import { Separator } from "@/components/ui/separator";
  
@@ -122,11 +123,20 @@ const getUTMParams = () => {
       hasTrackedInitiateCheckout.current = true;
       // Use base product price to avoid variation from shipping options
       const basePrice = productPrice * 0.95; // Product price with PIX discount
+      // TikTok InitiateCheckout
       trackInitiateCheckout({
         value: basePrice,
         currency: 'BRL',
         content_id: 'kit-sos-crescimento',
         content_name: 'Kit SOS Crescimento e Antiqueda',
+      });
+      // Meta InitiateCheckout
+      trackMetaInitiateCheckout({
+        value: basePrice,
+        currency: 'BRL',
+        content_ids: ['kit-sos-crescimento'],
+        content_name: 'Kit SOS Crescimento e Antiqueda',
+        num_items: 1,
       });
     }
 

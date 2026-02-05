@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import { trackMetaPageView } from "@/lib/meta-pixel";
 
 const ScrollToTop = () => {
   const { pathname, search } = useLocation();
@@ -12,6 +13,9 @@ const ScrollToTop = () => {
       window.ttq.page();
       console.log("TikTok Pixel: PageView tracked", { pathname, search });
     }
+
+    // Meta Pixel: track PageView on route changes for SPA
+    trackMetaPageView();
   }, [pathname, search]);
 
   return null;
