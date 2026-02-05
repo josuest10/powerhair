@@ -1,5 +1,6 @@
  import { Star, Heart, ShoppingBag } from "lucide-react";
 import { Shield, Truck, CreditCard } from "lucide-react";
+import { Link } from "react-router-dom";
  import { Button } from "@/components/ui/button";
  import { Input } from "@/components/ui/input";
  import { Badge } from "@/components/ui/badge";
@@ -108,10 +109,12 @@ import { Shield, Truck, CreditCard } from "lucide-react";
           </p>
         </div>
  
-        <Button className="w-full h-12 text-base font-semibold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground">
-          <ShoppingBag className="w-5 h-5 mr-2" />
-          Comprar agora
-         </Button>
+        <Link to="/checkout">
+          <Button className="w-full h-12 text-base font-semibold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground">
+            <ShoppingBag className="w-5 h-5 mr-2" />
+            Comprar agora
+          </Button>
+        </Link>
  
         {/* Trust indicators */}
         <div className="flex items-center justify-center gap-6 text-xs text-muted-foreground">
