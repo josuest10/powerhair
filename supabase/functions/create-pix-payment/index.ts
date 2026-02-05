@@ -1,4 +1,5 @@
  import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
+ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
  
  const corsHeaders = {
    'Access-Control-Allow-Origin': '*',
@@ -40,6 +41,8 @@
    try {
      const PODPAY_PUBLIC_KEY = Deno.env.get('PODPAY_PUBLIC_KEY');
      const PODPAY_SECRET_KEY = Deno.env.get('PODPAY_SECRET_KEY');
+     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
  
      if (!PODPAY_PUBLIC_KEY) {
        throw new Error('PODPAY_PUBLIC_KEY is not configured');
@@ -47,6 +50,11 @@
      if (!PODPAY_SECRET_KEY) {
        throw new Error('PODPAY_SECRET_KEY is not configured');
      }
+     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+       throw new Error('Supabase credentials are not configured');
+     }
+ 
+     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
  
      const body: PaymentRequest = await req.json();
  
@@ -73,6 +81,10 @@
      const phoneAreaCode = phoneDigits.substring(0, 2);
      const phoneNumber = phoneDigits.substring(2);
  
+     // Get the project URL for webhook
+     const projectId = SUPABASE_URL.match(/https:\/\/([^.]+)\./)?.[1] || '';
+     const webhookUrl = `https://${projectId}.supabase.co/functions/v1/podpay-webhook`;
+ 
      // Build Podpay payload
      const payload = {
        amount: body.amount, // Already in cents
@@ -80,6 +92,7 @@
        pix: {
          expiresIn: 1800, // 30 minutes
        },
+       postbackUrl: webhookUrl,
        items: body.items.map(item => ({
          title: item.name,
          quantity: item.quantity,
@@ -137,6 +150,32 @@
      }
  
      // Return successful response with PIX data
+     // Save order to database
+     const { error: insertError } = await supabase
+       .from('orders')
+       .insert({
+         transaction_id: data.id.toString(),
+         status: data.status,
+         amount: body.amount,
+         customer_name: body.customer.name,
+         customer_email: body.customer.email,
+         customer_cpf: body.customer.document,
+         customer_phone: body.customer.phone,
+         shipping_address: body.shipping.address,
+         shipping_number: body.shipping.number,
+         shipping_complement: body.shipping.complement || null,
+         shipping_neighborhood: body.shipping.neighborhood,
+         shipping_city: body.shipping.city,
+         shipping_state: body.shipping.state,
+         shipping_cep: body.shipping.zipCode,
+         product_name: body.items[0]?.name || 'Produto',
+       });
+ 
+     if (insertError) {
+       console.error('Error saving order:', insertError);
+       // Don't fail the payment, just log the error
+     }
+ 
      return new Response(
        JSON.stringify({
          success: true,
