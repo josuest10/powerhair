@@ -109,7 +109,7 @@ import { Link } from "react-router-dom";
           </p>
         </div>
  
-        <Link to="/checkout">
+        <Link to="/checkout" className="block mt-6">
           <Button className="w-full h-12 text-base font-semibold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground">
             <ShoppingBag className="w-5 h-5 mr-2" />
             Comprar agora
