@@ -4,6 +4,8 @@
  import ProductGallery from "@/components/ProductGallery";
  import ProductInfo from "@/components/ProductInfo";
  import ProductAttributes from "@/components/ProductAttributes";
+ import ProductDescription from "@/components/ProductDescription";
+ import ProductReviews from "@/components/ProductReviews";
  
 const Index = () => {
    const breadcrumbItems = [
@@ -61,7 +63,6 @@ const Index = () => {
                images={productImages}
                productCode="E2023040603"
              />
-             <ProductAttributes attributes={attributes} />
            </div>
            
            {/* Right column - Product Info */}
@@ -78,6 +79,15 @@ const Index = () => {
              />
            </div>
          </div>
+ 
+         {/* Product Attributes */}
+         <ProductAttributes attributes={attributes} />
+ 
+         {/* Product Description */}
+         <ProductDescription />
+ 
+         {/* Product Reviews */}
+         <ProductReviews />
        </main>
      </div>
   );

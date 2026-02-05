@@ -57,6 +57,10 @@ export default {
            DEFAULT: "hsl(var(--price))",
            old: "hsl(var(--price-old))",
          },
+         success: {
+           DEFAULT: "hsl(var(--success))",
+           foreground: "hsl(var(--success-foreground))",
+         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",

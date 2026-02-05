@@ -1,6 +1,7 @@
  import { Star, Heart, ShoppingBag } from "lucide-react";
  import { Button } from "@/components/ui/button";
  import { Input } from "@/components/ui/input";
+ import { Badge } from "@/components/ui/badge";
  
  interface KitItem {
    image: string;
@@ -29,8 +30,24 @@
    installmentPrice,
    installmentCount,
  }: ProductInfoProps) => {
+   const originalPrice = 199.90;
+   const discount = Math.round(((originalPrice - totalPrice) / originalPrice) * 100);
+ 
    return (
      <div className="space-y-6">
+       {/* Badges */}
+       <div className="flex flex-wrap gap-2">
+         <Badge className="bg-accent text-accent-foreground">
+           {discount}% OFF
+         </Badge>
+         <Badge variant="outline" className="border-accent text-accent">
+           Mais Vendido
+         </Badge>
+         <Badge variant="outline" className="border-success text-success">
+           Frete Grátis
+         </Badge>
+       </div>
+ 
        {/* Rating */}
        <div className="flex items-center gap-2">
          <div className="flex items-center gap-1 px-3 py-1 rounded-full border border-border">
@@ -61,14 +78,14 @@
  
        {/* Kit Items */}
        <div>
-         <p className="text-sm font-medium text-foreground mb-3">Itens desse Kit:</p>
+         <p className="text-sm font-medium text-foreground mb-3">Itens inclusos neste Kit:</p>
          <div className="flex gap-3">
            {kitItems.map((item, index) => (
              <div 
                key={index} 
-               className="border border-border rounded-lg p-3 hover:border-primary transition-colors cursor-pointer"
+               className="border border-border rounded-lg p-3 hover:border-accent hover:shadow-md transition-all cursor-pointer flex-1"
              >
-               <div className="w-16 h-16 mb-2">
+               <div className="w-full h-20 mb-2">
                  <img src={item.image} alt="" className="w-full h-full object-contain" />
                </div>
                <p className="text-sm font-medium text-price">
@@ -81,23 +98,44 @@
        </div>
  
        {/* Price Box */}
-       <div className="border border-border rounded-xl p-6 space-y-4">
+       <div className="border-2 border-accent rounded-xl p-6 space-y-4 bg-accent/5">
+         {/* Original Price */}
+         <div className="flex items-center gap-3">
+           <span className="text-price-old line-through text-lg">
+             De R$ {originalPrice.toFixed(2).replace(".", ",")}
+           </span>
+         </div>
+ 
          <div className="flex items-center gap-3">
            <div className="w-4 h-4 rounded-full border-4 border-accent" />
            <div>
-             <p className="text-2xl md:text-3xl font-bold text-foreground">
+             <p className="text-3xl md:text-4xl font-bold text-foreground">
                R$ {totalPrice.toFixed(2).replace(".", ",")}
              </p>
              <p className="text-sm text-muted-foreground">
-               {installmentCount}x de R$ {installmentPrice.toFixed(2).replace(".", ",")} no cartão
+               ou {installmentCount}x de <span className="font-semibold text-foreground">R$ {installmentPrice.toFixed(2).replace(".", ",")}</span> sem juros
+             </p>
+             <p className="text-xs text-accent font-medium mt-1">
+               Economize R$ {(originalPrice - totalPrice).toFixed(2).replace(".", ",")}
              </p>
            </div>
          </div>
  
-         <Button className="w-full h-14 text-lg font-medium rounded-lg bg-primary hover:bg-primary/90">
+         <Button className="w-full h-14 text-lg font-semibold rounded-lg bg-accent hover:bg-accent/90 text-accent-foreground shadow-lg">
            <ShoppingBag className="w-5 h-5 mr-2" />
-           COMPRAR
+           COMPRAR AGORA
          </Button>
+ 
+         <p className="text-center text-xs text-muted-foreground">
+           🔒 Compra 100% segura • Entrega garantida
+         </p>
+       </div>
+ 
+       {/* Urgency */}
+       <div className="bg-promo/10 border border-promo/20 rounded-lg p-4">
+         <p className="text-sm text-foreground font-medium text-center">
+           🔥 <span className="text-promo-highlight font-bold">Últimas unidades!</span> 23 pessoas estão vendo este produto agora
+         </p>
        </div>
  
        {/* Shipping Calculator */}

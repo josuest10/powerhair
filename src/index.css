@@ -45,6 +45,8 @@ All colors MUST be HSL.
      --rating: 45 100% 50%;
      --price: 270 50% 45%;
      --price-old: 30 10% 60%;
+     --success: 145 65% 40%;
+     --success-foreground: 0 0% 100%;
 
      --sidebar-background: 0 0% 98%;
      --sidebar-foreground: 30 10% 26%;
@@ -92,6 +94,9 @@ All colors MUST be HSL.
      --rating: 45 100% 50%;
      --price: 270 50% 65%;
      --price-old: 30 10% 50%;
+ 
+     --success: 145 65% 45%;
+     --success-foreground: 0 0% 100%;
  
      --sidebar-background: 30 15% 10%;
      --sidebar-foreground: 30 10% 96%;
