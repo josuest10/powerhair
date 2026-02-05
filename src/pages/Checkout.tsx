@@ -2,7 +2,7 @@
  import { z } from "zod";
  import { useForm } from "react-hook-form";
  import { zodResolver } from "@hookform/resolvers/zod";
- import { Copy, Check, Clock, Shield, Truck, Lock, Loader2, AlertCircle, Sparkles, Gift, CheckCircle2 } from "lucide-react";
+ import { Copy, Check, Clock, Shield, Truck, Lock, Loader2, AlertCircle, Sparkles, Gift, CheckCircle2, MapPin } from "lucide-react";
  import { Link } from "react-router-dom";
  import { Button } from "@/components/ui/button";
  import { Input } from "@/components/ui/input";
@@ -72,11 +72,15 @@
    const {
      register,
      handleSubmit,
+    setValue,
      formState: { errors, isSubmitting },
    } = useForm<CheckoutFormData>({
      resolver: zodResolver(checkoutSchema),
    });
  
+  const [cepLoading, setCepLoading] = useState(false);
+  const [cepError, setCepError] = useState<string | null>(null);
+
   useEffect(() => {
     return () => {
       if (timerRef.current) {
@@ -107,6 +111,43 @@
      return numbers.replace(/(\d{5})(\d)/, "$1-$2").slice(0, 9);
    };
  
+  const searchCEP = async (cep: string) => {
+    const cleanCep = cep.replace(/\D/g, "");
+    
+    if (cleanCep.length !== 8) {
+      return;
+    }
+    
+    setCepLoading(true);
+    setCepError(null);
+    
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      const data = await response.json();
+      
+      if (data.erro) {
+        setCepError("CEP não encontrado");
+        return;
+      }
+      
+      // Auto-fill address fields
+      if (data.logradouro) setValue("address", data.logradouro);
+      if (data.bairro) setValue("neighborhood", data.bairro);
+      if (data.localidade) setValue("city", data.localidade);
+      if (data.uf) setValue("state", data.uf);
+      
+      // Focus on the number field after auto-fill
+      const numberInput = document.getElementById("number");
+      if (numberInput) numberInput.focus();
+      
+    } catch (error) {
+      console.error("Error fetching CEP:", error);
+      setCepError("Erro ao buscar CEP");
+    } finally {
+      setCepLoading(false);
+    }
+  };
+
    const onSubmit = async (data: CheckoutFormData) => {
      setPaymentError(null);
      
@@ -310,18 +351,41 @@
                 <h2 className="text-base font-semibold text-foreground mb-4">Endereço de Entrega</h2>
                 
                 <div className="space-y-4">
-                  <div>
+                  <div className="relative">
                     <Label htmlFor="cep" className="text-xs text-muted-foreground">CEP</Label>
-                    <Input
-                      id="cep"
-                      placeholder="00000-000"
-                      {...register("cep")}
-                      onChange={(e) => {
-                        e.target.value = formatCEP(e.target.value);
-                      }}
-                      className={`mt-1 max-w-[140px] ${errors.cep ? "border-destructive" : ""}`}
-                    />
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="relative">
+                        <Input
+                          id="cep"
+                          placeholder="00000-000"
+                          {...register("cep")}
+                          onChange={(e) => {
+                            const formatted = formatCEP(e.target.value);
+                            e.target.value = formatted;
+                            if (formatted.length === 9) {
+                              searchCEP(formatted);
+                            }
+                          }}
+                          className={`max-w-[140px] pr-8 ${errors.cep ? "border-destructive" : ""}`}
+                        />
+                        {cepLoading && (
+                          <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-primary" />
+                        )}
+                      </div>
+                      {!cepLoading && !cepError && (
+                        <a 
+                          href="https://buscacepinter.correios.com.br/app/endereco/index.php" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-xs text-primary hover:underline flex items-center gap-1"
+                        >
+                          <MapPin className="w-3 h-3" />
+                          Não sei meu CEP
+                        </a>
+                      )}
+                    </div>
                     {errors.cep && <p className="text-xs text-destructive mt-1">{errors.cep.message}</p>}
+                    {cepError && <p className="text-xs text-destructive mt-1">{cepError}</p>}
                   </div>
                   
                   <div className="grid grid-cols-4 gap-3">
