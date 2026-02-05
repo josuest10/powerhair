@@ -1,9 +1,10 @@
- import { Search, MapPin, User, ShoppingBag, Heart, HelpCircle, Menu } from "lucide-react";
- import { Input } from "@/components/ui/input";
- import { Button } from "@/components/ui/button";
- 
+import { Search, MapPin, User, ShoppingBag, Heart, HelpCircle, Menu } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+
 const PowerHairLogo = () => (
-  <div className="flex items-center gap-2">
+  <Link to="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
     <div className="relative w-10 h-10 md:w-12 md:h-12">
       <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
         {/* Leaf shape */}
@@ -30,7 +31,7 @@ const PowerHairLogo = () => (
         HAIR
       </span>
     </div>
-  </div>
+  </Link>
 );
 
  const Header = () => {
