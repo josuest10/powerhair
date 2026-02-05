@@ -25,6 +25,7 @@ export type Database = {
           id: string
           paid_at: string | null
           product_name: string
+          sck: string | null
           shipping_address: string
           shipping_cep: string
           shipping_city: string
@@ -32,9 +33,15 @@ export type Database = {
           shipping_neighborhood: string
           shipping_number: string
           shipping_state: string
+          src: string | null
           status: string
           transaction_id: string
           updated_at: string
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
         }
         Insert: {
           amount: number
@@ -46,6 +53,7 @@ export type Database = {
           id?: string
           paid_at?: string | null
           product_name: string
+          sck?: string | null
           shipping_address: string
           shipping_cep: string
           shipping_city: string
@@ -53,9 +61,15 @@ export type Database = {
           shipping_neighborhood: string
           shipping_number: string
           shipping_state: string
+          src?: string | null
           status?: string
           transaction_id: string
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Update: {
           amount?: number
@@ -67,6 +81,7 @@ export type Database = {
           id?: string
           paid_at?: string | null
           product_name?: string
+          sck?: string | null
           shipping_address?: string
           shipping_cep?: string
           shipping_city?: string
@@ -74,9 +89,15 @@ export type Database = {
           shipping_neighborhood?: string
           shipping_number?: string
           shipping_state?: string
+          src?: string | null
           status?: string
           transaction_id?: string
           updated_at?: string
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Relationships: []
       }

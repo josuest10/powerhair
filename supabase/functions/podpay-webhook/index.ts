@@ -6,6 +6,27 @@
    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
  };
  
+interface OrderData {
+  id: string;
+  transaction_id: string;
+  status: string;
+  amount: number;
+  customer_name: string;
+  customer_email: string;
+  customer_cpf: string;
+  customer_phone: string;
+  product_name: string;
+  created_at: string;
+  paid_at: string | null;
+  utm_source: string | null;
+  utm_campaign: string | null;
+  utm_medium: string | null;
+  utm_content: string | null;
+  utm_term: string | null;
+  src: string | null;
+  sck: string | null;
+}
+
  serve(async (req) => {
    // Handle CORS preflight
    if (req.method === 'OPTIONS') {
@@ -64,7 +85,16 @@
     // Send server-side event to TikTok if payment was confirmed
     if (status === 'paid' && data && data.length > 0) {
       const order = data[0];
-      await sendTikTokEvent(order);
+     await Promise.all([
+       sendTikTokEvent(order as OrderData),
+       sendUtmifyEvent(order as OrderData, 'paid'),
+     ]);
+   }
+
+   // Send waiting_payment event to UTMify for PIX generated
+   if (status === 'waiting_payment' && data && data.length > 0) {
+     const order = data[0];
+     await sendUtmifyEvent(order as OrderData, 'waiting_payment');
     }
  
      return new Response(
@@ -81,7 +111,7 @@
    }
  });
  
- async function sendTikTokEvent(order: Record<string, unknown>) {
+async function sendTikTokEvent(order: OrderData) {
    try {
      const TIKTOK_ACCESS_TOKEN = Deno.env.get('TIKTOK_ACCESS_TOKEN');
      if (!TIKTOK_ACCESS_TOKEN) {
@@ -92,8 +122,8 @@
      const pixelId = 'D61CDMRC77UAR2VU6H60';
      
      // Hash email and phone for privacy
-     const email = order.customer_email as string;
-     const phone = (order.customer_phone as string)?.replace(/\D/g, '');
+    const email = order.customer_email;
+    const phone = order.customer_phone?.replace(/\D/g, '');
      
      const encoder = new TextEncoder();
      const emailHash = email ? await crypto.subtle.digest('SHA-256', encoder.encode(email.toLowerCase().trim())).then(buf => 
@@ -115,7 +145,7 @@
          },
        },
        properties: {
-         value: (order.amount as number) / 100, // Convert from cents
+        value: order.amount / 100, // Convert from cents
          currency: 'BRL',
          content_id: 'kit-sos-crescimento',
          content_name: order.product_name,
@@ -149,3 +179,78 @@
      // Don't throw - this is non-critical
    }
  }
+
+async function sendUtmifyEvent(order: OrderData, status: 'waiting_payment' | 'paid' | 'refunded' | 'chargedback') {
+  try {
+    const UTMIFY_API_TOKEN = Deno.env.get('UTMIFY_API_TOKEN');
+    if (!UTMIFY_API_TOKEN) {
+      console.log('UTMify API token not configured, skipping event');
+      return;
+    }
+
+    const utmifyStatus = status === 'waiting_payment' ? 'waiting_payment' : status;
+
+    const payload = {
+      orderId: order.transaction_id,
+      platform: 'PowerHair',
+      paymentMethod: 'pix',
+      status: utmifyStatus,
+      createdAt: new Date(order.created_at).toISOString().replace('T', ' ').slice(0, 19),
+      approvedDate: order.paid_at ? new Date(order.paid_at).toISOString().replace('T', ' ').slice(0, 19) : null,
+      refundedAt: null,
+      customer: {
+        name: order.customer_name,
+        email: order.customer_email,
+        phone: order.customer_phone?.replace(/\D/g, '') || null,
+        document: order.customer_cpf?.replace(/\D/g, '') || null,
+        country: 'BR',
+      },
+      products: [
+        {
+          id: 'kit-sos-crescimento',
+          name: order.product_name,
+          planId: null,
+          planName: null,
+          quantity: 1,
+          priceInCents: order.amount,
+        },
+      ],
+      trackingParameters: {
+        src: order.src,
+        sck: order.sck,
+        utm_source: order.utm_source,
+        utm_campaign: order.utm_campaign,
+        utm_medium: order.utm_medium,
+        utm_content: order.utm_content,
+        utm_term: order.utm_term,
+      },
+      commission: {
+        totalPriceInCents: order.amount,
+        gatewayFeeInCents: 0,
+        userCommissionInCents: order.amount,
+        currency: 'BRL',
+      },
+    };
+
+    console.log('Sending UTMify event:', JSON.stringify(payload, null, 2));
+
+    const response = await fetch('https://api.utmify.com.br/api-credentials/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-token': UTMIFY_API_TOKEN,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const result = await response.json();
+    console.log('UTMify API response:', JSON.stringify(result, null, 2));
+
+    if (!response.ok) {
+      console.error('UTMify API error:', result);
+    }
+  } catch (error) {
+    console.error('Error sending UTMify event:', error);
+    // Don't throw - this is non-critical
+  }
+}
