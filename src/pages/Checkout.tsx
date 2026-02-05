@@ -172,18 +172,28 @@ const getUTMParams = () => {
      return numbers.replace(/(\d{5})(\d)/, "$1-$2").slice(0, 9);
    };
  
+  const cepAbortRef = useRef<AbortController | null>(null);
+
   const searchCEP = async (cep: string) => {
     const cleanCep = cep.replace(/\D/g, "");
     
     if (cleanCep.length !== 8) {
       return;
     }
+
+    // Cancel previous request
+    if (cepAbortRef.current) {
+      cepAbortRef.current.abort();
+    }
+    cepAbortRef.current = new AbortController();
     
     setCepLoading(true);
     setCepError(null);
     
     try {
-      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`, {
+        signal: cepAbortRef.current.signal,
+      });
       const data = await response.json();
       
       if (data.erro) {
@@ -201,14 +211,30 @@ const getUTMParams = () => {
       setShowShippingOptions(true);
       
       // Focus on the number field after auto-fill
-      const numberInput = document.getElementById("number");
-      if (numberInput) numberInput.focus();
+      setTimeout(() => {
+        const numberInput = document.getElementById("number");
+        if (numberInput) numberInput.focus();
+      }, 100);
       
     } catch (error) {
-      console.error("Error fetching CEP:", error);
-      setCepError("Erro ao buscar CEP");
+      if ((error as Error).name !== 'AbortError') {
+        console.error("Error fetching CEP:", error);
+        setCepError("Erro ao buscar CEP");
+      }
     } finally {
       setCepLoading(false);
+    }
+  };
+
+  const handleCepChange = (value: string) => {
+    const formatted = formatCEP(value);
+    setValue("cep", formatted);
+    setCepError(null);
+    
+    // Auto-search when CEP is complete
+    const cleanCep = formatted.replace(/\D/g, "");
+    if (cleanCep.length === 8) {
+      searchCEP(formatted);
     }
   };
 
@@ -547,13 +573,7 @@ const getUTMParams = () => {
                           id="cep"
                           placeholder="00000-000"
                           {...register("cep")}
-                          onChange={(e) => {
-                            const formatted = formatCEP(e.target.value);
-                            e.target.value = formatted;
-                            if (formatted.length === 9) {
-                              searchCEP(formatted);
-                            }
-                          }}
+                          onChange={(e) => handleCepChange(e.target.value)}
                           className={`max-w-[140px] pr-8 ${errors.cep ? "border-destructive" : ""}`}
                         />
                         {cepLoading && (

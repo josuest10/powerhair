@@ -1,7 +1,7 @@
 import { Star, Heart, ShoppingBag, Loader2, Plus, Minus, Truck, CheckCircle } from "lucide-react";
 import { Shield, CreditCard } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -72,24 +72,33 @@ const ProductInfo = ({
     return numbers.replace(/(\d{5})(\d)/, "$1-$2").slice(0, 9);
   };
 
-  const calculateShipping = async () => {
-    const cleanCep = cep.replace(/\D/g, "");
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  const calculateShipping = async (cepValue: string) => {
+    const cleanCep = cepValue.replace(/\D/g, "");
     
     if (cleanCep.length !== 8) {
-      setCepError("CEP inválido");
       return;
     }
+
+    // Cancel previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
     
     setCepLoading(true);
     setCepError(null);
-    setShippingResult(null);
     
     try {
-      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`, {
+        signal: abortControllerRef.current.signal,
+      });
       const data = await response.json();
       
       if (data.erro) {
         setCepError("CEP não encontrado");
+        setShippingResult(null);
         return;
       }
       
@@ -97,20 +106,13 @@ const ProductInfo = ({
       const region = data.uf;
       let estimatedDays = "5 a 9 dias úteis";
       
-      // Sudeste (closer to distribution center)
       if (["SP", "RJ", "MG", "ES"].includes(region)) {
         estimatedDays = "3 a 5 dias úteis";
-      }
-      // Sul e Centro-Oeste
-      else if (["PR", "SC", "RS", "GO", "MT", "MS", "DF"].includes(region)) {
+      } else if (["PR", "SC", "RS", "GO", "MT", "MS", "DF"].includes(region)) {
         estimatedDays = "5 a 7 dias úteis";
-      }
-      // Nordeste
-      else if (["BA", "SE", "AL", "PE", "PB", "RN", "CE", "PI", "MA"].includes(region)) {
+      } else if (["BA", "SE", "AL", "PE", "PB", "RN", "CE", "PI", "MA"].includes(region)) {
         estimatedDays = "7 a 10 dias úteis";
-      }
-      // Norte
-      else {
+      } else {
         estimatedDays = "10 a 15 dias úteis";
       }
       
@@ -120,10 +122,26 @@ const ProductInfo = ({
         estimatedDays,
       });
     } catch (error) {
-      console.error("Error fetching CEP:", error);
-      setCepError("Erro ao buscar CEP");
+      if ((error as Error).name !== 'AbortError') {
+        console.error("Error fetching CEP:", error);
+        setCepError("Erro ao buscar CEP");
+      }
     } finally {
       setCepLoading(false);
+    }
+  };
+
+  const handleCepChange = (value: string) => {
+    const formatted = formatCEP(value);
+    setCep(formatted);
+    setCepError(null);
+    
+    // Auto-search when CEP is complete
+    const cleanCep = formatted.replace(/\D/g, "");
+    if (cleanCep.length === 8) {
+      calculateShipping(formatted);
+    } else {
+      setShippingResult(null);
     }
   };
 
@@ -273,16 +291,14 @@ const ProductInfo = ({
            placeholder="00000-000" 
            className="flex-1" 
            value={cep}
-           onChange={(e) => setCep(formatCEP(e.target.value))}
+           onChange={(e) => handleCepChange(e.target.value)}
            maxLength={9}
          />
-         <Button 
-           variant="outline" 
-           onClick={calculateShipping}
-           disabled={cepLoading}
-         >
-           {cepLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "OK"}
-         </Button>
+         {cepLoading && (
+           <div className="flex items-center px-3">
+             <Loader2 className="w-4 h-4 animate-spin text-primary" />
+           </div>
+         )}
         </div>
        
        {cepError && (
