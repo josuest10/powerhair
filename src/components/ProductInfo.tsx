@@ -32,7 +32,7 @@ import { Shield, Truck, CreditCard } from "lucide-react";
    installmentPrice,
    installmentCount,
  }: ProductInfoProps) => {
-  const originalPrice = 199.00;
+  const originalPrice = 149.90;
    const discount = Math.round(((originalPrice - totalPrice) / originalPrice) * 100);
   const pixPrice = totalPrice * 0.95;
  
