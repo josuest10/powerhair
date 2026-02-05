@@ -1,17 +1,19 @@
- import { useState, useRef, useEffect } from "react";
- import { z } from "zod";
- import { useForm } from "react-hook-form";
- import { zodResolver } from "@hookform/resolvers/zod";
- import { Copy, Check, Clock, Shield, Truck, Lock, Loader2, AlertCircle, Sparkles, Gift, CheckCircle2, MapPin } from "lucide-react";
- import { Link, useNavigate } from "react-router-dom";
- import { Button } from "@/components/ui/button";
- import { Input } from "@/components/ui/input";
- import { Label } from "@/components/ui/label";
- import { useToast } from "@/hooks/use-toast";
- import { supabase } from "@/integrations/supabase/client";
- import { QRCodeSVG } from "qrcode.react";
- import { validateCPF } from "@/lib/cpf-validator";
- import { trackInitiateCheckout, identifyUser } from "@/lib/tiktok-pixel";
+import { useState, useRef, useEffect } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Copy, Check, Clock, Shield, Truck, Lock, Loader2, AlertCircle, Sparkles, Gift, CheckCircle2, MapPin, Facebook, Instagram, Youtube, Twitter, Mail, Phone } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { QRCodeSVG } from "qrcode.react";
+import { validateCPF } from "@/lib/cpf-validator";
+import { trackInitiateCheckout, identifyUser } from "@/lib/tiktok-pixel";
+import CheckoutReviews from "@/components/CheckoutReviews";
+import { Separator } from "@/components/ui/separator";
  
 // Helper to get UTM params from URL
 const getUTMParams = () => {
@@ -586,12 +588,17 @@ const getUTMParams = () => {
                     <p className="text-sm text-destructive">{paymentError}</p>
                   </div>
                 )}
-               </div>
-            </form>
-           </div>
-         )}
- 
-         {step === "pix" && (
+              </div>
+
+              {/* Reviews Section */}
+              <div className="bg-card border border-border rounded-lg p-5">
+                <CheckoutReviews />
+              </div>
+           </form>
+          </div>
+        )}
+
+        {step === "pix" && (
            <div className="max-w-lg mx-auto">
              {/* Success Header */}
              <div className="text-center mb-6">
@@ -759,25 +766,127 @@ const getUTMParams = () => {
  
        </main>
  
-       {/* Footer */}
-       <footer className="border-t border-border py-6 mt-12">
-         <div className="container max-w-4xl mx-auto px-4">
-           <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
-             <div className="flex items-center gap-4">
-               <Shield className="w-4 h-4" />
-               <span>Ambiente seguro</span>
-               <span>•</span>
-               <span>Dados criptografados</span>
-             </div>
-             <div className="flex items-center gap-4">
-               <Link to="/termos-de-uso" className="hover:text-foreground transition-colors">Termos de Uso</Link>
-               <Link to="/politica-de-privacidade" className="hover:text-foreground transition-colors">Privacidade</Link>
-             </div>
-           </div>
-         </div>
-       </footer>
-     </div>
-   );
- };
- 
- export default Checkout;
+        {/* Footer */}
+        <footer className="bg-primary text-primary-foreground mt-12">
+          <div className="py-8">
+            <div className="container max-w-4xl mx-auto px-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Logo and Social */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="relative w-8 h-8">
+                      <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+                        <path
+                          d="M24 4C24 4 8 12 8 28C8 36 14 44 24 44C34 44 40 36 40 28C40 12 24 4 24 4Z"
+                          className="fill-primary-foreground"
+                        />
+                        <path
+                          d="M18 20C18 20 20 28 24 32M24 16C24 16 24 26 24 34M30 20C30 20 28 28 24 32"
+                          className="stroke-primary"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <circle cx="16" cy="18" r="2" className="fill-primary/40" />
+                      </svg>
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-base font-bold tracking-tight leading-none">POWER</span>
+                      <span className="text-sm font-light tracking-widest text-primary-foreground/80 leading-none">HAIR</span>
+                    </div>
+                  </div>
+                  <p className="text-sm text-primary-foreground/80 mb-4">
+                    Cabelos fortes, saudáveis e bonitos.
+                  </p>
+                  <div className="flex gap-3">
+                    <a href="#" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors">
+                      <Facebook className="w-4 h-4" />
+                    </a>
+                    <a href="#" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors">
+                      <Instagram className="w-4 h-4" />
+                    </a>
+                    <a href="#" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors">
+                      <Youtube className="w-4 h-4" />
+                    </a>
+                    <a href="#" className="p-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors">
+                      <Twitter className="w-4 h-4" />
+                    </a>
+                  </div>
+                </div>
+
+                {/* Links */}
+                <div>
+                  <h4 className="font-semibold mb-4">Links</h4>
+                  <ul className="space-y-2">
+                    <li>
+                      <Link to="/termos-de-uso" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+                        Termos de Uso
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/politica-de-privacidade" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+                        Política de Privacidade
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/trocas-e-devolucoes" className="text-sm text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+                        Trocas e Devoluções
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+
+                {/* Contact */}
+                <div>
+                  <h4 className="font-semibold mb-4">Contato</h4>
+                  <ul className="space-y-3">
+                    <li className="flex items-center gap-2 text-sm text-primary-foreground/80">
+                      <Phone className="w-4 h-4" />
+                      0800 123 4567
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-primary-foreground/80">
+                      <Mail className="w-4 h-4" />
+                      contato@powerhair.com.br
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <Separator className="my-6 bg-primary-foreground/20" />
+
+              {/* Security and Payment */}
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-4 text-sm text-primary-foreground/80">
+                  <div className="flex items-center gap-2">
+                    <Shield className="w-4 h-4" />
+                    <span>Compra Segura</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Lock className="w-4 h-4" />
+                    <span>Dados Criptografados</span>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  {["Visa", "Master", "Pix"].map((method) => (
+                    <span key={method} className="px-2 py-1 bg-primary-foreground/10 rounded text-xs">
+                      {method}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Copyright */}
+          <div className="bg-primary/80 py-4">
+            <div className="container max-w-4xl mx-auto px-4">
+              <p className="text-center text-sm text-primary-foreground/60">
+                © 2026 Power Hair. Todos os direitos reservados.
+              </p>
+            </div>
+          </div>
+        </footer>
+      </div>
+    );
+  };
+  
+  export default Checkout;
