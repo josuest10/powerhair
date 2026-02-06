@@ -154,6 +154,19 @@ const getUTMParams = () => {
       });
     }
 
+    // Start timer in preview mode
+    if (isPreviewMode && !timerRef.current) {
+      timerRef.current = window.setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1) {
+            if (timerRef.current) clearInterval(timerRef.current);
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
