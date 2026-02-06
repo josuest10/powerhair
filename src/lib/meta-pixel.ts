@@ -67,7 +67,8 @@ export function trackMetaInitiateCheckout(params: {
 }
 
 /**
- * Track Purchase event
+ * Track Purchase event - CRITICAL: This must fire on thank you page
+ * Includes retry logic to ensure the event is tracked even if fbq loads slowly
  */
 export function trackMetaPurchase(params: {
   value: number;
@@ -77,17 +78,44 @@ export function trackMetaPurchase(params: {
   num_items?: number;
   order_id?: string;
 }) {
-  if (typeof window !== 'undefined' && window.fbq) {
-    window.fbq('track', 'Purchase', {
-      value: params.value,
-      currency: params.currency || 'BRL',
-      content_ids: params.content_ids || ['kit-sos-crescimento'],
-      content_name: params.content_name || 'Kit SOS Crescimento e Antiqueda',
-      content_type: 'product',
-      num_items: params.num_items || 1,
-    });
-    console.log('Meta Pixel: Purchase tracked');
-  }
+  const fireEvent = () => {
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'Purchase', {
+        value: params.value,
+        currency: params.currency || 'BRL',
+        content_ids: params.content_ids || ['kit-sos-crescimento'],
+        content_name: params.content_name || 'Kit SOS Crescimento e Antiqueda',
+        content_type: 'product',
+        num_items: params.num_items || 1,
+      });
+      console.log('Meta Pixel: Purchase tracked successfully', { value: params.value, order_id: params.order_id });
+      return true;
+    }
+    return false;
+  };
+
+  // Try immediately
+  if (fireEvent()) return;
+
+  // If fbq not ready, retry up to 5 times with increasing delays
+  let attempts = 0;
+  const maxAttempts = 5;
+  const retryDelays = [500, 1000, 2000, 3000, 5000]; // ms
+
+  const retry = () => {
+    attempts++;
+    console.log(`Meta Pixel: Purchase retry attempt ${attempts}/${maxAttempts}`);
+    
+    if (fireEvent()) return;
+    
+    if (attempts < maxAttempts) {
+      setTimeout(retry, retryDelays[attempts] || 5000);
+    } else {
+      console.error('Meta Pixel: Purchase event FAILED after all retries - fbq not available');
+    }
+  };
+
+  setTimeout(retry, retryDelays[0]);
 }
 
 /**
