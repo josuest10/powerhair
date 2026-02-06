@@ -454,6 +454,21 @@ const getUTMParams = () => {
                   <div className="flex items-center gap-3">
                     <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
                       <img
+                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg"
+                        alt="Tônico SOS"
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-foreground">Tônico Fortalecedor SOS</p>
+                      <p className="text-xs text-muted-foreground">100ml</p>
+                    </div>
+                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+                      <img
                         src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg"
                         alt="Máscara SOS"
                         className="w-full h-full object-contain"
@@ -466,19 +481,16 @@ const getUTMParams = () => {
                     <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
                   </div>
                   
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
-                      <img
-                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg"
-                        alt="Tônico SOS"
-                        className="w-full h-full object-contain"
-                      />
+                  {/* Brinde Extra */}
+                  <div className="flex items-center gap-3 p-2 bg-primary/5 rounded-lg border border-primary/20">
+                    <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0">
+                      <Gift className="w-7 h-7 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">Tônico Fortalecedor SOS</p>
-                      <p className="text-xs text-muted-foreground">100ml</p>
+                      <p className="text-sm font-medium text-primary">🎁 BRINDE EXCLUSIVO</p>
+                      <p className="text-xs text-muted-foreground">Pente Massageador para Couro Cabeludo</p>
                     </div>
-                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">GRÁTIS</span>
                   </div>
                 </div>
                 
