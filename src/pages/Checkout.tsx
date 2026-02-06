@@ -454,7 +454,7 @@ const getUTMParams = () => {
                   <div className="flex items-center gap-3">
                     <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
                       <img
-                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg"
+                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg"
                         alt="Tônico SOS"
                         className="w-full h-full object-contain"
                       />
@@ -469,7 +469,7 @@ const getUTMParams = () => {
                   <div className="flex items-center gap-3">
                     <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
                       <img
-                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg"
+                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg"
                         alt="Máscara SOS"
                         className="w-full h-full object-contain"
                       />
