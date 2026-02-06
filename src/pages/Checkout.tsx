@@ -409,11 +409,11 @@ const getUTMParams = () => {
          </div>
        </header>
  
-       <main className="container max-w-4xl mx-auto px-4 py-8">
-         {step === "form" && (
-          <div className="space-y-6">
+        <main className="container max-w-4xl mx-auto px-4 py-8">
+          {step === "form" && (
+           <div className="space-y-6 animate-fade-in">
             {/* Order Summary - Top */}
-            <div className="bg-card border border-border rounded-lg overflow-hidden">
+            <div className="bg-card border border-border rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
               <div className="bg-secondary px-4 py-3 border-b border-border">
                 <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <Gift className="w-4 h-4 text-primary" />
@@ -501,7 +501,7 @@ const getUTMParams = () => {
             {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               {/* Personal Data */}
-              <div className="bg-card border border-border rounded-lg p-5">
+               <div className="bg-card border border-border rounded-lg p-5 transition-all duration-300 hover:shadow-md animate-fade-in" style={{ animationDelay: '100ms' }}>
                 <h2 className="text-base font-semibold text-foreground mb-4">Dados Pessoais</h2>
                 
                 <div className="space-y-4">
@@ -511,7 +511,7 @@ const getUTMParams = () => {
                       id="name"
                       placeholder="Seu nome completo"
                       {...register("name")}
-                      className={`mt-1 ${errors.name ? "border-destructive" : ""}`}
+                      className={`mt-1 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm ${errors.name ? "border-destructive" : ""}`}
                     />
                     {errors.name && <p className="text-xs text-destructive mt-1">{errors.name.message}</p>}
                   </div>
@@ -523,7 +523,7 @@ const getUTMParams = () => {
                       type="email"
                       placeholder="seu@email.com"
                       {...register("email")}
-                      className={`mt-1 ${errors.email ? "border-destructive" : ""}`}
+                      className={`mt-1 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm ${errors.email ? "border-destructive" : ""}`}
                     />
                     {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
                   </div>
@@ -538,7 +538,7 @@ const getUTMParams = () => {
                         onChange={(e) => {
                           e.target.value = formatCPF(e.target.value);
                         }}
-                        className={`mt-1 ${errors.cpf ? "border-destructive" : ""}`}
+                        className={`mt-1 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm ${errors.cpf ? "border-destructive" : ""}`}
                        />
                       {errors.cpf && <p className="text-xs text-destructive mt-1">{errors.cpf.message}</p>}
                      </div>
@@ -552,7 +552,7 @@ const getUTMParams = () => {
                          onChange={(e) => {
                            e.target.value = formatPhone(e.target.value);
                          }}
-                        className={`mt-1 ${errors.phone ? "border-destructive" : ""}`}
+                        className={`mt-1 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm ${errors.phone ? "border-destructive" : ""}`}
                        />
                       {errors.phone && <p className="text-xs text-destructive mt-1">{errors.phone.message}</p>}
                      </div>
@@ -561,7 +561,7 @@ const getUTMParams = () => {
               </div>
  
               {/* Address */}
-              <div className="bg-card border border-border rounded-lg p-5">
+              <div className="bg-card border border-border rounded-lg p-5 transition-all duration-300 hover:shadow-md animate-fade-in" style={{ animationDelay: '200ms' }}>
                 <h2 className="text-base font-semibold text-foreground mb-4">Endereço de Entrega</h2>
                 
                 <div className="space-y-4">
@@ -574,7 +574,7 @@ const getUTMParams = () => {
                           placeholder="00000-000"
                           {...register("cep")}
                           onChange={(e) => handleCepChange(e.target.value)}
-                          className={`max-w-[140px] pr-8 ${errors.cep ? "border-destructive" : ""}`}
+                          className={`max-w-[140px] pr-8 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm ${errors.cep ? "border-destructive" : ""}`}
                         />
                         {cepLoading && (
                           <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-primary" />
@@ -603,7 +603,7 @@ const getUTMParams = () => {
                         id="address"
                         placeholder="Rua, Avenida..."
                         {...register("address")}
-                        className={`mt-1 ${errors.address ? "border-destructive" : ""}`}
+                        className={`mt-1 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm ${errors.address ? "border-destructive" : ""}`}
                       />
                       {errors.address && <p className="text-xs text-destructive mt-1">{errors.address.message}</p>}
                     </div>
@@ -613,7 +613,7 @@ const getUTMParams = () => {
                         id="number"
                         placeholder="123"
                         {...register("number")}
-                        className={`mt-1 ${errors.number ? "border-destructive" : ""}`}
+                        className={`mt-1 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm ${errors.number ? "border-destructive" : ""}`}
                       />
                       {errors.number && <p className="text-xs text-destructive mt-1">{errors.number.message}</p>}
                     </div>
@@ -668,7 +668,7 @@ const getUTMParams = () => {
                 
                   {/* Shipping Options */}
                   {showShippingOptions && (
-                    <div className="mt-4 pt-4 border-t border-border">
+                    <div className="mt-4 pt-4 border-t border-border animate-fade-in">
                       <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
                         <Truck className="w-4 h-4 text-primary" />
                         Opções de Entrega
@@ -679,10 +679,10 @@ const getUTMParams = () => {
                           return (
                             <label
                               key={key}
-                              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-colors ${
+                              className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all duration-200 hover:scale-[1.01] ${
                                 selectedShipping === key
-                                  ? "border-primary bg-primary/5"
-                                  : "border-border hover:border-primary/50"
+                                  ? "border-primary bg-primary/5 shadow-sm"
+                                  : "border-border hover:border-primary/50 hover:shadow-sm"
                               }`}
                             >
                               <div className="flex items-center gap-3">
@@ -712,7 +712,7 @@ const getUTMParams = () => {
               </div>
 
               {/* Summary and Submit */}
-              <div className="bg-card border border-border rounded-lg p-5">
+              <div className="bg-card border border-border rounded-lg p-5 transition-all duration-300 hover:shadow-md animate-fade-in" style={{ animationDelay: '300ms' }}>
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <span>Subtotal</span>
@@ -734,7 +734,11 @@ const getUTMParams = () => {
                   </div>
                 </div>
                 
-                <Button type="submit" className="w-full h-12 text-base font-semibold" disabled={isSubmitting}>
+                <Button 
+                  type="submit" 
+                  className="w-full h-12 text-base font-semibold transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]" 
+                  disabled={isSubmitting}
+                >
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -754,7 +758,7 @@ const getUTMParams = () => {
               </div>
 
               {/* Reviews Section */}
-              <div className="bg-card border border-border rounded-lg p-5">
+              <div className="bg-card border border-border rounded-lg p-5 transition-all duration-300 hover:shadow-md animate-fade-in" style={{ animationDelay: '400ms' }}>
                 <CheckoutReviews />
               </div>
            </form>
@@ -762,18 +766,18 @@ const getUTMParams = () => {
         )}
 
         {step === "pix" && (
-           <div className="max-w-lg mx-auto">
+           <div className="max-w-lg mx-auto animate-fade-in">
              {/* Success Header */}
              <div className="text-center mb-6">
-               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
-                 <Sparkles className="w-8 h-8 text-primary" />
+               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4 animate-scale-in">
+                 <Sparkles className="w-8 h-8 text-primary animate-pulse" />
                </div>
-               <h1 className="text-2xl font-bold text-foreground">Quase lá! 🎉</h1>
-               <p className="text-muted-foreground mt-2">Escaneie o QR Code ou copie o código para finalizar</p>
+               <h1 className="text-2xl font-bold text-foreground animate-fade-in" style={{ animationDelay: '150ms' }}>Quase lá! 🎉</h1>
+               <p className="text-muted-foreground mt-2 animate-fade-in" style={{ animationDelay: '250ms' }}>Escaneie o QR Code ou copie o código para finalizar</p>
              </div>
  
              {/* Main Card */}
-             <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg">
+             <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg animate-fade-in transition-all duration-300" style={{ animationDelay: '350ms' }}>
                {/* Timer Banner */}
                <div className="bg-primary/10 px-4 py-3 flex items-center justify-center gap-2">
                  <Clock className="w-4 h-4 text-primary" />
@@ -823,12 +827,12 @@ const getUTMParams = () => {
                      {pixData?.qrCode || "Carregando..."}
                    </code>
                    <Button 
-                     variant={copied ? "default" : "outline"} 
-                     size="sm" 
-                     onClick={copyPixCode} 
-                     disabled={!pixData?.qrCode}
-                     className={copied ? "bg-primary text-primary-foreground" : ""}
-                   >
+                      variant={copied ? "default" : "outline"} 
+                      size="sm" 
+                      onClick={copyPixCode} 
+                      disabled={!pixData?.qrCode}
+                      className={`transition-all duration-200 hover:scale-105 active:scale-95 ${copied ? "bg-primary text-primary-foreground" : ""}`}
+                    >
                      {copied ? (
                        <>
                          <Check className="w-4 h-4 mr-1" />
@@ -874,11 +878,11 @@ const getUTMParams = () => {
              {/* Confirm Payment Button */}
              <div className="mt-6 space-y-3">
               <Button 
-                onClick={handlePaymentConfirmed} 
-                className="w-full h-12 text-base font-semibold"
-                disabled={paymentStatus === "checking"}
-                variant={paymentStatus === "paid" ? "default" : "outline"}
-              >
+                 onClick={handlePaymentConfirmed} 
+                 className={`w-full h-12 text-base font-semibold transition-all duration-300 ${paymentStatus === "paid" ? "animate-pulse hover:scale-[1.02]" : ""}`}
+                 disabled={paymentStatus === "checking"}
+                 variant={paymentStatus === "paid" ? "default" : "outline"}
+               >
                 {paymentStatus === "checking" && (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -899,12 +903,12 @@ const getUTMParams = () => {
                 )}
                </Button>
               {paymentStatus === "paid" && (
-                <div className="bg-primary/10 rounded-lg p-3 text-center">
-                  <p className="text-sm text-primary font-medium">
-                    🎉 Pagamento detectado! Redirecionando...
-                  </p>
-                </div>
-              )}
+                 <div className="bg-primary/10 rounded-lg p-3 text-center animate-fade-in">
+                   <p className="text-sm text-primary font-medium animate-pulse">
+                     🎉 Pagamento detectado! Redirecionando...
+                   </p>
+                 </div>
+               )}
               {paymentStatus === "waiting" && (
                 <p className="text-xs text-center text-muted-foreground">
                   O status será atualizado automaticamente após o pagamento.
