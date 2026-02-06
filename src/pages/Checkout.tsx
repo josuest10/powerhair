@@ -16,9 +16,7 @@ import { trackMetaInitiateCheckout } from "@/lib/meta-pixel";
 import CheckoutReviews from "@/components/CheckoutReviews";
 import { Separator } from "@/components/ui/separator";
 import { 
-  LiveViewerBadge, 
   OfferCountdown, 
-  StockWarning, 
   RecentPurchase, 
   ProgressSteps, 
   SavingsBadge, 
@@ -410,12 +408,9 @@ const getUTMParams = () => {
       <header className="border-b border-border bg-background py-3 sticky top-0 z-40 backdrop-blur-sm bg-background/95">
         <div className="container max-w-4xl mx-auto px-4 flex items-center justify-between">
           <PowerHairLogo />
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
-              <Lock className="w-3.5 h-3.5 text-primary" />
-              <span>Checkout Seguro</span>
-            </div>
-            <LiveViewerBadge />
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Lock className="w-3.5 h-3.5 text-primary" />
+            <span>Checkout Seguro</span>
           </div>
         </div>
       </header>
@@ -432,13 +427,10 @@ const getUTMParams = () => {
            {/* Order Summary - Top */}
            <div className="bg-card border-2 border-primary/20 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg shadow-md">
              <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 border-b border-primary/10">
-               <div className="flex items-center justify-between">
-                 <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                   <Gift className="w-4 h-4 text-primary" />
-                   Seu Pedido Especial
-                 </h2>
-                 <StockWarning />
-               </div>
+               <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                 <Gift className="w-4 h-4 text-primary" />
+                 Seu Pedido Especial
+               </h2>
              </div>
               
               <div className="p-4 space-y-4">

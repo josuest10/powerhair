@@ -20,10 +20,9 @@ const useViewerCount = () => {
   return count;
 };
 
-// Countdown timer for limited offer
+// Gentle offer timer without aggressive messaging
 const useOfferTimer = () => {
   const [timeLeft, setTimeLeft] = useState(() => {
-    // Set offer to expire in 15-25 minutes
     const storedExpiry = sessionStorage.getItem('offerExpiry');
     if (storedExpiry) {
       const remaining = Math.floor((parseInt(storedExpiry) - Date.now()) / 1000);
@@ -50,54 +49,33 @@ const useOfferTimer = () => {
   return { minutes, seconds, isExpired: timeLeft <= 0 };
 };
 
-export const LiveViewerBadge = () => {
-  const viewerCount = useViewerCount();
-  
-  return (
-    <div className="flex items-center gap-2 px-3 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full animate-pulse">
-      <span className="relative flex h-2 w-2">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-      </span>
-      <Users className="w-3.5 h-3.5 text-red-500" />
-      <span className="text-xs font-medium text-red-600">
-        {viewerCount} pessoas vendo agora
-      </span>
-    </div>
-  );
-};
+// Removed aggressive LiveViewerBadge - keeping export for backwards compatibility
+export const LiveViewerBadge = () => null;
 
 export const OfferCountdown = () => {
   const { minutes, seconds, isExpired } = useOfferTimer();
   
   if (isExpired) {
-    return (
-      <div className="flex items-center gap-2 px-3 py-2 bg-orange-500/10 border border-orange-500/20 rounded-lg">
-        <Flame className="w-4 h-4 text-orange-500" />
-        <span className="text-sm font-medium text-orange-600">
-          Oferta encerrada! Preços podem mudar.
-        </span>
-      </div>
-    );
+    return null; // Just hide when expired, no pressure message
   }
   
   return (
-    <div className="flex items-center justify-between gap-3 px-4 py-3 bg-gradient-to-r from-orange-500/10 via-red-500/10 to-orange-500/10 border border-orange-500/20 rounded-xl">
+    <div className="flex items-center justify-between gap-3 px-4 py-3 bg-secondary/50 border border-border rounded-xl">
       <div className="flex items-center gap-2">
-        <div className="p-1.5 bg-orange-500/20 rounded-lg">
-          <Flame className="w-4 h-4 text-orange-500 animate-pulse" />
+        <div className="p-1.5 bg-primary/10 rounded-lg">
+          <Clock className="w-4 h-4 text-primary" />
         </div>
         <div>
-          <p className="text-xs text-muted-foreground">Oferta expira em</p>
-          <p className="text-sm font-bold text-orange-600">ÚLTIMAS UNIDADES!</p>
+          <p className="text-xs text-muted-foreground">Preço promocional válido por</p>
+          <p className="text-sm font-medium text-foreground">Aproveite o desconto!</p>
         </div>
       </div>
       <div className="flex items-center gap-1">
-        <div className="bg-foreground text-background px-2 py-1 rounded font-mono font-bold text-lg min-w-[2.5rem] text-center">
+        <div className="bg-muted text-foreground px-2 py-1 rounded font-mono font-bold text-lg min-w-[2.5rem] text-center">
           {String(minutes).padStart(2, '0')}
         </div>
-        <span className="text-foreground font-bold text-lg">:</span>
-        <div className="bg-foreground text-background px-2 py-1 rounded font-mono font-bold text-lg min-w-[2.5rem] text-center">
+        <span className="text-muted-foreground font-bold text-lg">:</span>
+        <div className="bg-muted text-foreground px-2 py-1 rounded font-mono font-bold text-lg min-w-[2.5rem] text-center">
           {String(seconds).padStart(2, '0')}
         </div>
       </div>
@@ -105,18 +83,8 @@ export const OfferCountdown = () => {
   );
 };
 
-export const StockWarning = () => {
-  const [stock] = useState(() => Math.floor(Math.random() * 5) + 3); // 3-7 units
-  
-  return (
-    <div className="flex items-center gap-2 text-orange-600">
-      <TrendingUp className="w-4 h-4" />
-      <span className="text-xs font-medium">
-        Apenas <strong>{stock} kits</strong> restantes no estoque!
-      </span>
-    </div>
-  );
-};
+// Removed aggressive stock warning - keeping export for backwards compatibility
+export const StockWarning = () => null;
 
 export const RecentPurchase = () => {
   const [show, setShow] = useState(false);
