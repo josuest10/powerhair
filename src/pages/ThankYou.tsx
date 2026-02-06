@@ -1,53 +1,68 @@
- import { useEffect } from "react";
- import { Check, Shield, Truck, PartyPopper, Mail, Clock, ArrowLeft, Package } from "lucide-react";
- import { Link, useLocation } from "react-router-dom";
- import { Button } from "@/components/ui/button";
- import { trackCompletePayment } from "@/lib/tiktok-pixel";
- 
- const PowerHairLogo = () => (
-   <div className="flex items-center gap-2">
-     <div className="relative w-8 h-8">
-       <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
-         <path
-           d="M24 4C24 4 8 12 8 28C8 36 14 44 24 44C34 44 40 36 40 28C40 12 24 4 24 4Z"
-           className="fill-primary"
-         />
-         <path
-           d="M18 20C18 20 20 28 24 32M24 16C24 16 24 26 24 34M30 20C30 20 28 28 24 32"
-           className="stroke-primary-foreground"
-           strokeWidth="2"
-           strokeLinecap="round"
-         />
-         <circle cx="16" cy="18" r="2" className="fill-primary-foreground/40" />
-       </svg>
-     </div>
-     <div className="flex flex-col">
-       <span className="text-base font-bold tracking-tight text-primary leading-none">POWER</span>
-       <span className="text-sm font-light tracking-widest text-foreground leading-none">HAIR</span>
-     </div>
-   </div>
- );
- 
- interface OrderDetails {
-   orderId: string;
-   amount: number;
-   email?: string;
- }
- 
- const ThankYou = () => {
-   const location = useLocation();
-   const orderDetails = location.state as OrderDetails | undefined;
- 
-   const orderId = orderDetails?.orderId || `PWH${Date.now().toString().slice(-8)}`;
-   const amount = orderDetails?.amount || 92.15;
- 
-  // Track CompletePayment when page loads
+import { useEffect, useRef } from "react";
+import { Check, Shield, Truck, PartyPopper, Mail, Clock, ArrowLeft, Package } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { trackCompletePayment } from "@/lib/tiktok-pixel";
+import { trackMetaPurchase } from "@/lib/meta-pixel";
+
+const PowerHairLogo = () => (
+  <div className="flex items-center gap-2">
+    <div className="relative w-8 h-8">
+      <svg viewBox="0 0 48 48" fill="none" className="w-full h-full">
+        <path
+          d="M24 4C24 4 8 12 8 28C8 36 14 44 24 44C34 44 40 36 40 28C40 12 24 4 24 4Z"
+          className="fill-primary"
+        />
+        <path
+          d="M18 20C18 20 20 28 24 32M24 16C24 16 24 26 24 34M30 20C30 20 28 28 24 32"
+          className="stroke-primary-foreground"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        <circle cx="16" cy="18" r="2" className="fill-primary-foreground/40" />
+      </svg>
+    </div>
+    <div className="flex flex-col">
+      <span className="text-base font-bold tracking-tight text-primary leading-none">POWER</span>
+      <span className="text-sm font-light tracking-widest text-foreground leading-none">HAIR</span>
+    </div>
+  </div>
+);
+
+interface OrderDetails {
+  orderId: string;
+  amount: number;
+  email?: string;
+}
+
+const ThankYou = () => {
+  const location = useLocation();
+  const orderDetails = location.state as OrderDetails | undefined;
+  const hasTracked = useRef(false);
+
+  const orderId = orderDetails?.orderId || `PWH${Date.now().toString().slice(-8)}`;
+  const amount = orderDetails?.amount || 92.15;
+
+  // Track CompletePayment and Purchase when page loads (with deduplication)
   useEffect(() => {
+    if (hasTracked.current) return;
+    hasTracked.current = true;
+
+    // TikTok Pixel
     trackCompletePayment({
       value: amount,
       currency: 'BRL',
       order_id: orderId,
     });
+
+    // Meta Pixel
+    trackMetaPurchase({
+      value: amount,
+      currency: 'BRL',
+      order_id: orderId,
+    });
+
+    console.log('ThankYou: Payment tracked', { orderId, amount });
   }, [amount, orderId]);
  
    return (
