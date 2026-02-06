@@ -43,9 +43,10 @@ interface OrderData {
  
      const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
  
-     const body = await req.json();
-     
-     console.log('Webhook received:', JSON.stringify(body, null, 2));
+    const body = await req.json();
+    
+    console.log('📥 Webhook received at', new Date().toISOString());
+    console.log('📦 Payload:', JSON.stringify(body, null, 2));
  
     // Podpay sends transaction updates - data can be in body directly or in body.data
     const transactionData = body.data || body;
@@ -83,7 +84,7 @@ interface OrderData {
        );
      }
  
-     console.log('Order updated:', data);
+     console.log('✅ Order updated in database:', data);
  
     // Send server-side event to TikTok if payment was confirmed
     if (status === 'paid' && data && data.length > 0) {
@@ -115,73 +116,78 @@ interface OrderData {
  });
  
 async function sendTikTokEvent(order: OrderData) {
-   try {
-     const TIKTOK_ACCESS_TOKEN = Deno.env.get('TIKTOK_ACCESS_TOKEN');
-     if (!TIKTOK_ACCESS_TOKEN) {
-       console.log('TikTok access token not configured, skipping event');
-       return;
-     }
- 
-     const pixelId = 'D61CDMRC77UAR2VU6H60';
-     
-     // Hash email and phone for privacy
+  try {
+    const TIKTOK_ACCESS_TOKEN = Deno.env.get('TIKTOK_ACCESS_TOKEN');
+    if (!TIKTOK_ACCESS_TOKEN) {
+      console.warn('⚠️ TikTok access token not configured, skipping event');
+      return;
+    }
+
+    const pixelId = 'D61CDMRC77UAR2VU6H60';
+    
+    // Hash email and phone for privacy
     const email = order.customer_email;
     const phone = order.customer_phone?.replace(/\D/g, '');
-     
-     const encoder = new TextEncoder();
-     const emailHash = email ? await crypto.subtle.digest('SHA-256', encoder.encode(email.toLowerCase().trim())).then(buf => 
-       Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
-     ) : undefined;
-     const phoneHash = phone ? await crypto.subtle.digest('SHA-256', encoder.encode(phone)).then(buf =>
-       Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
-     ) : undefined;
- 
-     const eventPayload = {
-       pixel_code: pixelId,
-       event: 'CompletePayment',
-       event_id: order.transaction_id,
-       timestamp: new Date().toISOString(),
-       context: {
-         user: {
-           email: emailHash,
-           phone: phoneHash,
-         },
-       },
-       properties: {
+    
+    const encoder = new TextEncoder();
+    const emailHash = email ? await crypto.subtle.digest('SHA-256', encoder.encode(email.toLowerCase().trim())).then(buf => 
+      Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
+    ) : undefined;
+    const phoneHash = phone ? await crypto.subtle.digest('SHA-256', encoder.encode(phone)).then(buf =>
+      Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
+    ) : undefined;
+
+    const eventPayload = {
+      pixel_code: pixelId,
+      event: 'CompletePayment',
+      event_id: `server_${order.transaction_id}`,
+      timestamp: new Date().toISOString(),
+      context: {
+        user: {
+          email: emailHash,
+          phone: phoneHash,
+        },
+      },
+      properties: {
         value: order.amount / 100, // Convert from cents
-         currency: 'BRL',
-         content_id: 'kit-sos-crescimento',
-         content_name: order.product_name,
-         content_type: 'product',
-         order_id: order.transaction_id,
-       },
-     };
- 
-     console.log('Sending TikTok server event:', JSON.stringify(eventPayload, null, 2));
- 
-     const response = await fetch('https://business-api.tiktok.com/open_api/v1.3/event/track/', {
-       method: 'POST',
-       headers: {
-         'Content-Type': 'application/json',
-         'Access-Token': TIKTOK_ACCESS_TOKEN,
-       },
-       body: JSON.stringify({
-         pixel_code: pixelId,
-         event: 'CompletePayment',
-         event_id: order.transaction_id,
-         timestamp: new Date().toISOString(),
-         context: eventPayload.context,
-         properties: eventPayload.properties,
-       }),
-     });
- 
-     const result = await response.json();
-     console.log('TikTok API response:', JSON.stringify(result, null, 2));
-   } catch (error) {
-     console.error('Error sending TikTok event:', error);
-     // Don't throw - this is non-critical
-   }
- }
+        currency: 'BRL',
+        content_id: 'kit-sos-crescimento',
+        content_name: order.product_name,
+        content_type: 'product',
+        order_id: order.transaction_id,
+      },
+    };
+
+    console.log('📤 Sending TikTok server event for order:', order.transaction_id);
+
+    const response = await fetch('https://business-api.tiktok.com/open_api/v1.3/event/track/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Token': TIKTOK_ACCESS_TOKEN,
+      },
+      body: JSON.stringify({
+        pixel_code: pixelId,
+        event: 'CompletePayment',
+        event_id: `server_${order.transaction_id}`,
+        timestamp: new Date().toISOString(),
+        context: eventPayload.context,
+        properties: eventPayload.properties,
+      }),
+    });
+
+    const result = await response.json();
+    
+    if (response.ok && result.code === 0) {
+      console.log('✅ TikTok event sent successfully for order:', order.transaction_id);
+    } else {
+      console.error('❌ TikTok API error:', JSON.stringify(result, null, 2));
+    }
+  } catch (error) {
+    console.error('❌ Error sending TikTok event:', error);
+    // Don't throw - this is non-critical
+  }
+}
 
 async function sendUtmifyEvent(order: OrderData, status: 'waiting_payment' | 'paid' | 'refunded' | 'chargedback') {
   try {
