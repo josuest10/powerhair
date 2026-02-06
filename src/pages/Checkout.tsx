@@ -829,14 +829,11 @@ const getUTMParams = () => {
              {/* Progress Steps */}
              <ProgressSteps currentStep={2} />
              
-             {/* Success Header */}
-             <div className="text-center mb-6">
-               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 mb-4 animate-scale-in shadow-lg shadow-primary/20">
-                 <Sparkles className="w-10 h-10 text-primary animate-pulse" />
-               </div>
-               <h1 className="text-2xl font-bold text-foreground animate-fade-in" style={{ animationDelay: '150ms' }}>Quase lá! 🎉</h1>
-               <p className="text-muted-foreground mt-2 animate-fade-in" style={{ animationDelay: '250ms' }}>Escaneie o QR Code ou copie o código para finalizar</p>
-             </div>
+              {/* Success Header */}
+              <div className="text-center mb-6">
+                <h1 className="text-2xl font-bold text-foreground animate-fade-in">Quase lá! 🎉</h1>
+                <p className="text-muted-foreground mt-2 animate-fade-in" style={{ animationDelay: '100ms' }}>Escaneie o QR Code ou copie o código para finalizar</p>
+              </div>
  
              {/* Main Card */}
              <div className="bg-card border-2 border-primary/20 rounded-2xl overflow-hidden shadow-xl animate-fade-in transition-all duration-300" style={{ animationDelay: '350ms' }}>
