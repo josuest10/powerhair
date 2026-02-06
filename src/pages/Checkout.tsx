@@ -13,6 +13,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { validateCPF } from "@/lib/cpf-validator";
 import { trackInitiateCheckout, identifyUser } from "@/lib/tiktok-pixel";
 import { trackMetaInitiateCheckout } from "@/lib/meta-pixel";
+import { getStoredUTMParams } from "@/lib/utm-tracker";
 import CheckoutReviews from "@/components/CheckoutReviews";
 import { Separator } from "@/components/ui/separator";
 import { 
@@ -22,20 +23,6 @@ import {
   SavingsBadge, 
   TrustBar 
 } from "@/components/checkout/UrgencyElements";
- 
-// Helper to get UTM params from URL
-const getUTMParams = () => {
-  const params = new URLSearchParams(window.location.search);
-  return {
-    utm_source: params.get('utm_source') || null,
-    utm_campaign: params.get('utm_campaign') || null,
-    utm_medium: params.get('utm_medium') || null,
-    utm_content: params.get('utm_content') || null,
-    utm_term: params.get('utm_term') || null,
-    src: params.get('src') || null,
-    sck: params.get('sck') || null,
-  };
-};
 
  const PowerHairLogo = () => (
    <div className="flex items-center gap-2">
@@ -336,8 +323,8 @@ const getUTMParams = () => {
            city: data.city,
            state: data.state,
            zipCode: data.cep,
-         },
-        trackingParameters: getUTMParams(),
+        },
+        trackingParameters: getStoredUTMParams(),
        };
        
        const { data: responseData, error } = await supabase.functions.invoke('create-pix-payment', {

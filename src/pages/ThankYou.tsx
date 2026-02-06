@@ -4,6 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { trackCompletePayment } from "@/lib/tiktok-pixel";
 import { trackMetaPurchase } from "@/lib/meta-pixel";
+import { clearUTMParams } from "@/lib/utm-tracker";
 
 const PowerHairLogo = () => (
   <div className="flex items-center gap-2">
@@ -61,6 +62,9 @@ const ThankYou = () => {
       currency: 'BRL',
       order_id: orderId,
     });
+
+    // Clear UTM params after successful purchase
+    clearUTMParams();
 
     console.log('ThankYou: Payment tracked', { orderId, amount });
   }, [amount, orderId]);
