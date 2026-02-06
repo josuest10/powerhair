@@ -827,35 +827,54 @@ const getUTMParams = () => {
  
              {/* Main Card */}
              <div className="bg-card border-2 border-primary/20 rounded-2xl overflow-hidden shadow-xl animate-fade-in transition-all duration-300" style={{ animationDelay: '350ms' }}>
-                {/* Timer Banner with Progress Bar */}
-                <div className="bg-gradient-to-r from-destructive/10 via-destructive/5 to-destructive/10 px-4 py-4">
-                  <div className="flex items-center justify-center gap-2 mb-3">
-                    <Clock className={`w-4 h-4 text-destructive ${timeLeft <= 300 ? 'animate-pulse' : ''}`} />
-                    <span className="text-sm font-bold text-destructive">
-                      ⚡ Pague em até{" "}
-                      <span className="font-mono bg-foreground text-background px-2 py-1 rounded-md text-base">
-                        {formatTime(timeLeft)}
-                      </span>
-                    </span>
-                  </div>
-                  {/* Progress Bar */}
-                  <div className="w-full h-2 bg-destructive/20 rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-1000 ease-linear ${
+                {/* Timer Banner - Elegant Design */}
+                <div className="px-6 py-5 bg-gradient-to-br from-muted/50 to-muted/30 border-b border-border">
+                  <div className="flex flex-col items-center gap-4">
+                    {/* Timer Display */}
+                    <div className="flex items-center gap-3">
+                      <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
                         timeLeft <= 300 
-                          ? 'bg-gradient-to-r from-destructive to-destructive/80 animate-pulse' 
-                          : 'bg-gradient-to-r from-primary to-primary/80'
-                      }`}
-                      style={{ 
-                        width: `${(timeLeft / 1800) * 100}%`,
-                      }}
-                    />
+                          ? 'bg-destructive/10 text-destructive' 
+                          : 'bg-primary/10 text-primary'
+                      }`}>
+                        <Clock className={`w-5 h-5 ${timeLeft <= 300 ? 'animate-pulse' : ''}`} />
+                      </div>
+                      <div className="text-center">
+                        <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">
+                          Tempo restante
+                        </p>
+                        <div className="flex items-baseline gap-1 mt-0.5">
+                          <span className={`text-3xl font-bold tracking-tight tabular-nums ${
+                            timeLeft <= 300 ? 'text-destructive' : 'text-foreground'
+                          }`}>
+                            {formatTime(timeLeft)}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Progress Bar */}
+                    <div className="w-full max-w-xs">
+                      <div className="w-full h-1.5 bg-border rounded-full overflow-hidden">
+                        <div 
+                          className={`h-full rounded-full transition-all duration-1000 ease-linear ${
+                            timeLeft <= 300 
+                              ? 'bg-destructive' 
+                              : 'bg-primary'
+                          }`}
+                          style={{ width: `${(timeLeft / 1800) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                    
+                    {/* Urgency Message */}
+                    {timeLeft <= 300 && (
+                      <p className="text-xs text-destructive font-medium animate-fade-in flex items-center gap-1.5">
+                        <AlertCircle className="w-3.5 h-3.5" />
+                        Finalize antes que expire!
+                      </p>
+                    )}
                   </div>
-                  {timeLeft <= 300 && (
-                    <p className="text-xs text-destructive font-medium text-center mt-2 animate-fade-in">
-                      ⚠️ Tempo quase esgotando! Finalize agora.
-                    </p>
-                  )}
                 </div>
  
                {/* QR Code Section */}
