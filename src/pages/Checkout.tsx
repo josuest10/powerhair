@@ -1054,7 +1054,7 @@ const getUTMParams = () => {
           <div className="bg-primary/80 py-4">
             <div className="container max-w-4xl mx-auto px-4">
               <p className="text-center text-sm text-primary-foreground/60">
-                © 2026 Power Hair. Todos os direitos reservados. CNPJ: 00.000.000/0001-00
+                © 2026 Power Hair. Todos os direitos reservados. CNPJ: 15.190.451/0001-06
               </p>
             </div>
           </div>
