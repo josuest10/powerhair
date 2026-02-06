@@ -861,34 +861,44 @@ const getUTMParams = () => {
                  </div>
                </div>
  
-               {/* Copy Code Section */}
-               <div className="px-6 pb-6">
-                 <p className="text-sm font-medium text-foreground mb-2 text-center">Ou copie o código PIX:</p>
-                 <div className="bg-secondary rounded-xl p-3 flex items-center gap-3">
-                   <code className="flex-1 text-xs text-muted-foreground truncate font-mono">
-                     {pixData?.qrCode || "Carregando..."}
-                   </code>
-                   <Button 
-                      variant={copied ? "default" : "outline"} 
-                      size="sm" 
-                      onClick={copyPixCode} 
-                      disabled={!pixData?.qrCode}
-                      className={`transition-all duration-200 hover:scale-105 active:scale-95 ${copied ? "bg-primary text-primary-foreground" : ""}`}
-                    >
-                     {copied ? (
-                       <>
-                         <Check className="w-4 h-4 mr-1" />
-                         Copiado!
-                       </>
-                     ) : (
-                       <>
-                         <Copy className="w-4 h-4 mr-1" />
-                         Copiar
-                       </>
-                     )}
-                   </Button>
-                 </div>
-               </div>
+                {/* Copy Code Section */}
+                <div className="px-6 pb-6">
+                  <p className="text-sm font-medium text-foreground mb-2 text-center">Ou copie o código PIX:</p>
+                  <div className={`bg-secondary rounded-xl p-3 flex items-center gap-3 transition-all duration-300 ${copied ? "ring-2 ring-primary/50 bg-primary/5" : ""}`}>
+                    <code className="flex-1 text-xs text-muted-foreground truncate font-mono">
+                      {pixData?.qrCode || "Carregando..."}
+                    </code>
+                    <Button 
+                       variant={copied ? "default" : "secondary"} 
+                       size="default" 
+                       onClick={copyPixCode} 
+                       disabled={!pixData?.qrCode}
+                       className={`transition-all duration-300 font-semibold min-w-[120px] ${
+                         copied 
+                           ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 scale-105" 
+                           : "hover:bg-primary hover:text-primary-foreground hover:scale-105 active:scale-95"
+                       }`}
+                     >
+                      {copied ? (
+                        <>
+                          <Check className="w-4 h-4 mr-2 animate-scale-in" />
+                          Copiado!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4 mr-2" />
+                          Copiar Código
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  {copied && (
+                    <p className="text-sm text-primary font-medium text-center mt-3 animate-fade-in flex items-center justify-center gap-2">
+                      <CheckCircle2 className="w-4 h-4" />
+                      Agora cole o código no app do seu banco!
+                    </p>
+                  )}
+                </div>
 
                {/* Instructions */}
                <div className="bg-secondary/50 px-6 py-4 border-t border-border">
