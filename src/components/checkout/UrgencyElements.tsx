@@ -169,24 +169,16 @@ export const SavingsBadge = ({ originalPrice, finalPrice }: { originalPrice: num
   const percentage = Math.round((savings / originalPrice) * 100);
   
   return (
-    <div className="relative overflow-hidden px-4 py-3 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20 border border-primary/30 rounded-xl">
-      <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-      <div className="relative flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 bg-primary rounded-lg">
-            <Zap className="w-4 h-4 text-primary-foreground" />
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground">Você está economizando</p>
-            <p className="text-lg font-bold text-primary">
-              R$ {savings.toFixed(2).replace(".", ",")}
-            </p>
-          </div>
-        </div>
-        <div className="bg-primary text-primary-foreground px-3 py-1.5 rounded-full text-sm font-bold">
-          {percentage}% OFF
-        </div>
+    <div className="flex items-center justify-between px-3 py-2 bg-primary/5 border border-primary/20 rounded-lg">
+      <div className="flex items-center gap-2">
+        <Zap className="w-4 h-4 text-primary" />
+        <span className="text-sm text-muted-foreground">
+          Economia de <span className="font-semibold text-primary">R$ {savings.toFixed(2).replace(".", ",")}</span>
+        </span>
       </div>
+      <span className="text-xs font-bold text-primary-foreground bg-primary px-2 py-0.5 rounded-full">
+        {percentage}% OFF
+      </span>
     </div>
   );
 };
