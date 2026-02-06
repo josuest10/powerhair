@@ -41,7 +41,7 @@ const ThankYou = () => {
   const hasTracked = useRef(false);
 
   const orderId = orderDetails?.orderId || `PWH${Date.now().toString().slice(-8)}`;
-  const amount = orderDetails?.amount || 92.15;
+  const amount = orderDetails?.amount || 75.91; // Price with 5% PIX discount (79.90 * 0.95)
 
   // Track CompletePayment and Purchase when page loads (with deduplication)
   useEffect(() => {
