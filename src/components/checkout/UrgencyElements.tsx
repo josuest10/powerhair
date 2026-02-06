@@ -20,7 +20,7 @@ const useViewerCount = () => {
   return count;
 };
 
-// Gentle offer timer without aggressive messaging
+// Fixed 15 minute offer timer
 const useOfferTimer = () => {
   const [timeLeft, setTimeLeft] = useState(() => {
     const storedExpiry = sessionStorage.getItem('offerExpiry');
@@ -28,9 +28,10 @@ const useOfferTimer = () => {
       const remaining = Math.floor((parseInt(storedExpiry) - Date.now()) / 1000);
       return remaining > 0 ? remaining : 0;
     }
-    const expiry = Date.now() + (Math.floor(Math.random() * 10) + 15) * 60 * 1000;
+    // Fixed 15 minutes
+    const expiry = Date.now() + 15 * 60 * 1000;
     sessionStorage.setItem('offerExpiry', expiry.toString());
-    return Math.floor((expiry - Date.now()) / 1000);
+    return 15 * 60; // 15 minutes in seconds
   });
   
   useEffect(() => {
