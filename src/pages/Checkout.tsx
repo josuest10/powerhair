@@ -79,17 +79,24 @@ const getUTMParams = () => {
  
  type CheckoutFormData = z.infer<typeof checkoutSchema>;
  
+ // Check for preview mode via URL param
+ const isPreviewMode = new URLSearchParams(window.location.search).get('preview') === 'pix';
+ 
  const Checkout = () => {
    const { toast } = useToast();
    const navigate = useNavigate();
-   const [step, setStep] = useState<"form" | "pix" | "success">("form");
+   const [step, setStep] = useState<"form" | "pix" | "success">(isPreviewMode ? "pix" : "form");
    const [copied, setCopied] = useState(false);
    const [timeLeft, setTimeLeft] = useState(1800); // 30 minutes in seconds
   const [pixData, setPixData] = useState<{
     qrCode: string | null;
     qrCodeImage: string | null;
     transactionId: string | null;
-  } | null>(null);
+  } | null>(isPreviewMode ? {
+    qrCode: "00020126580014br.gov.bcb.pix0136exemplo-pix-code-para-preview-visual-only5204000053039865802BR5913Power Hair Co6008Sao Paulo62070503***6304ABCD",
+    qrCodeImage: null,
+    transactionId: "PREVIEW123",
+  } : null);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const timerRef = useRef<number | null>(null);
    const pollingRef = useRef<number | null>(null);
