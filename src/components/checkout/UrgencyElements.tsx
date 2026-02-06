@@ -99,12 +99,12 @@ export const RecentPurchase = () => {
   }));
   
   useEffect(() => {
-    // Show notification after 8-15 seconds
+    // Show notification after 45 seconds
     const showTimer = setTimeout(() => {
       setShow(true);
       // Hide after 5 seconds
       setTimeout(() => setShow(false), 5000);
-    }, 8000 + Math.random() * 7000);
+    }, 45000);
     
     return () => clearTimeout(showTimer);
   }, []);
