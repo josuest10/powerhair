@@ -9,6 +9,9 @@ import NotFound from "./pages/NotFound";
 import TermsOfUse from "./pages/TermsOfUse";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ReturnsPolicy from "./pages/ReturnsPolicy";
+import HelpCenter from "./pages/HelpCenter";
+import PaymentMethods from "./pages/PaymentMethods";
+import DeliveryInfo from "./pages/DeliveryInfo";
 import Checkout from "./pages/Checkout";
 import ThankYou from "./pages/ThankYou";
 
@@ -26,6 +29,9 @@ const App = () => (
           <Route path="/termos-de-uso" element={<TermsOfUse />} />
           <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
           <Route path="/trocas-e-devolucoes" element={<ReturnsPolicy />} />
+          <Route path="/central-de-ajuda" element={<HelpCenter />} />
+          <Route path="/formas-de-pagamento" element={<PaymentMethods />} />
+          <Route path="/prazo-de-entrega" element={<DeliveryInfo />} />
           <Route path="/checkout" element={<Checkout />} />
            <Route path="/obrigado" element={<ThankYou />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
