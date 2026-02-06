@@ -86,19 +86,20 @@ interface OrderData {
  
      console.log('✅ Order updated in database:', data);
  
-    // Send server-side event to TikTok if payment was confirmed
+    // Send server-side events if payment was confirmed
     if (status === 'paid' && data && data.length > 0) {
       const order = data[0];
-     await Promise.all([
-       sendTikTokEvent(order as OrderData),
-       sendUtmifyEvent(order as OrderData, 'paid'),
-     ]);
-   }
+      await Promise.all([
+        sendTikTokEvent(order as OrderData),
+        sendMetaEvent(order as OrderData),
+        sendUtmifyEvent(order as OrderData, 'paid'),
+      ]);
+    }
 
-   // Send waiting_payment event to UTMify for PIX generated
-   if (status === 'waiting_payment' && data && data.length > 0) {
-     const order = data[0];
-     await sendUtmifyEvent(order as OrderData, 'waiting_payment');
+    // Send waiting_payment event to UTMify for PIX generated
+    if (status === 'waiting_payment' && data && data.length > 0) {
+      const order = data[0];
+      await sendUtmifyEvent(order as OrderData, 'waiting_payment');
     }
  
      return new Response(
@@ -185,6 +186,76 @@ async function sendTikTokEvent(order: OrderData) {
     }
   } catch (error) {
     console.error('❌ Error sending TikTok event:', error);
+    // Don't throw - this is non-critical
+  }
+}
+
+async function sendMetaEvent(order: OrderData) {
+  try {
+    const META_ACCESS_TOKEN = Deno.env.get('META_ACCESS_TOKEN');
+    if (!META_ACCESS_TOKEN) {
+      console.warn('⚠️ Meta access token not configured, skipping event');
+      return;
+    }
+
+    const pixelId = '1198424312101245';
+    
+    // Hash email and phone for privacy (required by Meta)
+    const email = order.customer_email;
+    const phone = order.customer_phone?.replace(/\D/g, '');
+    
+    const encoder = new TextEncoder();
+    const emailHash = email ? await crypto.subtle.digest('SHA-256', encoder.encode(email.toLowerCase().trim())).then(buf => 
+      Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
+    ) : undefined;
+    const phoneHash = phone ? await crypto.subtle.digest('SHA-256', encoder.encode(`55${phone}`)).then(buf =>
+      Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
+    ) : undefined;
+
+    const eventData = {
+      data: [
+        {
+          event_name: 'Purchase',
+          event_time: Math.floor(Date.now() / 1000),
+          event_id: `server_${order.transaction_id}`,
+          action_source: 'website',
+          user_data: {
+            em: emailHash ? [emailHash] : undefined,
+            ph: phoneHash ? [phoneHash] : undefined,
+            country: ['br'],
+          },
+          custom_data: {
+            value: order.amount / 100, // Convert from cents
+            currency: 'BRL',
+            content_ids: ['kit-sos-crescimento'],
+            content_name: order.product_name,
+            content_type: 'product',
+            order_id: order.transaction_id,
+            num_items: 1,
+          },
+        },
+      ],
+    };
+
+    console.log('📤 Sending Meta server event for order:', order.transaction_id);
+
+    const response = await fetch(`https://graph.facebook.com/v18.0/${pixelId}/events?access_token=${META_ACCESS_TOKEN}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(eventData),
+    });
+
+    const result = await response.json();
+    
+    if (response.ok) {
+      console.log('✅ Meta event sent successfully for order:', order.transaction_id, result);
+    } else {
+      console.error('❌ Meta API error:', JSON.stringify(result, null, 2));
+    }
+  } catch (error) {
+    console.error('❌ Error sending Meta event:', error);
     // Don't throw - this is non-critical
   }
 }
