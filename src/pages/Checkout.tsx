@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Copy, Check, Clock, Shield, Truck, Lock, Loader2, AlertCircle, Sparkles, Gift, CheckCircle2, MapPin, Facebook, Instagram, Youtube, Twitter, Mail, Phone } from "lucide-react";
+import { Copy, Check, Clock, Shield, Truck, Lock, Loader2, AlertCircle, Sparkles, Gift, CheckCircle2, MapPin, Facebook, Instagram, Youtube, Twitter, Mail, Phone, Star, CreditCard } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,15 @@ import { trackInitiateCheckout, identifyUser } from "@/lib/tiktok-pixel";
 import { trackMetaInitiateCheckout } from "@/lib/meta-pixel";
 import CheckoutReviews from "@/components/CheckoutReviews";
 import { Separator } from "@/components/ui/separator";
+import { 
+  LiveViewerBadge, 
+  OfferCountdown, 
+  StockWarning, 
+  RecentPurchase, 
+  ProgressSteps, 
+  SavingsBadge, 
+  TrustBar 
+} from "@/components/checkout/UrgencyElements";
  
 // Helper to get UTM params from URL
 const getUTMParams = () => {
@@ -397,29 +406,40 @@ const getUTMParams = () => {
  
    return (
      <div className="min-h-screen bg-background">
-       {/* Header */}
-       <header className="border-b border-border bg-background py-3">
-         <div className="container max-w-4xl mx-auto px-4 flex items-center justify-center gap-3">
-           <PowerHairLogo />
-           <div className="h-4 w-px bg-border"></div>
-           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-             <Lock className="w-3.5 h-3.5 text-primary" />
-             <span>Checkout Seguro</span>
-           </div>
-         </div>
-       </header>
+      {/* Header */}
+      <header className="border-b border-border bg-background py-3 sticky top-0 z-40 backdrop-blur-sm bg-background/95">
+        <div className="container max-w-4xl mx-auto px-4 flex items-center justify-between">
+          <PowerHairLogo />
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
+              <Lock className="w-3.5 h-3.5 text-primary" />
+              <span>Checkout Seguro</span>
+            </div>
+            <LiveViewerBadge />
+          </div>
+        </div>
+      </header>
  
-        <main className="container max-w-4xl mx-auto px-4 py-8">
-          {step === "form" && (
-           <div className="space-y-6 animate-fade-in">
-            {/* Order Summary - Top */}
-            <div className="bg-card border border-border rounded-lg overflow-hidden transition-all duration-300 hover:shadow-md">
-              <div className="bg-secondary px-4 py-3 border-b border-border">
-                <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Gift className="w-4 h-4 text-primary" />
-                  Resumo do Pedido
-                </h2>
-              </div>
+       <main className="container max-w-4xl mx-auto px-4 py-6">
+         {step === "form" && (
+          <div className="space-y-5 animate-fade-in">
+           {/* Progress Steps */}
+           <ProgressSteps currentStep={1} />
+           
+           {/* Urgency Timer */}
+           <OfferCountdown />
+           
+           {/* Order Summary - Top */}
+           <div className="bg-card border-2 border-primary/20 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg shadow-md">
+             <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 border-b border-primary/10">
+               <div className="flex items-center justify-between">
+                 <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                   <Gift className="w-4 h-4 text-primary" />
+                   Seu Pedido Especial
+                 </h2>
+                 <StockWarning />
+               </div>
+             </div>
               
               <div className="p-4 space-y-4">
                 {/* Kit Items */}
@@ -470,31 +490,13 @@ const getUTMParams = () => {
                   </div>
                 </div>
                 
-                {/* Price Summary */}
-                <div className="pt-3 border-t border-border">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-muted-foreground line-through">De R$ {originalPrice.toFixed(2).replace(".", ",")}</p>
-                      <p className="text-lg font-bold text-foreground">R$ {productPrice.toFixed(2).replace(".", ",")}</p>
-                    </div>
-                    <div className="flex flex-col items-end gap-1">
-                      <span className="px-2 py-0.5 bg-primary text-primary-foreground text-xs font-medium rounded">
-                        {Math.round(((originalPrice - productPrice) / originalPrice) * 100)}% OFF
-                      </span>
-                      <span className="text-xs text-primary font-medium">+ 5% OFF no PIX</span>
-                    </div>
-                  </div>
+                {/* Savings Badge */}
+                <div className="pt-3">
+                  <SavingsBadge originalPrice={originalPrice} finalPrice={finalPrice} />
                 </div>
                 
-                {/* Trust badges */}
-                <div className="flex items-center justify-center gap-4 pt-2 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1">
-                    <Truck className="w-3.5 h-3.5 text-primary" /> Frete disponível
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Shield className="w-3.5 h-3.5 text-primary" /> Compra segura
-                  </span>
-                </div>
+                {/* Trust Bar */}
+                <TrustBar />
               </div>
             </div>
  
@@ -712,7 +714,7 @@ const getUTMParams = () => {
               </div>
 
               {/* Summary and Submit */}
-              <div className="bg-card border border-border rounded-lg p-5 transition-all duration-300 hover:shadow-md animate-fade-in" style={{ animationDelay: '300ms' }}>
+              <div className="bg-gradient-to-b from-card to-secondary/30 border-2 border-primary/20 rounded-2xl p-5 transition-all duration-300 shadow-lg animate-fade-in" style={{ animationDelay: '300ms' }}>
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <span>Subtotal</span>
@@ -724,30 +726,51 @@ const getUTMParams = () => {
                       {shippingPrice === 0 ? "Grátis" : `R$ ${shippingPrice.toFixed(2).replace(".", ",")}`}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-sm text-primary">
-                    <span>Desconto PIX (5%)</span>
-                    <span>- R$ {pixDiscount.toFixed(2).replace(".", ",")}</span>
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-primary font-medium flex items-center gap-1">
+                      <CreditCard className="w-3.5 h-3.5" />
+                      Desconto PIX (5%)
+                    </span>
+                    <span className="text-primary font-semibold">- R$ {pixDiscount.toFixed(2).replace(".", ",")}</span>
                   </div>
-                  <div className="flex items-center justify-between pt-2 border-t border-border">
+                  <div className="flex items-center justify-between pt-3 mt-2 border-t-2 border-dashed border-primary/30">
                     <span className="text-base font-semibold text-foreground">Total</span>
-                    <span className="text-2xl font-bold text-foreground">R$ {finalPrice.toFixed(2).replace(".", ",")}</span>
+                    <div className="text-right">
+                      <span className="text-3xl font-bold text-primary">R$ {finalPrice.toFixed(2).replace(".", ",")}</span>
+                      <p className="text-xs text-muted-foreground">à vista no PIX</p>
+                    </div>
                   </div>
                 </div>
                 
                 <Button 
                   type="submit" 
-                  className="w-full h-12 text-base font-semibold transition-all duration-200 hover:scale-[1.02] hover:shadow-lg active:scale-[0.98]" 
+                  className="w-full h-14 text-lg font-bold transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] bg-gradient-to-r from-primary to-primary/90 shadow-lg shadow-primary/30" 
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                       Gerando PIX...
                     </>
                   ) : (
-                    "Pagar com PIX"
+                    <>
+                      <Lock className="w-5 h-5 mr-2" />
+                      FINALIZAR COMPRA
+                    </>
                   )}
                 </Button>
+                
+                {/* Security badges under button */}
+                <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Shield className="w-4 h-4 text-primary" />
+                    <span>Pagamento Seguro</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Lock className="w-4 h-4 text-primary" />
+                    <span>Dados Criptografados</span>
+                  </div>
+                </div>
                 
                 {paymentError && (
                   <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg mt-3">
@@ -758,31 +781,46 @@ const getUTMParams = () => {
               </div>
 
               {/* Reviews Section */}
-              <div className="bg-card border border-border rounded-lg p-5 transition-all duration-300 hover:shadow-md animate-fade-in" style={{ animationDelay: '400ms' }}>
+              <div className="bg-card border border-border rounded-2xl p-5 transition-all duration-300 hover:shadow-md animate-fade-in" style={{ animationDelay: '400ms' }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    ))}
+                  </div>
+                  <span className="text-sm font-medium text-foreground">4.9/5</span>
+                  <span className="text-xs text-muted-foreground">(+2.500 avaliações)</span>
+                </div>
                 <CheckoutReviews />
               </div>
            </form>
           </div>
         )}
 
+        {/* Recent Purchase Notification */}
+        <RecentPurchase />
+
         {step === "pix" && (
            <div className="max-w-lg mx-auto animate-fade-in">
+             {/* Progress Steps */}
+             <ProgressSteps currentStep={2} />
+             
              {/* Success Header */}
              <div className="text-center mb-6">
-               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4 animate-scale-in">
-                 <Sparkles className="w-8 h-8 text-primary animate-pulse" />
+               <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 mb-4 animate-scale-in shadow-lg shadow-primary/20">
+                 <Sparkles className="w-10 h-10 text-primary animate-pulse" />
                </div>
                <h1 className="text-2xl font-bold text-foreground animate-fade-in" style={{ animationDelay: '150ms' }}>Quase lá! 🎉</h1>
                <p className="text-muted-foreground mt-2 animate-fade-in" style={{ animationDelay: '250ms' }}>Escaneie o QR Code ou copie o código para finalizar</p>
              </div>
  
              {/* Main Card */}
-             <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-lg animate-fade-in transition-all duration-300" style={{ animationDelay: '350ms' }}>
+             <div className="bg-card border-2 border-primary/20 rounded-2xl overflow-hidden shadow-xl animate-fade-in transition-all duration-300" style={{ animationDelay: '350ms' }}>
                {/* Timer Banner */}
-               <div className="bg-primary/10 px-4 py-3 flex items-center justify-center gap-2">
-                 <Clock className="w-4 h-4 text-primary" />
-                 <span className="text-sm font-medium text-primary">
-                   Pague em até <span className="font-mono font-bold">{formatTime(timeLeft)}</span>
+               <div className="bg-gradient-to-r from-orange-500/20 via-red-500/20 to-orange-500/20 px-4 py-3 flex items-center justify-center gap-2">
+                 <Clock className="w-4 h-4 text-orange-600 animate-pulse" />
+                 <span className="text-sm font-bold text-orange-600">
+                   ⚡ Pague em até <span className="font-mono bg-foreground text-background px-2 py-0.5 rounded">{formatTime(timeLeft)}</span>
                  </span>
                </div>
  
