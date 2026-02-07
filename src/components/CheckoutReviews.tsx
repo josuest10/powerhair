@@ -1,4 +1,7 @@
 import { Star, CheckCircle2, Quote, ThumbsUp } from "lucide-react";
+import review1 from "@/assets/reviews/review-1.png";
+import review2 from "@/assets/reviews/review-2.png";
+import review3 from "@/assets/reviews/review-3.png";
 
 interface Review {
   name: string;
@@ -8,7 +11,7 @@ interface Review {
   date: string;
   verified: boolean;
   helpfulCount: number;
-  avatar?: string;
+  image?: string;
 }
 
 const reviews: Review[] = [
@@ -20,6 +23,7 @@ const reviews: Review[] = [
     date: "15/01/2026",
     verified: true,
     helpfulCount: 47,
+    image: review1,
   },
   {
     name: "Carla M.",
@@ -29,6 +33,7 @@ const reviews: Review[] = [
     date: "12/01/2026",
     verified: true,
     helpfulCount: 32,
+    image: review2,
   },
   {
     name: "Fernanda L.",
@@ -38,6 +43,7 @@ const reviews: Review[] = [
     date: "08/01/2026",
     verified: true,
     helpfulCount: 28,
+    image: review3,
   },
 ];
 
@@ -126,6 +132,17 @@ const CheckoutReviews = () => {
             
             {/* Review text */}
             <p className="text-sm text-foreground/80 leading-relaxed">{review.text}</p>
+            
+            {/* Review image */}
+            {review.image && (
+              <div className="mt-3">
+                <img 
+                  src={review.image} 
+                  alt={`Resultado de ${review.name}`}
+                  className="w-full max-w-[200px] h-auto rounded-lg border border-border/50"
+                />
+              </div>
+            )}
             
             {/* Helpful count */}
             <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-border/50">
