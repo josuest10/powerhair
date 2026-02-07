@@ -2,7 +2,6 @@ import { useEffect, useRef } from "react";
 import { Check, Shield, Truck, PartyPopper, Mail, Clock, ArrowLeft, Package } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { trackCompletePayment } from "@/lib/tiktok-pixel";
 import { trackMetaPurchase } from "@/lib/meta-pixel";
 import { clearUTMParams } from "@/lib/utm-tracker";
 
@@ -33,6 +32,7 @@ const PowerHairLogo = () => (
 interface OrderDetails {
   orderId: string;
   amount: number;
+  transactionId?: string; // Full transaction ID for Meta deduplication
   email?: string;
 }
 
@@ -43,31 +43,32 @@ const ThankYou = () => {
 
   const orderId = orderDetails?.orderId || `PWH${Date.now().toString().slice(-8)}`;
   const amount = orderDetails?.amount || 75.91; // Price with 5% PIX discount (79.90 * 0.95)
+  const transactionId = orderDetails?.transactionId; // Full ID for deduplication
 
-  // Track CompletePayment and Purchase when page loads (with deduplication)
+  // Track Meta Purchase when page loads (single source of truth for conversions)
   useEffect(() => {
     if (hasTracked.current) return;
     hasTracked.current = true;
 
-    // TikTok Pixel
-    trackCompletePayment({
-      value: amount,
-      currency: 'BRL',
-      order_id: orderId,
-    });
+    // Generate consistent event_id for deduplication with server-side CAPI
+    const eventId = transactionId ? `purchase_${transactionId}` : `purchase_${orderId}`;
 
-    // Meta Pixel
+    // Meta Pixel Purchase (ONLY place this fires - for reliability)
     trackMetaPurchase({
       value: amount,
       currency: 'BRL',
-      order_id: orderId,
+      content_ids: ['kit-sos-crescimento'],
+      content_name: 'Kit SOS Crescimento e Antiqueda',
+      num_items: 1,
+      order_id: transactionId || orderId,
+      event_id: eventId,
     });
 
     // Clear UTM params after successful purchase
     clearUTMParams();
 
-    console.log('ThankYou: Payment tracked', { orderId, amount });
-  }, [amount, orderId]);
+    console.log('ThankYou: Meta Purchase tracked', { orderId, amount, eventId });
+  }, [amount, orderId, transactionId]);
  
    return (
      <div className="min-h-screen bg-background">

@@ -11,8 +11,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { QRCodeSVG } from "qrcode.react";
 import { validateCPF } from "@/lib/cpf-validator";
-import { trackInitiateCheckout, identifyUser, trackCompletePayment } from "@/lib/tiktok-pixel";
-import { trackMetaInitiateCheckout, trackMetaPurchase } from "@/lib/meta-pixel";
+import { trackInitiateCheckout, identifyUser } from "@/lib/tiktok-pixel";
+import { trackMetaInitiateCheckout } from "@/lib/meta-pixel";
 import { getStoredUTMParams } from "@/lib/utm-tracker";
 import CheckoutReviews from "@/components/CheckoutReviews";
 import { Separator } from "@/components/ui/separator";
@@ -320,36 +320,20 @@ import {
              
              console.log('🎯 Firing client-side purchase events as fallback', { transactionId, value: purchaseValue, eventId });
              
-             // TikTok CompletePayment
-             trackCompletePayment({
-               value: purchaseValue,
-               currency: 'BRL',
-               content_id: 'kit-sos-crescimento',
-               content_name: 'Kit SOS Crescimento e Antiqueda',
-               order_id: transactionId,
-               event_id: eventId,
-             });
-             
-             // Meta Purchase
-             trackMetaPurchase({
-               value: purchaseValue,
-               currency: 'BRL',
-               content_ids: ['kit-sos-crescimento'],
-               content_name: 'Kit SOS Crescimento e Antiqueda',
-               num_items: 1,
-               order_id: transactionId,
-               event_id: eventId,
-             });
-           }
+              // Note: Meta Purchase is now tracked ONLY on ThankYou page for reliability
+              // TikTok tracking removed - focusing on Meta only
+              console.log('✅ Payment confirmed, redirecting to thank you page for Meta Purchase tracking');
+            }
            
            // Auto redirect after 2 seconds
            setTimeout(() => {
-             navigate('/obrigado', {
-               state: {
-                 orderId: `PWH${transactionId.toString().slice(-8)}`,
-                 amount: finalPrice,
-               }
-             });
+              navigate('/obrigado', {
+                state: {
+                  orderId: `PWH${transactionId.toString().slice(-8)}`,
+                  amount: finalPrice,
+                  transactionId: transactionId, // Full transaction ID for Meta deduplication
+                }
+              });
            }, 2000);
          } else {
            setPaymentStatus("waiting");
