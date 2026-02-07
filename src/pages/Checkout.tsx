@@ -937,15 +937,6 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
 
               {/* Reviews Section */}
               <div className="bg-card border border-border rounded-2xl p-5 transition-all duration-300 hover:shadow-md animate-fade-in" style={{ animationDelay: '400ms' }}>
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="flex">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-rating text-rating" />
-                    ))}
-                  </div>
-                  <span className="text-sm font-medium text-foreground">4.9/5</span>
-                  <span className="text-xs text-muted-foreground">(+2.500 avaliações)</span>
-                </div>
                 <CheckoutReviews />
               </div>
               
