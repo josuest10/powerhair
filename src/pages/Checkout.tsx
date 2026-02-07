@@ -894,15 +894,7 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                 
                 {/* Total */}
                 <div className="flex items-center justify-between py-4 mb-6 border-y-2 border-dashed border-primary/30">
-                  <div>
-                    <span className="text-lg font-semibold text-foreground">Total</span>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs text-muted-foreground line-through">R$ {originalPrice.toFixed(2).replace(".", ",")}</span>
-                      <span className="px-2 py-0.5 text-[10px] font-bold text-primary-foreground bg-primary rounded-full animate-pulse">
-                        -{Math.round(((originalPrice - finalPrice) / originalPrice) * 100)}%
-                      </span>
-                    </div>
-                  </div>
+                  <span className="text-lg font-semibold text-foreground">Total</span>
                   <div className="text-right">
                     <span className="text-3xl font-bold text-primary">R$ {finalPrice.toFixed(2).replace(".", ",")}</span>
                     <p className="text-xs text-muted-foreground mt-0.5">à vista no PIX</p>
