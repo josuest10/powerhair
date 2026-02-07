@@ -3,6 +3,7 @@ import { Check, Shield, Truck, PartyPopper, Mail, Clock, ArrowLeft, Package } fr
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { trackMetaPurchase } from "@/lib/meta-pixel";
+import { trackCompletePayment } from "@/lib/tiktok-pixel";
 import { clearUTMParams } from "@/lib/utm-tracker";
 
 const PowerHairLogo = () => (
@@ -45,7 +46,7 @@ const ThankYou = () => {
   const amount = orderDetails?.amount || 75.91; // Price with 5% PIX discount (79.90 * 0.95)
   const transactionId = orderDetails?.transactionId; // Full ID for deduplication
 
-  // Track Meta Purchase when page loads (single source of truth for conversions)
+  // Track Purchase events when page loads (single source of truth for conversions)
   useEffect(() => {
     if (hasTracked.current) return;
     hasTracked.current = true;
@@ -53,7 +54,7 @@ const ThankYou = () => {
     // Generate consistent event_id for deduplication with server-side CAPI
     const eventId = transactionId ? `purchase_${transactionId}` : `purchase_${orderId}`;
 
-    // Meta Pixel Purchase (ONLY place this fires - for reliability)
+    // Meta Pixel Purchase
     trackMetaPurchase({
       value: amount,
       currency: 'BRL',
@@ -64,10 +65,20 @@ const ThankYou = () => {
       event_id: eventId,
     });
 
+    // TikTok Pixel CompletePayment (with event_id for server-side deduplication)
+    trackCompletePayment({
+      value: amount,
+      currency: 'BRL',
+      content_id: 'kit-sos-crescimento',
+      content_name: 'Kit SOS Crescimento e Antiqueda',
+      order_id: transactionId || orderId,
+      event_id: eventId,
+    });
+
     // Clear UTM params after successful purchase
     clearUTMParams();
 
-    console.log('ThankYou: Meta Purchase tracked', { orderId, amount, eventId });
+    console.log('ThankYou: Purchase tracked (Meta + TikTok)', { orderId, amount, eventId });
   }, [amount, orderId, transactionId]);
  
    return (
