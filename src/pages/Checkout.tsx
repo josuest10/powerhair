@@ -761,15 +761,10 @@ import {
 
               {/* Summary and Submit */}
               <div className="bg-gradient-to-b from-card to-secondary/30 border-2 border-primary/20 rounded-2xl p-5 transition-all duration-300 shadow-lg animate-fade-in" style={{ animationDelay: '300ms' }}>
-                {/* Coupon Section */}
-                <div className="mb-4 pb-4 border-b border-border">
-                  <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
-                    <Gift className="w-4 h-4 text-primary" />
-                    Cupom de Desconto
-                  </h3>
-                  
-                  {appliedCoupon ? (
-                    <div className="flex items-center justify-between p-3 bg-primary/10 border border-primary/30 rounded-lg">
+                {/* Coupon Section - Discrete collapsible */}
+                {appliedCoupon ? (
+                  <div className="mb-4 pb-4 border-b border-border">
+                    <div className="flex items-center justify-between p-2.5 bg-primary/10 border border-primary/30 rounded-lg">
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 text-primary" />
                         <span className="text-sm font-medium text-primary">{appliedCoupon}</span>
@@ -778,13 +773,18 @@ import {
                       <button
                         type="button"
                         onClick={removeCoupon}
-                        className="text-xs text-destructive hover:underline"
+                        className="text-xs text-muted-foreground hover:text-destructive hover:underline"
                       >
                         Remover
                       </button>
                     </div>
-                  ) : (
-                    <div className="space-y-2">
+                  </div>
+                ) : (
+                  <details className="mb-4 pb-4 border-b border-border group">
+                    <summary className="text-xs text-muted-foreground cursor-pointer hover:text-foreground transition-colors list-none flex items-center gap-1">
+                      <span className="underline">Tem um cupom?</span>
+                    </summary>
+                    <div className="mt-3 space-y-2 animate-fade-in">
                       <div className="flex gap-2">
                         <Input
                           placeholder="Digite seu cupom"
@@ -793,13 +793,14 @@ import {
                             setCouponCode(e.target.value.toUpperCase());
                             setCouponError(null);
                           }}
-                          className="flex-1 text-sm uppercase"
+                          className="flex-1 text-sm uppercase h-9"
                         />
                         <Button
                           type="button"
                           variant="outline"
+                          size="sm"
                           onClick={applyCoupon}
-                          className="px-4"
+                          className="px-3"
                         >
                           Aplicar
                         </Button>
@@ -811,8 +812,8 @@ import {
                         </p>
                       )}
                     </div>
-                  )}
-                </div>
+                  </details>
+                )}
                 
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
