@@ -23,7 +23,7 @@ import {
   SavingsBadge, 
   TrustBar 
 } from "@/components/checkout/UrgencyElements";
-import { SecurityBadges, SavingsHighlight } from "@/components/checkout/TrustElements";
+import { SecurityBadges } from "@/components/checkout/TrustElements";
 import StickyCheckoutCTA from "@/components/checkout/StickyCheckoutCTA";
 import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
 
@@ -850,6 +850,14 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                   </details>
                 )}
                 
+                {/* Savings badge - minimalist */}
+                <div className="flex items-center justify-center gap-2 mb-4 text-sm">
+                  <span className="text-primary font-semibold">Você economiza R$ {(originalPrice - finalPrice).toFixed(2).replace(".", ",")}</span>
+                  <span className="px-2 py-0.5 text-xs font-bold text-primary-foreground bg-primary rounded-full">
+                    {Math.round(((originalPrice - finalPrice) / originalPrice) * 100)}% OFF
+                  </span>
+                </div>
+                
                 {/* Price breakdown */}
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center justify-between text-sm py-1">
@@ -891,15 +899,6 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                     <span className="text-3xl font-bold text-primary">R$ {finalPrice.toFixed(2).replace(".", ",")}</span>
                     <p className="text-xs text-muted-foreground mt-0.5">à vista no PIX</p>
                   </div>
-                </div>
-                
-                {/* Savings highlight */}
-                <div className="mb-6">
-                  <SavingsHighlight 
-                    originalPrice={originalPrice} 
-                    finalPrice={finalPrice} 
-                    couponApplied={!!appliedCoupon} 
-                  />
                 </div>
                 
                 {/* Submit button */}
