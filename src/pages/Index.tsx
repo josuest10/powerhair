@@ -19,14 +19,14 @@ const Index = () => {
       hasTrackedViewContent.current = true;
       // TikTok ViewContent
       trackViewContent({
-        value: 79.90,
+        value: 69.90,
         currency: 'BRL',
         content_id: 'kit-sos-crescimento',
         content_name: 'Kit SOS Crescimento e Antiqueda',
       });
       // Meta ViewContent
       trackMetaViewContent({
-        value: 79.90,
+        value: 69.90,
         currency: 'BRL',
         content_ids: ['kit-sos-crescimento'],
         content_name: 'Kit SOS Crescimento e Antiqueda',
@@ -57,7 +57,7 @@ const Index = () => {
      },
      {
        image: "https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg",
-       price: 79.90,
+       price: 69.90,
        installments: "Máscara 300g",
        name: "Máscara SOS",
      },
@@ -100,12 +100,12 @@ const Index = () => {
                title="Kit SOS Crescimento e Antiqueda: Shampoo 300ml + Máscara 300g + Tônico Fortalecedor 100ml"
                brand="LIZZANTE"
                rating={5}
-               reviewCount={847}
-               kitItems={kitItems}
-                totalPrice={79.90}
-                installmentPrice={19.98}
-                installmentCount={4}
-              />
+                reviewCount={847}
+                kitItems={kitItems}
+                 totalPrice={69.90}
+                 installmentPrice={17.48}
+                 installmentCount={4}
+               />
            </div>
          </div>
  
