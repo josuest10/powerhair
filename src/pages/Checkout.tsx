@@ -23,7 +23,7 @@ import {
   SavingsBadge, 
   TrustBar 
 } from "@/components/checkout/UrgencyElements";
-import { SecurityBadges, SavingsHighlight, CheckoutRating } from "@/components/checkout/TrustElements";
+import { SecurityBadges, SavingsHighlight } from "@/components/checkout/TrustElements";
 import StickyCheckoutCTA from "@/components/checkout/StickyCheckoutCTA";
 import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
 
@@ -897,15 +897,9 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                   couponApplied={!!appliedCoupon} 
                 />
                 
-                {/* Security badges BEFORE button - increases trust */}
-                <SecurityBadges />
-                
-                {/* Compact rating */}
-                <CheckoutRating />
-                
                 <Button 
                   type="submit" 
-                  className="w-full h-16 text-lg font-bold transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] bg-gradient-to-r from-primary to-primary/90 shadow-lg shadow-primary/30 relative overflow-hidden group" 
+                  className="w-full h-14 text-lg font-bold transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] bg-gradient-to-r from-primary to-primary/90 shadow-lg shadow-primary/30 relative overflow-hidden group" 
                   disabled={isSubmitting}
                 >
                   {/* Shine effect */}
@@ -917,15 +911,15 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                       Gerando PIX...
                     </>
                   ) : (
-                    <div className="flex flex-col items-center">
-                      <div className="flex items-center gap-2">
-                        <Lock className="w-5 h-5" />
-                        <span>FINALIZAR COMPRA SEGURA</span>
-                      </div>
-                      <span className="text-xs font-normal opacity-90">Pagamento via PIX • Aprovação Instantânea</span>
-                    </div>
+                    <>
+                      <Lock className="w-5 h-5 mr-2" />
+                      FINALIZAR COMPRA
+                    </>
                   )}
                 </Button>
+                
+                {/* Security badges below button */}
+                <SecurityBadges />
                 
                 {paymentError && (
                   <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg mt-3">
