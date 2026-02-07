@@ -464,27 +464,31 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
      return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
    };
  
-   return (
-     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-background py-3 sticky top-0 z-40 backdrop-blur-sm bg-background/95">
-        <div className="container max-w-4xl mx-auto px-4 flex items-center justify-between">
-          <PowerHairLogo />
-          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Lock className="w-3.5 h-3.5 text-primary" />
-            <span>Checkout Seguro</span>
-          </div>
-        </div>
-      </header>
+  return (
+      <div className="min-h-screen bg-background">
+       {/* Promo Banner */}
+       <div className="bg-primary py-2.5 px-4 text-center">
+         <p className="text-primary-foreground text-sm font-medium">
+           Frete Grátis em todo Brasil • <span className="font-semibold bg-primary-foreground/20 px-2 py-0.5 rounded">5% OFF no PIX</span>
+         </p>
+       </div>
+       
+       {/* Header */}
+       <header className="border-b border-border bg-background py-3 sticky top-0 z-40 backdrop-blur-sm bg-background/95">
+         <div className="container max-w-4xl mx-auto px-4 flex items-center justify-between">
+           <PowerHairLogo />
+           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+             <Lock className="w-3.5 h-3.5 text-primary" />
+             <span>Checkout Seguro</span>
+           </div>
+         </div>
+       </header>
  
        <main className="container max-w-4xl mx-auto px-4 py-6">
          {step === "form" && (
           <div className="space-y-5 animate-fade-in">
            {/* Progress Steps */}
            <ProgressSteps currentStep={1} />
-           
-           {/* Free Shipping Banner - Immediate visibility */}
-           <FreeShippingBanner />
            
            {/* Urgency Timer */}
            <OfferCountdown />
