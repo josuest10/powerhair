@@ -43,7 +43,7 @@ const ThankYou = () => {
   const hasTracked = useRef(false);
 
   const orderId = orderDetails?.orderId || `PWH${Date.now().toString().slice(-8)}`;
-  const amount = orderDetails?.amount || 66.41; // Price with 5% PIX discount (69.90 * 0.95)
+  const amount = orderDetails?.amount || 69.90; // Preço PIX sem desconto adicional
   const transactionId = orderDetails?.transactionId; // Full ID for deduplication
 
   // Track Purchase events when page loads (single source of truth for conversions)

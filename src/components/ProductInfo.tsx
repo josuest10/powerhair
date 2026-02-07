@@ -52,7 +52,7 @@ const ProductInfo = ({
   const unitPrice = totalPrice;
   const currentTotalPrice = unitPrice * quantity;
   const discount = Math.round(((originalPrice - unitPrice) / originalPrice) * 100);
-  const pixPrice = currentTotalPrice * 0.95;
+  const pixPrice = currentTotalPrice; // Preço PIX sem desconto adicional
   const installmentTotal = currentTotalPrice / installmentCount;
 
   const handleQuantityChange = (delta: number) => {

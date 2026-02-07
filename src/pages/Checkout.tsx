@@ -112,12 +112,12 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
    const shippingPrice = shippingOptions[selectedShipping].price;
    const subtotalWithShipping = productPrice + shippingPrice;
    
-   // Apply coupon discount (10% off) before PIX discount
+   // Apply coupon discount (10% off) - sem desconto PIX adicional
    const couponDiscount = appliedCoupon === "VOLTEI10" ? subtotalWithShipping * 0.10 : 0;
    const priceAfterCoupon = subtotalWithShipping - couponDiscount;
    
-   const pixDiscount = priceAfterCoupon * 0.05;
-   const finalPrice = priceAfterCoupon - pixDiscount;
+   const pixDiscount = 0; // Preço PIX já é o valor final
+   const finalPrice = priceAfterCoupon;
    
    // Function to apply coupon
    const applyCoupon = () => {
