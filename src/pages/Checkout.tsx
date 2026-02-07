@@ -11,8 +11,8 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { QRCodeSVG } from "qrcode.react";
 import { validateCPF } from "@/lib/cpf-validator";
-import { trackInitiateCheckout, identifyUser } from "@/lib/tiktok-pixel";
-import { trackMetaInitiateCheckout } from "@/lib/meta-pixel";
+import { trackInitiateCheckout, identifyUser, trackCompletePayment } from "@/lib/tiktok-pixel";
+import { trackMetaInitiateCheckout, trackMetaPurchase } from "@/lib/meta-pixel";
 import { getStoredUTMParams } from "@/lib/utm-tracker";
 import CheckoutReviews from "@/components/CheckoutReviews";
 import { Separator } from "@/components/ui/separator";
@@ -287,6 +287,9 @@ import {
     }
   };
 
+   // Track if we've already fired the purchase event for this transaction
+   const hasTrackedPurchase = useRef(false);
+   
    // Start polling for payment status
    const startPaymentPolling = (transactionId: string) => {
      // Poll every 5 seconds
@@ -308,6 +311,37 @@ import {
            if (pollingRef.current) {
              clearInterval(pollingRef.current);
            }
+           
+           // Fire client-side purchase events as fallback (deduplication via event_id)
+           if (!hasTrackedPurchase.current) {
+             hasTrackedPurchase.current = true;
+             const purchaseValue = finalPrice;
+             const eventId = `purchase_${transactionId}`;
+             
+             console.log('🎯 Firing client-side purchase events as fallback', { transactionId, value: purchaseValue, eventId });
+             
+             // TikTok CompletePayment
+             trackCompletePayment({
+               value: purchaseValue,
+               currency: 'BRL',
+               content_id: 'kit-sos-crescimento',
+               content_name: 'Kit SOS Crescimento e Antiqueda',
+               order_id: transactionId,
+               event_id: eventId,
+             });
+             
+             // Meta Purchase
+             trackMetaPurchase({
+               value: purchaseValue,
+               currency: 'BRL',
+               content_ids: ['kit-sos-crescimento'],
+               content_name: 'Kit SOS Crescimento e Antiqueda',
+               num_items: 1,
+               order_id: transactionId,
+               event_id: eventId,
+             });
+           }
+           
            // Auto redirect after 2 seconds
            setTimeout(() => {
              navigate('/obrigado', {
