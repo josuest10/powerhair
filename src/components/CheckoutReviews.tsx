@@ -81,31 +81,6 @@ const CheckoutReviews = () => {
         </div>
       </div>
       
-      {/* Rating breakdown - compact */}
-      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-        <div className="flex items-center gap-1.5">
-          <span>5★</span>
-          <div className="w-16 h-1.5 bg-border rounded-full overflow-hidden">
-            <div className="h-full bg-rating rounded-full" style={{ width: "92%" }} />
-          </div>
-          <span>92%</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span>4★</span>
-          <div className="w-16 h-1.5 bg-border rounded-full overflow-hidden">
-            <div className="h-full bg-rating rounded-full" style={{ width: "6%" }} />
-          </div>
-          <span>6%</span>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <span>3★</span>
-          <div className="w-16 h-1.5 bg-border rounded-full overflow-hidden">
-            <div className="h-full bg-rating rounded-full" style={{ width: "2%" }} />
-          </div>
-          <span>2%</span>
-        </div>
-      </div>
-      
       {/* Reviews list */}
       <div className="space-y-4 pt-2">
         {reviews.map((review, index) => (
