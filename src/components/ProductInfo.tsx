@@ -237,27 +237,16 @@ const ProductInfo = ({
 
       {/* Price Box */}
      <div className="space-y-4">
-       {/* Savings Badge */}
-       <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 flex items-center justify-between">
-         <div className="flex items-center gap-2">
-           <span className="text-2xl">🎉</span>
-           <div>
-             <p className="text-xs text-muted-foreground">Você economiza</p>
-             <p className="text-lg font-bold text-primary">
-               R$ {((originalPrice * quantity) - pixPrice).toFixed(2).replace(".", ",")}
-             </p>
-           </div>
-         </div>
-         <Badge className="bg-primary text-primary-foreground text-sm px-3 py-1">
-           {Math.round((((originalPrice * quantity) - pixPrice) / (originalPrice * quantity)) * 100)}% OFF
-         </Badge>
-       </div>
-
        {/* Prices */}
        <div className="space-y-1">
-         <p className="text-sm text-muted-foreground line-through">
-           De R$ {(originalPrice * quantity).toFixed(2).replace(".", ",")}
-         </p>
+         <div className="flex items-center gap-2">
+           <p className="text-sm text-muted-foreground line-through">
+             De R$ {(originalPrice * quantity).toFixed(2).replace(".", ",")}
+           </p>
+           <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded">
+             -{Math.round((((originalPrice * quantity) - pixPrice) / (originalPrice * quantity)) * 100)}%
+           </span>
+         </div>
          <p className="text-3xl font-bold text-foreground">
            R$ {pixPrice.toFixed(2).replace(".", ",")}
            <span className="text-sm font-normal text-primary ml-2">no PIX</span>
