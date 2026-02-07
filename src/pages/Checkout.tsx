@@ -93,7 +93,7 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
   const timerRef = useRef<number | null>(null);
    const pollingRef = useRef<number | null>(null);
    const [paymentStatus, setPaymentStatus] = useState<"waiting" | "checking" | "paid">("waiting");
-   const [selectedShipping, setSelectedShipping] = useState<"free" | "sedex" | "pac">("free");
+   const [selectedShipping, setSelectedShipping] = useState<"free" | "sedex">("free");
    const [showShippingOptions, setShowShippingOptions] = useState(false);
    
    // Coupon state
@@ -104,7 +104,6 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
   const shippingOptions = {
     free: { label: "Frete Grátis", price: 0, days: "5 a 9 dias úteis" },
     sedex: { label: "Sedex", price: 12.49, days: "3 a 5 dias úteis" },
-    pac: { label: "PAC", price: 15.30, days: "7 a 10 dias úteis" },
   };
 
    const originalPrice = 149.0;
