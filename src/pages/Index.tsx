@@ -19,14 +19,14 @@ const Index = () => {
       hasTrackedViewContent.current = true;
       // TikTok ViewContent
       trackViewContent({
-        value: 69.90,
+        value: 79.90,
         currency: 'BRL',
         content_id: 'kit-sos-crescimento',
         content_name: 'Kit SOS Crescimento e Antiqueda',
       });
       // Meta ViewContent
       trackMetaViewContent({
-        value: 69.90,
+        value: 79.90,
         currency: 'BRL',
         content_ids: ['kit-sos-crescimento'],
         content_name: 'Kit SOS Crescimento e Antiqueda',
@@ -51,13 +51,13 @@ const Index = () => {
    const kitItems = [
      {
        image: "https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg",
-       price: 69.90,
+       price: 79.90,
        installments: "Shampoo 300ml",
        name: "Shampoo SOS",
      },
      {
        image: "https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg",
-       price: 69.90,
+       price: 79.90,
        installments: "Máscara 300g",
        name: "Máscara SOS",
      },
@@ -102,8 +102,8 @@ const Index = () => {
                rating={5}
                 reviewCount={847}
                 kitItems={kitItems}
-                 totalPrice={69.90}
-                 installmentPrice={17.48}
+                 totalPrice={79.90}
+                 installmentPrice={19.98}
                  installmentCount={4}
                />
            </div>
