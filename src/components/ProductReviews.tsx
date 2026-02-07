@@ -1,60 +1,73 @@
 import { Star, ThumbsUp, CheckCircle } from "lucide-react";
 import { useState } from "react";
- import { Button } from "@/components/ui/button";
- import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import review1 from "@/assets/reviews/review-1.png";
+import review2 from "@/assets/reviews/review-2.png";
+import review3 from "@/assets/reviews/review-3.png";
+import review4 from "@/assets/reviews/review-4.png";
+import review5 from "@/assets/reviews/review-5.png";
+import review6 from "@/assets/reviews/review-6.png";
+import review7 from "@/assets/reviews/review-7.png";
+import review8 from "@/assets/reviews/review-8.png";
+
+interface Review {
+  id: number;
+  author: string;
+  rating: number;
+  date: string;
+  title: string;
+  content: string;
+  helpful: number;
+  verified: boolean;
+  image?: string;
+}
  
- interface Review {
-   id: number;
-   author: string;
-   rating: number;
-   date: string;
-   title: string;
-   content: string;
-   helpful: number;
-   verified: boolean;
- }
- 
- const reviews: Review[] = [
-   {
-     id: 1,
+const reviews: Review[] = [
+  {
+    id: 1,
     author: "Camila R.",
-     rating: 5,
+    rating: 5,
     date: "02/02/2026",
     title: "Resultado incrível em 30 dias!",
     content: "Estava com muita queda de cabelo e decidi testar esse kit. Em 30 dias de uso correto (shampoo, máscara e tônico diariamente), meus cabelos pararam de cair e já vejo fios novos nascendo! O tônico é essencial, uso todo dia na raiz. Super recomendo!",
     helpful: 156,
-     verified: true,
-   },
-   {
-     id: 2,
+    verified: true,
+    image: review1,
+  },
+  {
+    id: 2,
     author: "Roberto M.",
-     rating: 5,
+    rating: 5,
     date: "25/01/2026",
     title: "Funciona para homem também!",
     content: "Tinha calvície começando e estava receoso de usar. Depois de 2 meses usando o kit completo, os fios estão mais grossos e fortes. O segredo é usar o tônico diariamente direto no couro cabeludo. Recomendo para homens que estão com queda!",
     helpful: 98,
-     verified: true,
-   },
-   {
-     id: 3,
+    verified: true,
+    image: review2,
+  },
+  {
+    id: 3,
     author: "Ana Paula",
     rating: 5,
     date: "18/01/2026",
     title: "Melhor investimento que fiz!",
     content: "Depois da gravidez meu cabelo caía muito. Esse kit salvou meu cabelo! A máscara deixa os fios muito macios e o tônico tem cheiro agradável sem deixar oleoso. Em 1 mês já vi diferença absurda. Frete grátis foi um bônus!",
     helpful: 87,
-     verified: true,
-   },
-   {
-     id: 4,
+    verified: true,
+    image: review3,
+  },
+  {
+    id: 4,
     author: "Fernanda S.",
-     rating: 5,
+    rating: 5,
     date: "10/01/2026",
     title: "Crescimento acelerado real!",
     content: "Estava querendo deixar o cabelo crescer e esse kit acelerou muito o processo. Meus colegas já comentaram a diferença em menos de 2 meses! O shampoo limpa muito bem e a máscara é super nutritiva. Já comprei o segundo kit.",
     helpful: 64,
-     verified: true,
-   },
+    verified: true,
+    image: review4,
+  },
   {
     id: 5,
     author: "Juliana Costa",
@@ -64,6 +77,7 @@ import { useState } from "react";
     content: "A hidratação que a máscara proporciona é incrível! Meus fios estavam muito ressecados e quebradiços. Depois de 3 semanas usando o kit, a diferença é visível. Os fios estão macios, brilhantes e com muito menos frizz.",
     helpful: 52,
     verified: true,
+    image: review5,
   },
   {
     id: 6,
@@ -74,6 +88,7 @@ import { useState } from "react";
     content: "Tinha feito progressiva e meu cabelo estava destruído. Esse kit literalmente recuperou meus fios! A combinação dos três produtos é perfeita. O shampoo limpa sem agredir, a máscara nutre profundamente e o tônico fortalece da raiz.",
     helpful: 78,
     verified: true,
+    image: review6,
   },
   {
     id: 7,
@@ -84,6 +99,7 @@ import { useState } from "react";
     content: "Já tentei vários produtos antiqueda e nenhum funcionou como esse. Em 6 semanas minha escova parou de ficar cheia de cabelo. O tônico faz toda diferença! Uso religiosamente todos os dias e os resultados são impressionantes.",
     helpful: 91,
     verified: true,
+    image: review7,
   },
   {
     id: 8,
@@ -94,6 +110,7 @@ import { useState } from "react";
     content: "O produto é excelente, mas precisa de paciência. Vi resultados reais só depois de 45 dias de uso contínuo. Agora meu cabelo está muito mais forte e volumoso. A hidratação é nota 10! Recomendo para quem tem persistência.",
     helpful: 34,
     verified: true,
+    image: review8,
   },
   {
     id: 9,
@@ -306,8 +323,19 @@ import { useState } from "react";
              </div>
  
             <p className="text-sm text-muted-foreground mb-3">{review.content}</p>
- 
-             <div className="flex items-center justify-between">
+
+            {/* Review image */}
+            {review.image && (
+              <div className="mb-3">
+                <img 
+                  src={review.image} 
+                  alt={`Resultado de ${review.author}`}
+                  className="w-full max-w-[280px] h-auto rounded-lg border border-border"
+                />
+              </div>
+            )}
+
+            <div className="flex items-center justify-between">
               <span className="text-xs text-muted-foreground">{review.author}</span>
               <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
                 <ThumbsUp className="w-3 h-3" />
