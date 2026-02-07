@@ -1,8 +1,8 @@
  import { useState } from "react";
 import { ChevronDown, ChevronUp, Check, Leaf, Droplets, Sparkles, Zap, Heart, Shield } from "lucide-react";
  
- const ProductDescription = () => {
-   const [isExpanded, setIsExpanded] = useState(false);
+const ProductDescription = () => {
+  const [isExpanded, setIsExpanded] = useState(true);
  
    const benefits = [
     { icon: Zap, text: "Crescimento acelerado em 30 dias", highlight: true },
