@@ -886,33 +886,36 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                   </div>
                 </div>
                 
-                <Button 
-                  type="submit" 
-                  className="w-full h-14 text-lg font-bold transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] bg-gradient-to-r from-primary to-primary/90 shadow-lg shadow-primary/30" 
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Gerando PIX...
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="w-5 h-5 mr-2" />
-                      FINALIZAR COMPRA
-                    </>
-                  )}
-                </Button>
-                
-                {/* Security badges under button */}
-                <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Shield className="w-4 h-4 text-primary" />
-                    <span>Pagamento Seguro</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Lock className="w-4 h-4 text-primary" />
-                    <span>Dados Criptografados</span>
+                {/* Desktop CTA - Hidden on mobile since we have sticky CTA */}
+                <div className="hidden lg:block">
+                  <Button 
+                    type="submit" 
+                    className="w-full h-14 text-lg font-bold transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] bg-gradient-to-r from-primary to-primary/90 shadow-lg shadow-primary/30" 
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Gerando PIX...
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="w-5 h-5 mr-2" />
+                        FINALIZAR COMPRA
+                      </>
+                    )}
+                  </Button>
+                  
+                  {/* Security badges under button */}
+                  <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Shield className="w-4 h-4 text-primary" />
+                      <span>Pagamento Seguro</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Lock className="w-4 h-4 text-primary" />
+                      <span>Dados Criptografados</span>
+                    </div>
                   </div>
                 </div>
                 
@@ -922,6 +925,20 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                     <p className="text-sm text-destructive">{paymentError}</p>
                   </div>
                 )}
+              </div>
+
+              {/* Reviews Section */}
+              <div className="bg-card border border-border rounded-2xl p-5 transition-all duration-300 hover:shadow-md animate-fade-in" style={{ animationDelay: '400ms' }}>
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-4 h-4 fill-rating text-rating" />
+                    ))}
+                  </div>
+                  <span className="text-sm font-medium text-foreground">4.9/5</span>
+                  <span className="text-xs text-muted-foreground">(+2.500 avaliações)</span>
+                </div>
+                <CheckoutReviews />
               </div>
               
               {/* Spacer for sticky CTA on mobile */}
