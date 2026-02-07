@@ -23,6 +23,8 @@ import {
   SavingsBadge, 
   TrustBar 
 } from "@/components/checkout/UrgencyElements";
+import StickyCheckoutCTA from "@/components/checkout/StickyCheckoutCTA";
+import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
 
  const PowerHairLogo = () => (
    <div className="flex items-center gap-2">
@@ -481,6 +483,9 @@ import {
            {/* Progress Steps */}
            <ProgressSteps currentStep={1} />
            
+           {/* Free Shipping Banner - Immediate visibility */}
+           <FreeShippingBanner />
+           
            {/* Urgency Timer */}
            <OfferCountdown />
            
@@ -576,6 +581,7 @@ import {
                     <Input
                       id="name"
                       placeholder="Seu nome completo"
+                      autoComplete="name"
                       {...register("name")}
                       className={`mt-1 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm ${errors.name ? "border-destructive" : ""}`}
                     />
@@ -588,6 +594,7 @@ import {
                       id="email"
                       type="email"
                       placeholder="seu@email.com"
+                      autoComplete="email"
                       {...register("email")}
                       className={`mt-1 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm ${errors.email ? "border-destructive" : ""}`}
                     />
@@ -600,6 +607,7 @@ import {
                        <Input
                         id="cpf"
                         placeholder="000.000.000-00"
+                        inputMode="numeric"
                         {...register("cpf")}
                         onChange={(e) => {
                           e.target.value = formatCPF(e.target.value);
@@ -614,6 +622,8 @@ import {
                        <Input
                          id="phone"
                          placeholder="(00) 00000-0000"
+                         autoComplete="tel"
+                         inputMode="tel"
                          {...register("phone")}
                          onChange={(e) => {
                            e.target.value = formatPhone(e.target.value);
@@ -638,6 +648,8 @@ import {
                         <Input
                           id="cep"
                           placeholder="00000-000"
+                          autoComplete="postal-code"
+                          inputMode="numeric"
                           {...register("cep")}
                           onChange={(e) => handleCepChange(e.target.value)}
                           className={`max-w-[140px] pr-8 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm ${errors.cep ? "border-destructive" : ""}`}
@@ -668,6 +680,7 @@ import {
                       <Input
                         id="address"
                         placeholder="Rua, Avenida..."
+                        autoComplete="street-address"
                         {...register("address")}
                         className={`mt-1 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm ${errors.address ? "border-destructive" : ""}`}
                       />
@@ -678,6 +691,7 @@ import {
                       <Input
                         id="number"
                         placeholder="123"
+                        inputMode="numeric"
                         {...register("number")}
                         className={`mt-1 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm ${errors.number ? "border-destructive" : ""}`}
                       />
@@ -701,6 +715,7 @@ import {
                       <Input
                         id="neighborhood"
                         placeholder="Seu bairro"
+                        autoComplete="address-level3"
                         {...register("neighborhood")}
                         className={`mt-1 ${errors.neighborhood ? "border-destructive" : ""}`}
                       />
@@ -711,6 +726,7 @@ import {
                       <Input
                         id="city"
                         placeholder="Sua cidade"
+                        autoComplete="address-level2"
                         {...register("city")}
                         className={`mt-1 ${errors.city ? "border-destructive" : ""}`}
                       />
@@ -722,6 +738,7 @@ import {
                         id="state"
                         placeholder="SP"
                         maxLength={2}
+                        autoComplete="address-level1"
                         {...register("state")}
                         onChange={(e) => {
                           e.target.value = e.target.value.toUpperCase();
@@ -912,7 +929,7 @@ import {
                 <div className="flex items-center gap-2 mb-4">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <Star key={i} className="w-4 h-4 fill-rating text-rating" />
                     ))}
                   </div>
                   <span className="text-sm font-medium text-foreground">4.9/5</span>
@@ -920,7 +937,18 @@ import {
                 </div>
                 <CheckoutReviews />
               </div>
+              
+              {/* Spacer for sticky CTA on mobile */}
+              <div className="h-32 lg:hidden" />
            </form>
+           
+           {/* Sticky CTA for Mobile */}
+           <StickyCheckoutCTA 
+             finalPrice={finalPrice}
+             originalPrice={originalPrice}
+             isSubmitting={isSubmitting}
+             onSubmit={handleSubmit(onSubmit)}
+           />
           </div>
         )}
 
