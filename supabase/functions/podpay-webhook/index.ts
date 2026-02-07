@@ -142,7 +142,7 @@ async function sendTikTokEvent(order: OrderData) {
     const eventPayload = {
       pixel_code: pixelId,
       event: 'CompletePayment',
-      event_id: `server_${order.transaction_id}`,
+      event_id: `purchase_${order.transaction_id}`, // Same format as client-side for deduplication
       timestamp: new Date().toISOString(),
       context: {
         user: {
@@ -171,7 +171,7 @@ async function sendTikTokEvent(order: OrderData) {
       body: JSON.stringify({
         pixel_code: pixelId,
         event: 'CompletePayment',
-        event_id: `server_${order.transaction_id}`,
+        event_id: `purchase_${order.transaction_id}`, // Same format as client-side for deduplication
         timestamp: new Date().toISOString(),
         context: eventPayload.context,
         properties: eventPayload.properties,
@@ -218,7 +218,7 @@ async function sendMetaEvent(order: OrderData) {
         {
           event_name: 'Purchase',
           event_time: Math.floor(Date.now() / 1000),
-          event_id: `server_${order.transaction_id}`,
+          event_id: `purchase_${order.transaction_id}`, // Same format as client-side for deduplication
           action_source: 'website',
           user_data: {
             em: emailHash ? [emailHash] : undefined,

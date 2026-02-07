@@ -6,7 +6,8 @@ declare global {
     fbq?: (
       action: string,
       event: string,
-      params?: Record<string, unknown>
+      params?: Record<string, unknown>,
+      options?: { eventID?: string }
     ) => void;
   }
 }
@@ -69,6 +70,7 @@ export function trackMetaInitiateCheckout(params: {
 /**
  * Track Purchase event - CRITICAL: This must fire on thank you page
  * Includes retry logic to ensure the event is tracked even if fbq loads slowly
+ * Uses event_id for deduplication with server-side events
  */
 export function trackMetaPurchase(params: {
   value: number;
@@ -77,7 +79,11 @@ export function trackMetaPurchase(params: {
   content_name?: string;
   num_items?: number;
   order_id?: string;
+  event_id?: string;
 }) {
+  // Generate event_id for deduplication (matches server-side format)
+  const eventId = params.event_id || (params.order_id ? `client_${params.order_id}` : `client_${Date.now()}`);
+  
   const fireEvent = () => {
     if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'Purchase', {
@@ -87,8 +93,9 @@ export function trackMetaPurchase(params: {
         content_name: params.content_name || 'Kit SOS Crescimento e Antiqueda',
         content_type: 'product',
         num_items: params.num_items || 1,
-      });
-      console.log('Meta Pixel: Purchase tracked successfully', { value: params.value, order_id: params.order_id });
+        order_id: params.order_id,
+      }, { eventID: eventId });
+      console.log('Meta Pixel: Purchase tracked successfully', { value: params.value, order_id: params.order_id, event_id: eventId });
       return true;
     }
     return false;

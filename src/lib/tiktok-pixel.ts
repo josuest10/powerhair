@@ -32,28 +32,34 @@
    }
  }
  
- /**
-  * Track CompletePayment event
-  */
- export function trackCompletePayment(params: {
-   value: number;
-   currency?: string;
-   content_id?: string;
-   content_name?: string;
-   order_id?: string;
- }) {
-   if (typeof window !== 'undefined' && window.ttq) {
-     window.ttq.track('CompletePayment', {
-       value: params.value,
-       currency: params.currency || 'BRL',
-       content_id: params.content_id || 'kit-sos-crescimento',
-       content_name: params.content_name || 'Kit SOS Crescimento e Antiqueda',
-       content_type: 'product',
-       order_id: params.order_id,
-     });
-     console.log('TikTok Pixel: CompletePayment tracked');
-   }
- }
+/**
+ * Track CompletePayment event
+ * Uses event_id for deduplication with server-side events
+ */
+export function trackCompletePayment(params: {
+  value: number;
+  currency?: string;
+  content_id?: string;
+  content_name?: string;
+  order_id?: string;
+  event_id?: string;
+}) {
+  // Generate event_id for deduplication (matches server-side format)
+  const eventId = params.event_id || (params.order_id ? `client_${params.order_id}` : `client_${Date.now()}`);
+  
+  if (typeof window !== 'undefined' && window.ttq) {
+    window.ttq.track('CompletePayment', {
+      value: params.value,
+      currency: params.currency || 'BRL',
+      content_id: params.content_id || 'kit-sos-crescimento',
+      content_name: params.content_name || 'Kit SOS Crescimento e Antiqueda',
+      content_type: 'product',
+      order_id: params.order_id,
+      event_id: eventId,
+    });
+    console.log('TikTok Pixel: CompletePayment tracked', { value: params.value, order_id: params.order_id, event_id: eventId });
+  }
+}
  
  /**
   * Track AddToCart event
