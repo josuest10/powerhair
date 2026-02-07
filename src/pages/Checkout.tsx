@@ -562,14 +562,6 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                     <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">GRÁTIS</span>
                   </div>
                 </div>
-                
-                {/* Savings Badge */}
-                <div className="pt-3">
-                  <SavingsBadge originalPrice={originalPrice} finalPrice={finalPrice} />
-                </div>
-                
-                {/* Trust Bar */}
-                <TrustBar />
               </div>
             </div>
  
