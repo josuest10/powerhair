@@ -86,21 +86,22 @@ interface OrderData {
  
      console.log('✅ Order updated in database:', data);
  
-    // Send server-side events if payment was confirmed
-    if (status === 'paid' && data && data.length > 0) {
-      const order = data[0];
-      await Promise.all([
-        sendTikTokEvent(order as OrderData),
-        sendMetaEvent(order as OrderData),
-        sendUtmifyEvent(order as OrderData, 'paid'),
-      ]);
-    }
+     // Send server-side events if payment was confirmed
+     if (status === 'paid' && data && data.length > 0) {
+       const order = data[0];
+       await Promise.all([
+         sendTikTokEvent(order as OrderData),
+         sendMetaEvent(order as OrderData),
+         sendUtmifyEvent(order as OrderData, 'paid'),
+         sendPaymentConfirmationEmail(order as OrderData),
+       ]);
+     }
 
-    // Send waiting_payment event to UTMify for PIX generated
-    if (status === 'waiting_payment' && data && data.length > 0) {
-      const order = data[0];
-      await sendUtmifyEvent(order as OrderData, 'waiting_payment');
-    }
+     // Send waiting_payment event to UTMify for PIX generated
+     if (status === 'waiting_payment' && data && data.length > 0) {
+       const order = data[0];
+       await sendUtmifyEvent(order as OrderData, 'waiting_payment');
+     }
  
      return new Response(
        JSON.stringify({ success: true, message: 'Webhook processed successfully' }),
@@ -331,6 +332,68 @@ async function sendUtmifyEvent(order: OrderData, status: 'waiting_payment' | 'pa
     }
   } catch (error) {
     console.error('Error sending UTMify event:', error);
+    // Don't throw - this is non-critical
+  }
+}
+
+async function sendPaymentConfirmationEmail(order: OrderData) {
+  try {
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      console.warn('⚠️ Supabase credentials not configured for email sending');
+      return;
+    }
+
+    // Get full order details from database
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+    const { data: fullOrder, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('transaction_id', order.transaction_id)
+      .single();
+
+    if (error || !fullOrder) {
+      console.error('Error fetching order details for email:', error);
+      return;
+    }
+
+    const emailPayload = {
+      customerName: fullOrder.customer_name,
+      customerEmail: fullOrder.customer_email,
+      amount: fullOrder.amount,
+      transactionId: fullOrder.transaction_id,
+      productName: fullOrder.product_name,
+      shippingAddress: fullOrder.shipping_address,
+      shippingNumber: fullOrder.shipping_number,
+      shippingComplement: fullOrder.shipping_complement,
+      shippingNeighborhood: fullOrder.shipping_neighborhood,
+      shippingCity: fullOrder.shipping_city,
+      shippingState: fullOrder.shipping_state,
+      shippingCep: fullOrder.shipping_cep,
+    };
+
+    console.log('📤 Sending payment confirmation email for order:', order.transaction_id);
+
+    const response = await fetch(`${SUPABASE_URL}/functions/v1/send-payment-confirmation-email`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+      },
+      body: JSON.stringify(emailPayload),
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.success) {
+      console.log('✅ Payment confirmation email sent successfully for order:', order.transaction_id);
+    } else {
+      console.error('❌ Payment confirmation email error:', result);
+    }
+  } catch (error) {
+    console.error('❌ Error sending payment confirmation email:', error);
     // Don't throw - this is non-critical
   }
 }

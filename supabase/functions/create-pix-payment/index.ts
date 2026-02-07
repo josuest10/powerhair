@@ -192,20 +192,53 @@
        // Don't fail the payment, just log the error
      }
  
-     return new Response(
-       JSON.stringify({
-         success: true,
-         transactionId: data.id,
-         status: data.status,
-         pix: {
-           qrCode: data.pix?.qrcode,
-           qrCodeImage: `https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=${encodeURIComponent(data.pix?.qrcode || '')}`,
-           expiresAt: data.pix?.expirationDate,
-         },
-         amount: data.amount,
-       }),
-       { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-     );
+      const pixQrCodeUrl = `https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=${encodeURIComponent(data.pix?.qrcode || '')}`;
+
+      // Send PIX generated email (non-blocking)
+      try {
+        const emailPayload = {
+          customerName: body.customer.name,
+          customerEmail: body.customer.email,
+          amount: body.amount,
+          pixCode: data.pix?.qrcode || '',
+          pixQrCodeUrl: pixQrCodeUrl,
+          transactionId: data.id.toString(),
+          productName: body.items[0]?.name || 'Kit SOS Crescimento e Antiqueda',
+          expiresAt: data.pix?.expirationDate,
+        };
+
+        // Fire and forget - don't await to not delay the response
+        fetch(`${SUPABASE_URL}/functions/v1/send-pix-email`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+          },
+          body: JSON.stringify(emailPayload),
+        }).then(res => res.json()).then(result => {
+          console.log('PIX email sent:', result);
+        }).catch(err => {
+          console.error('Error sending PIX email:', err);
+        });
+      } catch (emailError) {
+        console.error('Error preparing PIX email:', emailError);
+        // Don't fail the payment if email fails
+      }
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          transactionId: data.id,
+          status: data.status,
+          pix: {
+            qrCode: data.pix?.qrcode,
+            qrCodeImage: pixQrCodeUrl,
+            expiresAt: data.pix?.expirationDate,
+          },
+          amount: data.amount,
+        }),
+        { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
    } catch (error) {
      console.error('Error creating PIX payment:', error);
      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
