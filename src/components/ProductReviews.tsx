@@ -1,4 +1,4 @@
-import { Star, ThumbsUp, CheckCircle } from "lucide-react";
+import { Star, ThumbsUp, CheckCircle, X, ZoomIn } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -10,6 +10,9 @@ import review5 from "@/assets/reviews/review-5.png";
 import review6 from "@/assets/reviews/review-6.png";
 import review7 from "@/assets/reviews/review-7.png";
 import review8 from "@/assets/reviews/review-8.png";
+import review9 from "@/assets/reviews/review-9.png";
+import review10 from "@/assets/reviews/review-10.png";
+import review11 from "@/assets/reviews/review-11.png";
 
 interface Review {
   id: number;
@@ -22,7 +25,7 @@ interface Review {
   verified: boolean;
   image?: string;
 }
- 
+
 const reviews: Review[] = [
   {
     id: 1,
@@ -121,6 +124,7 @@ const reviews: Review[] = [
     content: "Estava perdendo cabelo nas entradas e já estava me conformando. Minha esposa comprou esse kit e insistiu para eu usar. Depois de 3 meses, os fios estão nascendo novamente! Não acreditava em produtos assim, mas esse funciona de verdade.",
     helpful: 145,
     verified: true,
+    image: review9,
   },
   {
     id: 10,
@@ -131,6 +135,7 @@ const reviews: Review[] = [
     content: "A máscara é um sonho! Meu cabelo fica hidratado por dias. Uso o kit 3x por semana como recomendado e o tônico diariamente. Meus fios nunca estiveram tão saudáveis. O investimento vale muito a pena!",
     helpful: 67,
     verified: true,
+    image: review10,
   },
   {
     id: 11,
@@ -141,6 +146,7 @@ const reviews: Review[] = [
     content: "Comprei sem muita expectativa porque já tinha tentado vários produtos. Em 1 mês meu cabelo já mostrou sinais de recuperação. Agora com 2 meses de uso, a queda diminuiu 90% e os fios estão muito mais grossos. Impressionada!",
     helpful: 89,
     verified: true,
+    image: review11,
   },
   {
     id: 12,
@@ -232,106 +238,136 @@ const reviews: Review[] = [
     helpful: 167,
     verified: true,
   },
- ];
- 
- const ratingDistribution = [
+];
+
+const ratingDistribution = [
   { stars: 5, percentage: 92, count: 779 },
   { stars: 4, percentage: 5, count: 42 },
   { stars: 3, percentage: 2, count: 17 },
   { stars: 2, percentage: 1, count: 6 },
   { stars: 1, percentage: 0, count: 3 },
- ];
- 
- const ProductReviews = () => {
+];
+
+const ProductReviews = () => {
   const averageRating = 4.9;
   const totalReviews = 847;
   const [visibleReviews, setVisibleReviews] = useState(4);
-  
+  const [expandedImage, setExpandedImage] = useState<string | null>(null);
+
   const showMoreReviews = () => {
     setVisibleReviews(prev => Math.min(prev + 4, reviews.length));
   };
-  
+
   const showLessReviews = () => {
     setVisibleReviews(4);
   };
- 
-   return (
-     <div className="border-t border-border py-8">
+
+  return (
+    <div className="border-t border-border py-8">
+      {/* Image Modal */}
+      {expandedImage && (
+        <div 
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={() => setExpandedImage(null)}
+        >
+          <button 
+            className="absolute top-4 right-4 text-white hover:text-white/80 transition-colors"
+            onClick={() => setExpandedImage(null)}
+          >
+            <X className="w-8 h-8" />
+          </button>
+          <img 
+            src={expandedImage} 
+            alt="Resultado ampliado"
+            className="max-w-full max-h-[90vh] rounded-lg object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+
       <h2 className="text-xl font-semibold text-foreground mb-6">Avaliações dos clientes</h2>
- 
-       {/* Rating Summary */}
+
+      {/* Rating Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 p-5 bg-secondary rounded-lg">
-         {/* Overall Rating */}
+        {/* Overall Rating */}
         <div className="text-center md:border-r border-border">
           <div className="text-4xl font-bold text-foreground">{averageRating}</div>
           <div className="flex justify-center gap-0.5 my-2">
-             {[...Array(5)].map((_, i) => (
-               <Star
-                 key={i}
+            {[...Array(5)].map((_, i) => (
+              <Star
+                key={i}
                 className={`w-4 h-4 ${i < Math.round(averageRating) ? "fill-rating text-rating" : "text-border"}`}
-               />
-             ))}
-           </div>
+              />
+            ))}
+          </div>
           <p className="text-xs text-muted-foreground">{totalReviews} avaliações</p>
-         </div>
- 
-         {/* Rating Distribution */}
+        </div>
+
+        {/* Rating Distribution */}
         <div className="space-y-1.5">
-           {ratingDistribution.map((item) => (
+          {ratingDistribution.map((item) => (
             <div key={item.stars} className="flex items-center gap-2 text-xs">
               <span className="text-muted-foreground w-6 text-right">
                 {item.stars}★
               </span>
               <Progress value={item.percentage} className="flex-1 h-2" />
               <span className="text-muted-foreground w-8">{item.count}</span>
-             </div>
-           ))}
-         </div>
- 
-         {/* CTA */}
-         <div className="flex flex-col items-center justify-center gap-3">
+            </div>
+          ))}
+        </div>
+
+        {/* CTA */}
+        <div className="flex flex-col items-center justify-center gap-3">
           <p className="text-xs text-muted-foreground text-center">Comprou este produto?</p>
           <Button variant="outline" size="sm">Escrever avaliação</Button>
-         </div>
-       </div>
- 
-       {/* Reviews List */}
-       <div className="space-y-6">
+        </div>
+      </div>
+
+      {/* Reviews List */}
+      <div className="space-y-6">
         {reviews.slice(0, visibleReviews).map((review) => (
           <div key={review.id} className="border-b border-border pb-5 last:border-b-0">
             <div className="flex items-start justify-between mb-2">
-               <div>
+              <div>
                 <div className="flex items-center gap-2 mb-0.5">
                   <div className="flex gap-0.5">
-                     {[...Array(5)].map((_, i) => (
-                       <Star
-                         key={i}
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
                         className={`w-3.5 h-3.5 ${i < review.rating ? "fill-rating text-rating" : "text-border"}`}
-                       />
-                     ))}
-                   </div>
-                   {review.verified && (
+                      />
+                    ))}
+                  </div>
+                  {review.verified && (
                     <span className="flex items-center gap-1 text-xs text-primary">
                       <CheckCircle className="w-3 h-3" />
                       Compra Verificada
-                     </span>
-                   )}
-                 </div>
+                    </span>
+                  )}
+                </div>
                 <h4 className="font-medium text-foreground text-sm">{review.title}</h4>
-               </div>
+              </div>
               <span className="text-xs text-muted-foreground">{review.date}</span>
-             </div>
- 
+            </div>
+
             <p className="text-sm text-muted-foreground mb-3">{review.content}</p>
 
-            {/* Review image */}
+            {/* Review image thumbnail */}
             {review.image && (
               <div className="mb-3">
-                <img 
-                  src={review.image} 
-                  alt={`Resultado de ${review.author}`}
-                  className="w-full max-w-[280px] h-auto rounded-lg border border-border"
-                />
+                <button 
+                  onClick={() => setExpandedImage(review.image!)}
+                  className="relative group"
+                >
+                  <img 
+                    src={review.image} 
+                    alt={`Resultado de ${review.author}`}
+                    className="w-20 h-20 object-cover rounded-lg border border-border transition-opacity group-hover:opacity-80"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ZoomIn className="w-5 h-5 text-white drop-shadow-lg" />
+                  </div>
+                </button>
               </div>
             )}
 
@@ -339,13 +375,13 @@ const reviews: Review[] = [
               <span className="text-xs text-muted-foreground">{review.author}</span>
               <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
                 <ThumbsUp className="w-3 h-3" />
-                 Útil ({review.helpful})
-               </button>
-             </div>
-           </div>
-         ))}
-       </div>
- 
+                Útil ({review.helpful})
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* Show More/Less Buttons */}
       <div className="flex justify-center gap-3 mt-6">
         {visibleReviews < reviews.length && (
@@ -359,8 +395,8 @@ const reviews: Review[] = [
           </Button>
         )}
       </div>
-     </div>
-   );
- };
- 
- export default ProductReviews;
+    </div>
+  );
+};
+
+export default ProductReviews;

@@ -1,4 +1,5 @@
-import { Star, CheckCircle2, Quote, ThumbsUp } from "lucide-react";
+import { Star, CheckCircle2, Quote, ThumbsUp, X, ZoomIn } from "lucide-react";
+import { useState } from "react";
 import review1 from "@/assets/reviews/review-1.png";
 import review2 from "@/assets/reviews/review-2.png";
 import review3 from "@/assets/reviews/review-3.png";
@@ -69,8 +70,31 @@ const getAvatarColor = (name: string) => {
 };
 
 const CheckoutReviews = () => {
+  const [expandedImage, setExpandedImage] = useState<string | null>(null);
+
   return (
     <div className="space-y-4">
+      {/* Image Modal */}
+      {expandedImage && (
+        <div 
+          className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+          onClick={() => setExpandedImage(null)}
+        >
+          <button 
+            className="absolute top-4 right-4 text-white hover:text-white/80 transition-colors"
+            onClick={() => setExpandedImage(null)}
+          >
+            <X className="w-8 h-8" />
+          </button>
+          <img 
+            src={expandedImage} 
+            alt="Resultado ampliado"
+            className="max-w-full max-h-[90vh] rounded-lg object-contain"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
+
       {/* Summary header */}
       <div className="flex items-center justify-between pb-3 border-b border-border">
         <div>
@@ -133,14 +157,22 @@ const CheckoutReviews = () => {
             {/* Review text */}
             <p className="text-sm text-foreground/80 leading-relaxed">{review.text}</p>
             
-            {/* Review image */}
+            {/* Review image thumbnail */}
             {review.image && (
               <div className="mt-3">
-                <img 
-                  src={review.image} 
-                  alt={`Resultado de ${review.name}`}
-                  className="w-full max-w-[200px] h-auto rounded-lg border border-border/50"
-                />
+                <button 
+                  onClick={() => setExpandedImage(review.image!)}
+                  className="relative group"
+                >
+                  <img 
+                    src={review.image} 
+                    alt={`Resultado de ${review.name}`}
+                    className="w-16 h-16 object-cover rounded-lg border border-border/50 transition-opacity group-hover:opacity-80"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ZoomIn className="w-5 h-5 text-white drop-shadow-lg" />
+                  </div>
+                </button>
               </div>
             )}
             
