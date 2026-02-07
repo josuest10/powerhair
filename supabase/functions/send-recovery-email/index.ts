@@ -33,8 +33,13 @@ serve(async (req) => {
     const formattedAmount = (amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     const firstName = customerName.split(' ')[0];
 
-    // Generate a new checkout URL with the customer's info pre-filled
-    const checkoutUrl = `https://powerhair.lovable.app/checkout`;
+    // Generate a new checkout URL with coupon code
+    const couponCode = "VOLTEI10";
+    const checkoutUrl = `https://powerhair.lovable.app/checkout?cupom=${couponCode}`;
+    
+    // Calculate discounted price (10% off)
+    const discountedAmount = amount * 0.90;
+    const formattedDiscountedAmount = (discountedAmount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
     const emailHtml = `
 <!DOCTYPE html>
@@ -72,14 +77,26 @@ serve(async (req) => {
                 Não se preocupe! Separamos seu kit e você ainda pode garantir sua compra com o <strong>mesmo desconto especial</strong>:
               </p>
               
+              <!-- Coupon Box -->
+              <table role="presentation" style="width: 100%; margin-bottom: 24px;">
+                <tr>
+                  <td style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); padding: 16px; border-radius: 12px; text-align: center;">
+                    <p style="margin: 0 0 4px 0; font-size: 12px; color: rgba(255,255,255,0.9); text-transform: uppercase; letter-spacing: 1px;">🎁 Cupom exclusivo de recuperação</p>
+                    <p style="margin: 0; font-size: 28px; font-weight: bold; color: #ffffff; letter-spacing: 3px; font-family: monospace;">${couponCode}</p>
+                    <p style="margin: 8px 0 0 0; font-size: 14px; color: #FEF3C7; font-weight: bold;">10% OFF adicional no seu pedido!</p>
+                  </td>
+                </tr>
+              </table>
+              
               <!-- Price Box -->
               <table role="presentation" style="width: 100%; margin-bottom: 24px;">
                 <tr>
                   <td style="background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%); padding: 24px; border-radius: 12px; text-align: center;">
-                    <p style="margin: 0 0 4px 0; font-size: 14px; color: rgba(255,255,255,0.9);">Valor especial reservado:</p>
+                    <p style="margin: 0 0 4px 0; font-size: 14px; color: rgba(255,255,255,0.9);">Valor especial com cupom:</p>
                     <p style="margin: 0 0 4px 0; font-size: 16px; color: rgba(255,255,255,0.7); text-decoration: line-through;">De R$ 149,00</p>
-                    <p style="margin: 0; font-size: 36px; font-weight: bold; color: #ffffff;">${formattedAmount}</p>
-                    <p style="margin: 8px 0 0 0; font-size: 14px; color: #4ADE80; font-weight: bold;">Você economiza R$ 69,10! 🎉</p>
+                    <p style="margin: 0 0 4px 0; font-size: 14px; color: rgba(255,255,255,0.5); text-decoration: line-through;">${formattedAmount}</p>
+                    <p style="margin: 0; font-size: 36px; font-weight: bold; color: #ffffff;">${formattedDiscountedAmount}</p>
+                    <p style="margin: 8px 0 0 0; font-size: 14px; color: #4ADE80; font-weight: bold;">Economia total de R$ 77,09! 🎉</p>
                     <p style="margin: 8px 0 0 0; font-size: 12px; color: rgba(255,255,255,0.8);">+ Frete Grátis + Brinde Exclusivo 🎁</p>
                   </td>
                 </tr>

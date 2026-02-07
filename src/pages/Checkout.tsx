@@ -66,8 +66,10 @@ import {
  
  type CheckoutFormData = z.infer<typeof checkoutSchema>;
  
- // Check for preview mode via URL param
- const isPreviewMode = new URLSearchParams(window.location.search).get('preview') === 'pix';
+  // Check for preview mode and coupon via URL params
+  const urlParams = new URLSearchParams(window.location.search);
+  const isPreviewMode = urlParams.get('preview') === 'pix';
+  const urlCoupon = urlParams.get('cupom')?.toUpperCase();
  
  const Checkout = () => {
    const { toast } = useToast();
@@ -87,9 +89,14 @@ import {
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const timerRef = useRef<number | null>(null);
    const pollingRef = useRef<number | null>(null);
-  const [paymentStatus, setPaymentStatus] = useState<"waiting" | "checking" | "paid">("waiting");
-  const [selectedShipping, setSelectedShipping] = useState<"free" | "sedex" | "pac">("free");
-  const [showShippingOptions, setShowShippingOptions] = useState(false);
+   const [paymentStatus, setPaymentStatus] = useState<"waiting" | "checking" | "paid">("waiting");
+   const [selectedShipping, setSelectedShipping] = useState<"free" | "sedex" | "pac">("free");
+   const [showShippingOptions, setShowShippingOptions] = useState(false);
+   
+   // Coupon state
+   const [couponCode, setCouponCode] = useState(urlCoupon || "");
+   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(urlCoupon === "VOLTEI10" ? "VOLTEI10" : null);
+   const [couponError, setCouponError] = useState<string | null>(null);
 
   const shippingOptions = {
     free: { label: "Frete Grátis", price: 0, days: "5 a 9 dias úteis" },
@@ -97,12 +104,40 @@ import {
     pac: { label: "PAC", price: 15.30, days: "7 a 10 dias úteis" },
   };
 
-  const originalPrice = 149.0;
-  const productPrice = 79.90;
-  const shippingPrice = shippingOptions[selectedShipping].price;
-  const subtotalWithShipping = productPrice + shippingPrice;
-  const pixDiscount = subtotalWithShipping * 0.05;
-  const finalPrice = subtotalWithShipping - pixDiscount;
+   const originalPrice = 149.0;
+   const productPrice = 79.90;
+   const shippingPrice = shippingOptions[selectedShipping].price;
+   const subtotalWithShipping = productPrice + shippingPrice;
+   
+   // Apply coupon discount (10% off) before PIX discount
+   const couponDiscount = appliedCoupon === "VOLTEI10" ? subtotalWithShipping * 0.10 : 0;
+   const priceAfterCoupon = subtotalWithShipping - couponDiscount;
+   
+   const pixDiscount = priceAfterCoupon * 0.05;
+   const finalPrice = priceAfterCoupon - pixDiscount;
+   
+   // Function to apply coupon
+   const applyCoupon = () => {
+     setCouponError(null);
+     const code = couponCode.trim().toUpperCase();
+     
+     if (!code) {
+       setCouponError("Digite um código de cupom");
+       return;
+     }
+     
+     if (code === "VOLTEI10") {
+       setAppliedCoupon("VOLTEI10");
+       setCouponCode("");
+     } else {
+       setCouponError("Cupom inválido ou expirado");
+     }
+   };
+   
+   const removeCoupon = () => {
+     setAppliedCoupon(null);
+     setCouponError(null);
+   };
  
    const {
      register,
@@ -726,6 +761,59 @@ import {
 
               {/* Summary and Submit */}
               <div className="bg-gradient-to-b from-card to-secondary/30 border-2 border-primary/20 rounded-2xl p-5 transition-all duration-300 shadow-lg animate-fade-in" style={{ animationDelay: '300ms' }}>
+                {/* Coupon Section */}
+                <div className="mb-4 pb-4 border-b border-border">
+                  <h3 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+                    <Gift className="w-4 h-4 text-primary" />
+                    Cupom de Desconto
+                  </h3>
+                  
+                  {appliedCoupon ? (
+                    <div className="flex items-center justify-between p-3 bg-primary/10 border border-primary/30 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-primary" />
+                        <span className="text-sm font-medium text-primary">{appliedCoupon}</span>
+                        <span className="text-xs text-muted-foreground">(-10%)</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={removeCoupon}
+                        className="text-xs text-destructive hover:underline"
+                      >
+                        Remover
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <div className="flex gap-2">
+                        <Input
+                          placeholder="Digite seu cupom"
+                          value={couponCode}
+                          onChange={(e) => {
+                            setCouponCode(e.target.value.toUpperCase());
+                            setCouponError(null);
+                          }}
+                          className="flex-1 text-sm uppercase"
+                        />
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={applyCoupon}
+                          className="px-4"
+                        >
+                          Aplicar
+                        </Button>
+                      </div>
+                      {couponError && (
+                        <p className="text-xs text-destructive flex items-center gap-1">
+                          <AlertCircle className="w-3 h-3" />
+                          {couponError}
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </div>
+                
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <span>Subtotal</span>
@@ -737,6 +825,15 @@ import {
                       {shippingPrice === 0 ? "Grátis" : `R$ ${shippingPrice.toFixed(2).replace(".", ",")}`}
                     </span>
                   </div>
+                  {appliedCoupon && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-primary font-medium flex items-center gap-1">
+                        <Gift className="w-3.5 h-3.5" />
+                        Cupom {appliedCoupon} (10%)
+                      </span>
+                      <span className="text-primary font-semibold">- R$ {couponDiscount.toFixed(2).replace(".", ",")}</span>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-primary font-medium flex items-center gap-1">
                       <CreditCard className="w-3.5 h-3.5" />
