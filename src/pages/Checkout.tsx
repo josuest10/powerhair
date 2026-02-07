@@ -882,13 +882,6 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                       <span className="text-primary font-semibold">- R$ {couponDiscount.toFixed(2).replace(".", ",")}</span>
                     </div>
                   )}
-                  <div className="flex items-center justify-between text-sm py-1">
-                    <span className="text-primary font-medium flex items-center gap-1.5">
-                      <CreditCard className="w-4 h-4" />
-                      Desconto PIX (5%)
-                    </span>
-                    <span className="text-primary font-semibold">- R$ {pixDiscount.toFixed(2).replace(".", ",")}</span>
-                  </div>
                 </div>
                 
                 {/* Total */}
