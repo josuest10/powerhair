@@ -17,7 +17,7 @@ const DeliveryInfo = () => {
           <section className="space-y-3">
             <h2 className="text-xl font-semibold text-foreground">Modalidades de Frete</h2>
             <p>
-              Oferecemos três opções de entrega para você escolher a que melhor atende suas necessidades:
+              Oferecemos duas opções de entrega para você escolher a que melhor atende suas necessidades:
             </p>
             
             <div className="space-y-4">
