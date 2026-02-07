@@ -850,59 +850,64 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                   </details>
                 )}
                 
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center justify-between text-sm">
+                {/* Price breakdown */}
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center justify-between text-sm py-1">
                     <span className="text-muted-foreground">Preço original</span>
                     <span className="text-muted-foreground line-through">R$ {originalPrice.toFixed(2).replace(".", ",")}</span>
                   </div>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>Subtotal</span>
-                    <span>R$ {productPrice.toFixed(2).replace(".", ",")}</span>
+                  <div className="flex items-center justify-between text-sm py-1">
+                    <span className="text-muted-foreground">Subtotal</span>
+                    <span className="text-muted-foreground">R$ {productPrice.toFixed(2).replace(".", ",")}</span>
                   </div>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground">
-                    <span>Frete ({shippingOptions[selectedShipping].label})</span>
-                    <span className={shippingPrice === 0 ? "text-primary font-medium" : ""}>
+                  <div className="flex items-center justify-between text-sm py-1">
+                    <span className="text-muted-foreground">Frete ({shippingOptions[selectedShipping].label})</span>
+                    <span className={shippingPrice === 0 ? "text-primary font-medium" : "text-muted-foreground"}>
                       {shippingPrice === 0 ? "Grátis" : `R$ ${shippingPrice.toFixed(2).replace(".", ",")}`}
                     </span>
                   </div>
                   {appliedCoupon && (
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-primary font-medium flex items-center gap-1">
-                        <Gift className="w-3.5 h-3.5" />
+                    <div className="flex items-center justify-between text-sm py-1">
+                      <span className="text-primary font-medium flex items-center gap-1.5">
+                        <Gift className="w-4 h-4" />
                         Cupom {appliedCoupon} (10%)
                       </span>
                       <span className="text-primary font-semibold">- R$ {couponDiscount.toFixed(2).replace(".", ",")}</span>
                     </div>
                   )}
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-primary font-medium flex items-center gap-1">
-                      <CreditCard className="w-3.5 h-3.5" />
+                  <div className="flex items-center justify-between text-sm py-1">
+                    <span className="text-primary font-medium flex items-center gap-1.5">
+                      <CreditCard className="w-4 h-4" />
                       Desconto PIX (5%)
                     </span>
                     <span className="text-primary font-semibold">- R$ {pixDiscount.toFixed(2).replace(".", ",")}</span>
                   </div>
-                  <div className="flex items-center justify-between pt-3 mt-2 border-t-2 border-dashed border-primary/30">
-                    <span className="text-base font-semibold text-foreground">Total</span>
-                    <div className="text-right">
-                      <span className="text-3xl font-bold text-primary">R$ {finalPrice.toFixed(2).replace(".", ",")}</span>
-                      <p className="text-xs text-muted-foreground">à vista no PIX</p>
-                    </div>
+                </div>
+                
+                {/* Total */}
+                <div className="flex items-center justify-between py-4 mb-6 border-y-2 border-dashed border-primary/30">
+                  <span className="text-lg font-semibold text-foreground">Total</span>
+                  <div className="text-right">
+                    <span className="text-3xl font-bold text-primary">R$ {finalPrice.toFixed(2).replace(".", ",")}</span>
+                    <p className="text-xs text-muted-foreground mt-0.5">à vista no PIX</p>
                   </div>
                 </div>
                 
-                {/* Savings highlight - makes deal feel unmissable */}
-                <SavingsHighlight 
-                  originalPrice={originalPrice} 
-                  finalPrice={finalPrice} 
-                  couponApplied={!!appliedCoupon} 
-                />
+                {/* Savings highlight */}
+                <div className="mb-6">
+                  <SavingsHighlight 
+                    originalPrice={originalPrice} 
+                    finalPrice={finalPrice} 
+                    couponApplied={!!appliedCoupon} 
+                  />
+                </div>
                 
+                {/* Submit button */}
                 <Button 
                   type="submit" 
                   className="w-full h-14 text-lg font-bold transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] bg-gradient-to-r from-primary to-primary/90 shadow-lg shadow-primary/30 relative overflow-hidden group" 
                   disabled={isSubmitting}
                 >
-                  {/* Shine effect */}
                   <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                   
                   {isSubmitting ? (
@@ -918,11 +923,13 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                   )}
                 </Button>
                 
-                {/* Security badges below button */}
-                <SecurityBadges />
+                {/* Security badges */}
+                <div className="mt-6">
+                  <SecurityBadges />
+                </div>
                 
                 {paymentError && (
-                  <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg mt-3">
+                  <div className="flex items-center gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg mt-4">
                     <AlertCircle className="w-4 h-4 text-destructive flex-shrink-0" />
                     <p className="text-sm text-destructive">{paymentError}</p>
                   </div>
