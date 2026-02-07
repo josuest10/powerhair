@@ -493,77 +493,80 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
            {/* Urgency Timer */}
            <OfferCountdown />
            
-           {/* Order Summary - Top */}
-           <div className="bg-card border-2 border-primary/20 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-lg shadow-md">
-             <div className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 border-b border-primary/10">
+           {/* Order Summary - Collapsible */}
+           <details className="bg-card border-2 border-primary/20 rounded-2xl overflow-hidden transition-all duration-300 shadow-md group" open>
+             <summary className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 cursor-pointer list-none flex items-center justify-between">
                <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
                  <Gift className="w-4 h-4 text-primary" />
                  Seu Pedido Especial
                </h2>
-             </div>
+               <svg className="w-5 h-5 text-muted-foreground transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+               </svg>
+             </summary>
               
-              <div className="p-4 space-y-4">
-                {/* Kit Items */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
-                      <img
-                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg"
-                        alt="Shampoo SOS"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">Shampoo SOS Crescimento</p>
-                      <p className="text-xs text-muted-foreground">300ml</p>
-                    </div>
-                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
-                      <img
-                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg"
-                        alt="Tônico SOS"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">Tônico Fortalecedor SOS</p>
-                      <p className="text-xs text-muted-foreground">100ml</p>
-                    </div>
-                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                  </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
-                      <img
-                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg"
-                        alt="Máscara SOS"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">Máscara SOS Crescimento</p>
-                      <p className="text-xs text-muted-foreground">300g</p>
-                    </div>
-                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                  </div>
-                  
-                  {/* Brinde Extra */}
-                  <div className="flex items-center gap-3 p-2 bg-primary/5 rounded-lg border border-primary/20">
-                    <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0">
-                      <Gift className="w-7 h-7 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-primary">🎁 BRINDE EXCLUSIVO</p>
-                      <p className="text-xs text-muted-foreground">Pente Massageador para Couro Cabeludo</p>
-                    </div>
-                    <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">GRÁTIS</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+             <div className="p-4 space-y-4">
+               {/* Kit Items */}
+               <div className="space-y-3">
+                 <div className="flex items-center gap-3">
+                   <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+                     <img
+                       src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg"
+                       alt="Shampoo SOS"
+                       className="w-full h-full object-contain"
+                     />
+                   </div>
+                   <div className="flex-1 min-w-0">
+                     <p className="text-sm font-medium text-foreground">Shampoo SOS Crescimento</p>
+                     <p className="text-xs text-muted-foreground">300ml</p>
+                   </div>
+                   <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                 </div>
+                 
+                 <div className="flex items-center gap-3">
+                   <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+                     <img
+                       src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg"
+                       alt="Tônico SOS"
+                       className="w-full h-full object-contain"
+                     />
+                   </div>
+                   <div className="flex-1 min-w-0">
+                     <p className="text-sm font-medium text-foreground">Tônico Fortalecedor SOS</p>
+                     <p className="text-xs text-muted-foreground">100ml</p>
+                   </div>
+                   <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                 </div>
+                 
+                 <div className="flex items-center gap-3">
+                   <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+                     <img
+                       src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg"
+                       alt="Máscara SOS"
+                       className="w-full h-full object-contain"
+                     />
+                   </div>
+                   <div className="flex-1 min-w-0">
+                     <p className="text-sm font-medium text-foreground">Máscara SOS Crescimento</p>
+                     <p className="text-xs text-muted-foreground">300g</p>
+                   </div>
+                   <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                 </div>
+                 
+                 {/* Brinde Extra */}
+                 <div className="flex items-center gap-3 p-2 bg-primary/5 rounded-lg border border-primary/20">
+                   <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0">
+                     <Gift className="w-7 h-7 text-primary" />
+                   </div>
+                   <div className="flex-1 min-w-0">
+                     <p className="text-sm font-medium text-primary">🎁 BRINDE EXCLUSIVO</p>
+                     <p className="text-xs text-muted-foreground">Pente Massageador para Couro Cabeludo</p>
+                   </div>
+                   <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">GRÁTIS</span>
+                 </div>
+               </div>
+             </div>
+           </details>
  
             {/* Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
