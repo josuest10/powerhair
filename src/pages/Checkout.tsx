@@ -886,36 +886,33 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                   </div>
                 </div>
                 
-                {/* Desktop CTA - Hidden on mobile since we have sticky CTA */}
-                <div className="hidden lg:block">
-                  <Button 
-                    type="submit" 
-                    className="w-full h-14 text-lg font-bold transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] bg-gradient-to-r from-primary to-primary/90 shadow-lg shadow-primary/30" 
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                        Gerando PIX...
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="w-5 h-5 mr-2" />
-                        FINALIZAR COMPRA
-                      </>
-                    )}
-                  </Button>
-                  
-                  {/* Security badges under button */}
-                  <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
-                    <div className="flex items-center gap-1">
-                      <Shield className="w-4 h-4 text-primary" />
-                      <span>Pagamento Seguro</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Lock className="w-4 h-4 text-primary" />
-                      <span>Dados Criptografados</span>
-                    </div>
+                <Button 
+                  type="submit" 
+                  className="w-full h-14 text-lg font-bold transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] bg-gradient-to-r from-primary to-primary/90 shadow-lg shadow-primary/30" 
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Gerando PIX...
+                    </>
+                  ) : (
+                    <>
+                      <Lock className="w-5 h-5 mr-2" />
+                      FINALIZAR COMPRA
+                    </>
+                  )}
+                </Button>
+                
+                {/* Security badges under button */}
+                <div className="flex items-center justify-center gap-4 mt-4 text-xs text-muted-foreground">
+                  <div className="flex items-center gap-1">
+                    <Shield className="w-4 h-4 text-primary" />
+                    <span>Pagamento Seguro</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Lock className="w-4 h-4 text-primary" />
+                    <span>Dados Criptografados</span>
                   </div>
                 </div>
                 
@@ -941,17 +938,7 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                 <CheckoutReviews />
               </div>
               
-              {/* Spacer for sticky CTA on mobile */}
-              <div className="h-32 lg:hidden" />
            </form>
-           
-           {/* Sticky CTA for Mobile */}
-           <StickyCheckoutCTA 
-             finalPrice={finalPrice}
-             originalPrice={originalPrice}
-             isSubmitting={isSubmitting}
-             onSubmit={handleSubmit(onSubmit)}
-           />
           </div>
         )}
 
