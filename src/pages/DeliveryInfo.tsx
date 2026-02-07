@@ -32,12 +32,6 @@ const DeliveryInfo = () => {
                 <p className="text-sm">Prazo: 3 a 5 dias úteis</p>
                 <p className="text-sm">Valor: R$ 12,49</p>
               </div>
-              
-              <div className="border border-border rounded-lg p-4">
-                <h3 className="font-semibold text-foreground">PAC</h3>
-                <p className="text-sm">Prazo: 7 a 10 dias úteis</p>
-                <p className="text-sm">Valor: R$ 15,30</p>
-              </div>
             </div>
           </section>
 
