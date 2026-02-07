@@ -850,6 +850,10 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                 )}
                 
                 <div className="space-y-2 mb-4">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Preço original</span>
+                    <span className="text-muted-foreground line-through">R$ {originalPrice.toFixed(2).replace(".", ",")}</span>
+                  </div>
                   <div className="flex items-center justify-between text-sm text-muted-foreground">
                     <span>Subtotal</span>
                     <span>R$ {productPrice.toFixed(2).replace(".", ",")}</span>
