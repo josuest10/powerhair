@@ -28,18 +28,19 @@ const ProductDescription = () => {
         Sobre o Kit SOS Crescimento
       </h2>
       
-      {/* Benefits - design minimalista */}
+      {/* Benefits - design minimalista com animações */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-10">
         {benefits.map((benefit, index) => (
           <div 
             key={index}
-            className={`flex flex-col items-center text-center gap-3 p-4 rounded-xl border transition-all ${
+            className={`flex flex-col items-center text-center gap-3 p-4 rounded-xl border transition-all duration-300 hover:scale-105 hover:shadow-lg animate-fade-in ${
               benefit.highlight 
-                ? 'border-primary/50 bg-primary/5' 
-                : 'border-border bg-card hover:border-muted-foreground/20'
+                ? 'border-primary/50 bg-primary/5 hover:border-primary hover:shadow-primary/20' 
+                : 'border-border bg-card hover:border-muted-foreground/30 hover:shadow-muted/30'
             }`}
+            style={{ animationDelay: `${index * 100}ms` }}
           >
-            <div className={`w-11 h-11 rounded-full flex items-center justify-center ${
+            <div className={`w-11 h-11 rounded-full flex items-center justify-center transition-transform duration-300 group-hover:scale-110 ${
               benefit.highlight ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
             }`}>
               <benefit.icon className="w-5 h-5" />
