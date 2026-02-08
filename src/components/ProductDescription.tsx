@@ -41,19 +41,79 @@ const ProductDescription = () => {
        </div>
  
        {/* Description text */}
-       <div className={`space-y-4 text-muted-foreground ${!isExpanded ? "line-clamp-4" : ""}`}>
-         <p>
-          O <strong className="text-foreground">Kit SOS Crescimento</strong> da Lizzante Profissional é a solução completa para quem deseja acelerar o crescimento dos fios e combater a queda capilar. Com tratamento fitoterápico natural, este kit promove uma limpeza eficiente e estimula o crescimento saudável e acelerado dos fios, além de auxiliar no tratamento de alopecia.
-         </p>
-         <p>
-          O <strong className="text-foreground">Shampoo SOS Crescimento 300ml</strong> promove uma limpeza profunda ao perímetro capilar e auxilia no fortalecimento e crescimento dos cabelos. Suas propriedades contam com uma ação altamente antioxidante, capaz de retardar os danos provocados por radicais livres e proporcionar o rejuvenescimento dos fios.
-         </p>
-         <p>
-          A <strong className="text-foreground">Máscara SOS Crescimento 300g</strong> dá mais força e resistência para os fios danificados, eliminando a queda excessiva e a quebra dos fios. O produto atua nas camadas mais profundas da fibra para oferecer uma nutrição intensa, capaz de recuperar o semblante macio, luminoso e saudável dos cabelos.
-         </p>
-         <p>
-          O <strong className="text-foreground">Tônico SOS Crescimento 100ml</strong> é um super fortalecedor da raiz e dos fios, auxiliando no crescimento acelerado e combatendo a queda e a quebra capilar. Eleva a atividade metabólica estimulando os folículos e a circulação sanguínea, revitalizando por completo os fios capilares. Poderoso antioxidante, reduz a oleosidade e regenera o couro cabeludo.
-         </p>
+        <div className={`space-y-6 text-muted-foreground ${!isExpanded ? "line-clamp-4" : ""}`}>
+          {/* Intro destaque */}
+          <div className="text-base leading-relaxed">
+            <p>
+              O <strong className="text-foreground">Kit SOS Crescimento</strong> é a solução completa para <span className="text-primary font-medium">acelerar o crescimento</span> e <span className="text-primary font-medium">combater a queda</span>. Tratamento 100% fitoterápico.
+            </p>
+          </div>
+
+          {/* Cards dos produtos */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-4 bg-secondary/50 rounded-xl border border-border/50">
+              <div className="flex items-center gap-2 mb-2">
+                <Droplets className="w-5 h-5 text-primary" />
+                <h4 className="font-semibold text-foreground text-sm">Shampoo 300ml</h4>
+              </div>
+              <ul className="space-y-1 text-sm">
+                <li className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Limpeza profunda do couro</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Ação antioxidante</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Rejuvenescimento dos fios</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="p-4 bg-secondary/50 rounded-xl border border-border/50">
+              <div className="flex items-center gap-2 mb-2">
+                <Heart className="w-5 h-5 text-primary" />
+                <h4 className="font-semibold text-foreground text-sm">Máscara 300g</h4>
+              </div>
+              <ul className="space-y-1 text-sm">
+                <li className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Força e resistência</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Nutrição profunda</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Recupera maciez e brilho</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="p-4 bg-primary/5 rounded-xl border-2 border-primary/30">
+              <div className="flex items-center gap-2 mb-2">
+                <Sparkles className="w-5 h-5 text-primary" />
+                <h4 className="font-semibold text-foreground text-sm">Tônico 100ml ⭐</h4>
+              </div>
+              <ul className="space-y-1 text-sm">
+                <li className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Fortalece a raiz</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Estimula crescimento</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-3.5 h-3.5 text-primary mt-0.5 flex-shrink-0" />
+                  <span>Reduz oleosidade</span>
+                </li>
+              </ul>
+            </div>
+          </div>
  
          {isExpanded && (
            <>
