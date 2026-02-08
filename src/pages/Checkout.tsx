@@ -450,10 +450,12 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
       return;
     }
     
+    // Pass transactionId for Meta/TikTok deduplication
     navigate('/obrigado', {
       state: {
         orderId: pixData?.transactionId ? `PWH${pixData.transactionId.toString().slice(-8)}` : undefined,
         amount: finalPrice,
+        transactionId: pixData?.transactionId, // Critical for pixel tracking deduplication
       }
     });
    };
