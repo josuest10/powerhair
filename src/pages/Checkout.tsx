@@ -453,13 +453,25 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
     
     // Pass transactionId + customer data for Meta/TikTok deduplication and advanced matching
     const formData = getValues();
+    
+    // Parse name into first and last name for Meta Advanced Matching
+    const nameParts = formData.name?.trim().split(/\s+/) || [];
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+    
     navigate('/obrigado', {
       state: {
         orderId: pixData?.transactionId ? `PWH${pixData.transactionId.toString().slice(-8)}` : undefined,
         amount: finalPrice,
         transactionId: pixData?.transactionId, // Critical for pixel tracking deduplication
+        // User data for Meta Advanced Matching (90%+ match rate)
         email: formData.email,
         phone: formData.phone,
+        firstName,
+        lastName,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.cep,
       }
     });
    };
