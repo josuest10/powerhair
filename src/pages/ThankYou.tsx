@@ -33,9 +33,15 @@ const PowerHairLogo = () => (
 interface OrderDetails {
   orderId: string;
   amount: number;
-  transactionId?: string; // Full transaction ID for Meta deduplication
+  transactionId?: string;
+  // User data for Meta Advanced Matching
   email?: string;
   phone?: string;
+  firstName?: string;
+  lastName?: string;
+  city?: string;
+  state?: string;
+  zipCode?: string;
 }
 
 const ThankYou = () => {
@@ -44,21 +50,18 @@ const ThankYou = () => {
   const hasTracked = useRef(false);
 
   const orderId = orderDetails?.orderId || `PWH${Date.now().toString().slice(-8)}`;
-  const amount = orderDetails?.amount || 79.90; // Preço PIX sem desconto adicional
-  const transactionId = orderDetails?.transactionId; // Full ID for deduplication
-  const email = orderDetails?.email;
-  const phone = orderDetails?.phone;
+  const amount = orderDetails?.amount || 79.90;
+  const transactionId = orderDetails?.transactionId;
 
-  // Track Purchase events when page loads (single source of truth for conversions)
+  // Track Purchase events when page loads
   useEffect(() => {
     if (hasTracked.current) return;
     hasTracked.current = true;
 
-    // Generate consistent event_id for deduplication with server-side CAPI
-    // Using UUID format for proper Meta deduplication
+    // Generate consistent event_id for deduplication
     const eventId = `purchase_${transactionId || orderId}_${Date.now()}`;
 
-    // Meta Pixel Purchase (async - fires browser pixel + calls server-side CAPI)
+    // Meta Pixel Purchase with full Advanced Matching data
     trackMetaPurchase({
       value: amount,
       currency: 'BRL',
@@ -67,15 +70,29 @@ const ThankYou = () => {
       num_items: 1,
       order_id: transactionId || orderId,
       event_id: eventId,
-      email: email,
-      phone: phone,
+      // Full user data for 90%+ Advanced Matching
+      email: orderDetails?.email,
+      phone: orderDetails?.phone,
+      firstName: orderDetails?.firstName,
+      lastName: orderDetails?.lastName,
+      city: orderDetails?.city,
+      state: orderDetails?.state,
+      zipCode: orderDetails?.zipCode,
+      country: 'br',
       // Uncomment to test in Meta Events Manager:
       // test_event_code: 'TEST12345',
     }).then(({ event_id }) => {
-      console.log('ThankYou: Meta Purchase tracked', { order_id: transactionId || orderId, event_id });
+      console.log('ThankYou: Meta Purchase tracked with Advanced Matching', { 
+        order_id: transactionId || orderId, 
+        event_id,
+        has_email: !!orderDetails?.email,
+        has_phone: !!orderDetails?.phone,
+        has_name: !!(orderDetails?.firstName || orderDetails?.lastName),
+        has_address: !!(orderDetails?.city || orderDetails?.state || orderDetails?.zipCode),
+      });
     });
 
-    // TikTok Pixel CompletePayment (with event_id for server-side deduplication)
+    // TikTok Pixel CompletePayment
     trackCompletePayment({
       value: amount,
       currency: 'BRL',
@@ -89,7 +106,7 @@ const ThankYou = () => {
     clearUTMParams();
 
     console.log('ThankYou: Purchase tracked (Meta + TikTok)', { orderId, amount, eventId });
-  }, [amount, orderId, transactionId, email, phone]);
+  }, [amount, orderId, transactionId, orderDetails]);
  
    return (
      <div className="min-h-screen bg-background">

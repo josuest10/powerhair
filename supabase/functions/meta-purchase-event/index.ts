@@ -11,31 +11,78 @@ interface PurchaseEventRequest {
   event_id: string;
   value: number;
   currency?: string;
+  // User data for Advanced Matching
   email?: string;
   phone?: string;
-  fbp?: string;  // _fbp cookie
-  fbc?: string;  // _fbc cookie
+  first_name?: string;
+  last_name?: string;
+  city?: string;
+  state?: string;
+  zip_code?: string;
+  country?: string;
+  // Meta cookies
+  fbp?: string;
+  fbc?: string;
   client_user_agent?: string;
-  test_event_code?: string; // For Meta Events Manager test mode
+  test_event_code?: string;
 }
 
-// SHA256 hash function for user data
+/**
+ * Remove accents and diacritics from a string
+ */
+function removeAccents(str: string): string {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
+/**
+ * Normalize a string for Meta: trim, lowercase, remove accents
+ */
+function normalizeString(value: string | undefined | null): string | null {
+  if (!value || value.trim() === '') return null;
+  return removeAccents(value.trim().toLowerCase());
+}
+
+/**
+ * Normalize phone number: digits only with Brazil country code
+ */
+function normalizePhone(phone: string | undefined | null): string | null {
+  if (!phone) return null;
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 0) return null;
+  // Add Brazil country code if not present
+  if (digits.length === 10 || digits.length === 11) {
+    return `55${digits}`;
+  }
+  // If already has country code or other format, return as is
+  return digits;
+}
+
+/**
+ * Normalize zip code: digits only
+ */
+function normalizeZipCode(zip: string | undefined | null): string | null {
+  if (!zip) return null;
+  const digits = zip.replace(/\D/g, '');
+  return digits.length > 0 ? digits : null;
+}
+
+/**
+ * SHA256 hash function for user data
+ */
 async function sha256Hash(value: string): Promise<string> {
   const encoder = new TextEncoder();
-  const data = encoder.encode(value.toLowerCase().trim());
+  const data = encoder.encode(value);
   const hashBuffer = await crypto.subtle.digest('SHA-256', data);
   const hashArray = Array.from(new Uint8Array(hashBuffer));
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// Normalize phone number for Brazil
-function normalizePhone(phone: string): string {
-  const digits = phone.replace(/\D/g, '');
-  // Add Brazil country code if not present
-  if (digits.length === 11 || digits.length === 10) {
-    return `55${digits}`;
-  }
-  return digits;
+/**
+ * Hash a normalized value if it exists
+ */
+async function hashIfPresent(value: string | null): Promise<string | undefined> {
+  if (!value) return undefined;
+  return await sha256Hash(value);
 }
 
 serve(async (req) => {
@@ -81,6 +128,13 @@ serve(async (req) => {
       has_fbc: !!body.fbc,
       has_email: !!body.email,
       has_phone: !!body.phone,
+      has_first_name: !!body.first_name,
+      has_last_name: !!body.last_name,
+      has_city: !!body.city,
+      has_state: !!body.state,
+      has_zip: !!body.zip_code,
+      client_ip: clientIp ? 'present' : 'missing',
+      user_agent: userAgent ? 'present' : 'missing',
       test_mode: !!body.test_event_code,
     });
 
@@ -107,30 +161,44 @@ serve(async (req) => {
       );
     }
 
-    // Prepare user data with hashing
-    const userData: Record<string, unknown> = {
-      country: ['br'],
-    };
+    // Normalize all user data
+    const normalizedEmail = normalizeString(body.email);
+    const normalizedPhone = normalizePhone(body.phone);
+    const normalizedFirstName = normalizeString(body.first_name);
+    const normalizedLastName = normalizeString(body.last_name);
+    const normalizedCity = normalizeString(body.city);
+    const normalizedState = normalizeString(body.state);
+    const normalizedZip = normalizeZipCode(body.zip_code);
+    const normalizedCountry = normalizeString(body.country) || 'br';
 
-    // Hash email if provided
-    let emailHash: string | null = null;
-    if (body.email) {
-      emailHash = await sha256Hash(body.email);
-      userData.em = [emailHash];
-    }
+    // Hash all user data fields
+    const [emailHash, phoneHash, fnHash, lnHash, ctHash, stHash, zpHash, countryHash] = await Promise.all([
+      hashIfPresent(normalizedEmail),
+      hashIfPresent(normalizedPhone),
+      hashIfPresent(normalizedFirstName),
+      hashIfPresent(normalizedLastName),
+      hashIfPresent(normalizedCity),
+      hashIfPresent(normalizedState),
+      hashIfPresent(normalizedZip),
+      hashIfPresent(normalizedCountry),
+    ]);
 
-    // Hash phone if provided
-    let phoneHash: string | null = null;
-    if (body.phone) {
-      const normalizedPhone = normalizePhone(body.phone);
-      phoneHash = await sha256Hash(normalizedPhone);
-      userData.ph = [phoneHash];
-    }
-
+    // Build user_data object - only include non-empty fields
+    const userData: Record<string, unknown> = {};
+    
+    if (emailHash) userData.em = [emailHash];
+    if (phoneHash) userData.ph = [phoneHash];
+    if (fnHash) userData.fn = [fnHash];
+    if (lnHash) userData.ln = [lnHash];
+    if (ctHash) userData.ct = [ctHash];
+    if (stHash) userData.st = [stHash];
+    if (zpHash) userData.zp = [zpHash];
+    if (countryHash) userData.country = [countryHash];
+    
     // Add browser IDs (not hashed - they're already unique identifiers)
     if (body.fbp) userData.fbp = body.fbp;
     if (body.fbc) userData.fbc = body.fbc;
-
+    
     // Add IP and user agent for advanced matching
     if (clientIp) userData.client_ip_address = clientIp;
     if (userAgent) userData.client_user_agent = userAgent;
@@ -138,13 +206,29 @@ serve(async (req) => {
     const eventTime = Math.floor(Date.now() / 1000);
     const pixelId = '1198424312101245';
 
+    // Log normalized values for debugging (not hashes)
+    console.log('📊 Normalized user_data fields:', {
+      email: normalizedEmail ? '✓' : '✗',
+      phone: normalizedPhone ? '✓' : '✗',
+      first_name: normalizedFirstName ? '✓' : '✗',
+      last_name: normalizedLastName ? '✓' : '✗',
+      city: normalizedCity ? '✓' : '✗',
+      state: normalizedState ? '✓' : '✗',
+      zip_code: normalizedZip ? '✓' : '✗',
+      country: normalizedCountry ? '✓' : '✗',
+      fbp: body.fbp ? '✓' : '✗',
+      fbc: body.fbc ? '✓' : '✗',
+      client_ip: clientIp ? '✓' : '✗',
+      client_user_agent: userAgent ? '✓' : '✗',
+    });
+
     // Build the event payload
     const eventPayload: Record<string, unknown> = {
       data: [
         {
           event_name: 'Purchase',
           event_time: eventTime,
-          event_id: body.event_id, // Same as browser for deduplication
+          event_id: body.event_id,
           action_source: 'website',
           user_data: userData,
           custom_data: {
@@ -163,6 +247,7 @@ serve(async (req) => {
     // Add test event code if in test mode
     if (body.test_event_code) {
       eventPayload.test_event_code = body.test_event_code;
+      console.log('🧪 TEST MODE enabled with code:', body.test_event_code);
     }
 
     console.log('📤 Sending Meta CAPI event:', JSON.stringify(eventPayload, null, 2));
@@ -193,8 +278,8 @@ serve(async (req) => {
         fbp: body.fbp || null,
         client_ip: clientIp,
         client_user_agent: userAgent,
-        email_hash: emailHash,
-        phone_hash: phoneHash,
+        email_hash: emailHash || null,
+        phone_hash: phoneHash || null,
         api_response: result,
         test_event_code: body.test_event_code || null,
       });
@@ -216,6 +301,8 @@ serve(async (req) => {
         order_id: body.order_id,
         event_id: body.event_id,
         events_received: result.events_received,
+        fbtrace_id: result.fbtrace_id,
+        user_data_fields: Object.keys(userData).length,
       });
 
       return new Response(
