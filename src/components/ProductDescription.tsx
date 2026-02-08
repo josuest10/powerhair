@@ -12,13 +12,13 @@ const ProductDescription = () => {
   ];
 
   const ingredients = [
-    { name: "Biotina", desc: "Cabelos fortes e espessos" },
-    { name: "Pantenol", desc: "Hidratação profunda" },
-    { name: "Extrato de Bambu", desc: "Vitaminas A, B e C" },
-    { name: "Óleo de Rícino", desc: "Estimula crescimento" },
-    { name: "Keratina", desc: "Reconstrução capilar" },
-    { name: "Extrato de Bardana", desc: "Ação anti-inflamatória" },
-    { name: "Extrato de Café", desc: "Controle da alopecia" },
+    { name: "Biotina", desc: "Fortalece e engrossa os fios", icon: "💪" },
+    { name: "Pantenol", desc: "Hidratação profunda e duradoura", icon: "💧" },
+    { name: "Extrato de Bambu", desc: "Rico em vitaminas A, B e C", icon: "🌿" },
+    { name: "Óleo de Rícino", desc: "Estimula o crescimento capilar", icon: "🌱" },
+    { name: "Keratina", desc: "Reconstrução da fibra capilar", icon: "✨" },
+    { name: "Extrato de Bardana", desc: "Ação anti-inflamatória", icon: "🍃" },
+    { name: "Extrato de Café", desc: "Controle da alopecia", icon: "☕" },
   ];
 
   return (
@@ -146,18 +146,21 @@ const ProductDescription = () => {
               </p>
             </div>
 
-            {/* Ativos - tags simples */}
+            {/* Ativos - grid com descrições */}
             <div>
               <h3 className="text-lg font-semibold text-foreground mb-4">Ativos Poderosos</h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
                 {ingredients.map((ingredient, index) => (
-                  <span 
+                  <div 
                     key={index}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted text-sm text-foreground"
+                    className="flex items-start gap-3 p-3 rounded-lg bg-muted/50 border border-border/50 hover:border-primary/30 transition-colors"
                   >
-                    <Check className="w-3 h-3 text-primary" />
-                    {ingredient.name}
-                  </span>
+                    <span className="text-lg flex-shrink-0">{ingredient.icon}</span>
+                    <div className="min-w-0">
+                      <p className="font-medium text-foreground text-sm">{ingredient.name}</p>
+                      <p className="text-xs text-muted-foreground leading-snug">{ingredient.desc}</p>
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>
