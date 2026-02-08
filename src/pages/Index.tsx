@@ -7,6 +7,7 @@ import ProductInfo from "@/components/ProductInfo";
 import ProductAttributes from "@/components/ProductAttributes";
 import ProductDescription from "@/components/ProductDescription";
 import ProductReviews from "@/components/ProductReviews";
+import ProductFAQ from "@/components/ProductFAQ";
 import Footer from "@/components/Footer";
 import { trackViewContent } from "@/lib/tiktok-pixel";
 import { trackMetaViewContent } from "@/lib/meta-pixel";
@@ -115,9 +116,12 @@ const Index = () => {
          {/* Product Description */}
          <ProductDescription />
  
-         {/* Product Reviews */}
-         <ProductReviews />
-       </main>
+          {/* Product Reviews */}
+          <ProductReviews />
+
+          {/* FAQ Section */}
+          <ProductFAQ />
+        </main>
        
        <Footer />
      </div>

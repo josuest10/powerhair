@@ -1,14 +1,14 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Check, Leaf, Droplets, Sparkles, Zap, Heart, Shield, HelpCircle } from "lucide-react";
+import { ChevronDown, ChevronUp, Check, Leaf, Droplets, Sparkles, Zap, Heart, Shield, Star } from "lucide-react";
 
 const ProductDescription = () => {
   const [isExpanded, setIsExpanded] = useState(true);
 
   const benefits = [
-    { icon: Zap, text: "Crescimento acelerado em 30 dias", highlight: true },
-    { icon: Shield, text: "Combate queda e fortalece", highlight: false },
-    { icon: Droplets, text: "Tratamento fitoterápico natural", highlight: false },
-    { icon: Leaf, text: "Não testado em animais", highlight: false },
+    { icon: Star, text: "Recupere sua autoconfiança", highlight: true },
+    { icon: Zap, text: "Crescimento visível em 30 dias", highlight: false },
+    { icon: Shield, text: "Fios mais fortes e resistentes", highlight: false },
+    { icon: Leaf, text: "100% natural e vegano", highlight: false },
   ];
 
   const ingredients = [
@@ -53,10 +53,18 @@ const ProductDescription = () => {
 
       {/* Description content */}
       <div className={`space-y-8 ${!isExpanded ? "line-clamp-4" : ""}`}>
-        {/* Intro simples */}
-        <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
-          O <strong className="text-foreground">Kit SOS Crescimento</strong> é a solução completa para acelerar o crescimento e combater a queda. Tratamento 100% fitoterápico e natural.
-        </p>
+        {/* Intro focado em autoestima */}
+        <div className="space-y-4">
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            <strong className="text-foreground">Você merece se olhar no espelho e amar o que vê.</strong> Sabemos como a queda de cabelo pode afetar sua autoestima e confiança. O medo de passar a mão nos fios, a insegurança ao sair de casa, a frustração de ver cada vez menos volume...
+          </p>
+          <p className="text-base md:text-lg leading-relaxed text-muted-foreground">
+            O <strong className="text-foreground">Kit SOS Crescimento</strong> foi criado para devolver não apenas seus cabelos, mas sua <strong className="text-foreground">confiança e autoestima</strong>. Com ingredientes 100% naturais e fitoterápicos, nosso tratamento completo ataca a queda na raiz e estimula o crescimento de fios novos, mais fortes e saudáveis.
+          </p>
+          <p className="text-base md:text-lg leading-relaxed text-primary font-medium">
+            ✨ Mais de 10.000 mulheres já recuperaram a confiança com o Kit SOS. Agora é a sua vez.
+          </p>
+        </div>
 
         {/* Cards dos produtos - clean design */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -165,23 +173,6 @@ const ProductDescription = () => {
               </div>
             </div>
 
-            {/* FAQ - clean */}
-            <div className="bg-card border border-border rounded-xl p-6">
-              <h3 className="text-lg font-semibold text-foreground mb-5">Perguntas Frequentes</h3>
-              
-              <div className="space-y-4">
-                {[
-                  { q: "Qual a principal função do kit SOS?", a: "Fortalecer fios fracos, diminuir queda e promover crescimento acelerado com fios mais espessos." },
-                  { q: "Em quanto tempo vejo resultados?", a: "Fortalecimento já na 1ª aplicação. Para crescimento visível, use por no mínimo 30 dias." },
-                  { q: "Serve para homem?", a: "Sim! O kit é unissex e serve para todos os tipos de cabelo." },
-                ].map((item, i) => (
-                  <div key={i} className="pb-4 border-b border-border last:border-0 last:pb-0">
-                    <p className="font-medium text-foreground mb-1">{item.q}</p>
-                    <p className="text-sm text-muted-foreground">{item.a}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
           </>
         )}
       </div>
