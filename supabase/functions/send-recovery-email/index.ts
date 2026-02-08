@@ -96,7 +96,7 @@ serve(async (req) => {
                     <p style="margin: 0 0 4px 0; font-size: 16px; color: rgba(255,255,255,0.7); text-decoration: line-through;">De R$ 149,00</p>
                     <p style="margin: 0 0 4px 0; font-size: 14px; color: rgba(255,255,255,0.5); text-decoration: line-through;">\${formattedAmount}</p>
                     <p style="margin: 0; font-size: 36px; font-weight: bold; color: #ffffff;">\${formattedDiscountedAmount}</p>
-                    <p style="margin: 8px 0 0 0; font-size: 14px; color: #4ADE80; font-weight: bold;">Economia total de R$ 77,09! 🎉</p>
+                    <p style="margin: 8px 0 0 0; font-size: 14px; color: #4ADE80; font-weight: bold;">Economia total de R$ 69,89! 🎉</p>
                     <p style="margin: 8px 0 0 0; font-size: 12px; color: rgba(255,255,255,0.8);">+ Frete Grátis + Brinde Exclusivo 🎁</p>
                   </td>
                 </tr>
