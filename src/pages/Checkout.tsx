@@ -324,20 +324,35 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
              console.log('🎯 Firing client-side purchase events as fallback', { transactionId, value: purchaseValue, eventId });
              
               // Note: Meta Purchase is now tracked ONLY on ThankYou page for reliability
-              // TikTok tracking removed - focusing on Meta only
-              console.log('✅ Payment confirmed, redirecting to thank you page for Meta Purchase tracking');
-            }
-           
-           // Auto redirect after 2 seconds
-           setTimeout(() => {
-              navigate('/obrigado', {
-                state: {
-                  orderId: `PWH${transactionId.toString().slice(-8)}`,
-                  amount: finalPrice,
-                  transactionId: transactionId, // Full transaction ID for Meta deduplication
-                }
-              });
-           }, 2000);
+               // TikTok tracking removed - focusing on Meta only
+               console.log('✅ Payment confirmed, redirecting to thank you page for Meta Purchase tracking');
+             }
+            
+            // Auto redirect after 2 seconds - MUST include user data for Meta Advanced Matching
+            setTimeout(() => {
+               const formData = getValues();
+               
+               // Parse name into first and last name for Meta Advanced Matching
+               const nameParts = formData.name?.trim().split(/\s+/) || [];
+               const firstName = nameParts[0] || '';
+               const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+               
+               navigate('/obrigado', {
+                 state: {
+                   orderId: `PWH${transactionId.toString().slice(-8)}`,
+                   amount: finalPrice,
+                   transactionId: transactionId, // Full transaction ID for Meta deduplication
+                   // User data for Meta Advanced Matching (90%+ match rate)
+                   email: formData.email,
+                   phone: formData.phone,
+                   firstName,
+                   lastName,
+                   city: formData.city,
+                   state: formData.state,
+                   zipCode: formData.cep,
+                 }
+               });
+            }, 2000);
          } else {
            setPaymentStatus("waiting");
          }
