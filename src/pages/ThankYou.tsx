@@ -35,6 +35,7 @@ interface OrderDetails {
   amount: number;
   transactionId?: string; // Full transaction ID for Meta deduplication
   email?: string;
+  phone?: string;
 }
 
 const ThankYou = () => {
@@ -45,6 +46,8 @@ const ThankYou = () => {
   const orderId = orderDetails?.orderId || `PWH${Date.now().toString().slice(-8)}`;
   const amount = orderDetails?.amount || 79.90; // Preço PIX sem desconto adicional
   const transactionId = orderDetails?.transactionId; // Full ID for deduplication
+  const email = orderDetails?.email;
+  const phone = orderDetails?.phone;
 
   // Track Purchase events when page loads (single source of truth for conversions)
   useEffect(() => {
@@ -52,9 +55,10 @@ const ThankYou = () => {
     hasTracked.current = true;
 
     // Generate consistent event_id for deduplication with server-side CAPI
-    const eventId = transactionId ? `purchase_${transactionId}` : `purchase_${orderId}`;
+    // Using UUID format for proper Meta deduplication
+    const eventId = `purchase_${transactionId || orderId}_${Date.now()}`;
 
-    // Meta Pixel Purchase
+    // Meta Pixel Purchase (async - fires browser pixel + calls server-side CAPI)
     trackMetaPurchase({
       value: amount,
       currency: 'BRL',
@@ -63,6 +67,12 @@ const ThankYou = () => {
       num_items: 1,
       order_id: transactionId || orderId,
       event_id: eventId,
+      email: email,
+      phone: phone,
+      // Uncomment to test in Meta Events Manager:
+      // test_event_code: 'TEST12345',
+    }).then(({ event_id }) => {
+      console.log('ThankYou: Meta Purchase tracked', { order_id: transactionId || orderId, event_id });
     });
 
     // TikTok Pixel CompletePayment (with event_id for server-side deduplication)
@@ -79,7 +89,7 @@ const ThankYou = () => {
     clearUTMParams();
 
     console.log('ThankYou: Purchase tracked (Meta + TikTok)', { orderId, amount, eventId });
-  }, [amount, orderId, transactionId]);
+  }, [amount, orderId, transactionId, email, phone]);
  
    return (
      <div className="min-h-screen bg-background">

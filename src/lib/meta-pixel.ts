@@ -13,6 +13,37 @@ declare global {
 }
 
 /**
+ * Generate a UUID v4 for event_id deduplication
+ */
+export function generateEventId(): string {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === 'x' ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
+/**
+ * Get Meta browser cookies for advanced matching
+ */
+export function getMetaCookies(): { fbp: string | null; fbc: string | null } {
+  if (typeof document === 'undefined') {
+    return { fbp: null, fbc: null };
+  }
+
+  const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+    const [key, value] = cookie.trim().split('=');
+    acc[key] = value;
+    return acc;
+  }, {} as Record<string, string>);
+
+  return {
+    fbp: cookies['_fbp'] || null,
+    fbc: cookies['_fbc'] || null,
+  };
+}
+
+/**
  * Track PageView event (for SPA navigation)
  */
 export function trackMetaPageView() {
@@ -68,23 +99,29 @@ export function trackMetaInitiateCheckout(params: {
 }
 
 /**
- * Track Purchase event - CRITICAL: This must fire on thank you page
- * Includes retry logic to ensure the event is tracked even if fbq loads slowly
- * Uses event_id for deduplication with server-side events
+ * Track Purchase event - Browser-side with server-side CAPI call
+ * Uses event_id for deduplication between browser and server events
  */
-export function trackMetaPurchase(params: {
+export async function trackMetaPurchase(params: {
   value: number;
   currency?: string;
   content_ids?: string[];
   content_name?: string;
   num_items?: number;
-  order_id?: string;
+  order_id: string;
   event_id?: string;
-}) {
-  // Generate event_id for deduplication (matches server-side format)
-  const eventId = params.event_id || (params.order_id ? `client_${params.order_id}` : `client_${Date.now()}`);
+  email?: string;
+  phone?: string;
+  test_event_code?: string; // For Meta Events Manager test mode
+}): Promise<{ success: boolean; event_id: string }> {
+  // Generate event_id if not provided
+  const eventId = params.event_id || generateEventId();
   
-  const fireEvent = () => {
+  // Get Meta cookies for advanced matching
+  const { fbp, fbc } = getMetaCookies();
+
+  // 1. Fire browser-side pixel event
+  const firePixelEvent = () => {
     if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'Purchase', {
         value: params.value,
@@ -95,34 +132,108 @@ export function trackMetaPurchase(params: {
         num_items: params.num_items || 1,
         order_id: params.order_id,
       }, { eventID: eventId });
-      console.log('Meta Pixel: Purchase tracked successfully', { value: params.value, order_id: params.order_id, event_id: eventId });
+      console.log('Meta Pixel: Purchase tracked (browser)', { 
+        value: params.value, 
+        order_id: params.order_id, 
+        event_id: eventId,
+        fbp: fbp ? 'present' : 'missing',
+        fbc: fbc ? 'present' : 'missing',
+      });
       return true;
     }
     return false;
   };
 
-  // Try immediately
-  if (fireEvent()) return;
+  // Try immediately, with retries if needed
+  if (!firePixelEvent()) {
+    let attempts = 0;
+    const maxAttempts = 5;
+    const retryDelays = [500, 1000, 2000, 3000, 5000];
 
-  // If fbq not ready, retry up to 5 times with increasing delays
-  let attempts = 0;
-  const maxAttempts = 5;
-  const retryDelays = [500, 1000, 2000, 3000, 5000]; // ms
+    const retry = (): Promise<void> => {
+      return new Promise((resolve) => {
+        attempts++;
+        console.log(`Meta Pixel: Purchase retry attempt ${attempts}/${maxAttempts}`);
+        
+        if (firePixelEvent()) {
+          resolve();
+          return;
+        }
+        
+        if (attempts < maxAttempts) {
+          setTimeout(() => retry().then(resolve), retryDelays[attempts] || 5000);
+        } else {
+          console.error('Meta Pixel: Purchase event FAILED after all retries - fbq not available');
+          resolve();
+        }
+      });
+    };
 
-  const retry = () => {
-    attempts++;
-    console.log(`Meta Pixel: Purchase retry attempt ${attempts}/${maxAttempts}`);
-    
-    if (fireEvent()) return;
-    
-    if (attempts < maxAttempts) {
-      setTimeout(retry, retryDelays[attempts] || 5000);
-    } else {
-      console.error('Meta Pixel: Purchase event FAILED after all retries - fbq not available');
-    }
-  };
+    await new Promise<void>((resolve) => {
+      setTimeout(() => retry().then(resolve), retryDelays[0]);
+    });
+  }
 
-  setTimeout(retry, retryDelays[0]);
+  // 2. Call server-side CAPI endpoint (non-blocking)
+  sendServerSideEvent({
+    order_id: params.order_id,
+    event_id: eventId,
+    value: params.value,
+    currency: params.currency,
+    email: params.email,
+    phone: params.phone,
+    fbp: fbp || undefined,
+    fbc: fbc || undefined,
+    client_user_agent: navigator.userAgent,
+    test_event_code: params.test_event_code,
+  }).catch((error) => {
+    console.error('Meta CAPI: Server-side event failed:', error);
+  });
+
+  return { success: true, event_id: eventId };
+}
+
+/**
+ * Send server-side event to Meta CAPI via Edge Function
+ */
+async function sendServerSideEvent(params: {
+  order_id: string;
+  event_id: string;
+  value: number;
+  currency?: string;
+  email?: string;
+  phone?: string;
+  fbp?: string;
+  fbc?: string;
+  client_user_agent?: string;
+  test_event_code?: string;
+}): Promise<void> {
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+  
+  if (!supabaseUrl) {
+    console.warn('Meta CAPI: SUPABASE_URL not configured, skipping server-side event');
+    return;
+  }
+
+  const response = await fetch(`${supabaseUrl}/functions/v1/meta-purchase-event`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(params),
+  });
+
+  const result = await response.json();
+
+  if (response.ok && result.success) {
+    console.log('Meta CAPI: Server-side event sent successfully', {
+      order_id: params.order_id,
+      event_id: params.event_id,
+      events_received: result.events_received,
+    });
+  } else {
+    console.error('Meta CAPI: Server-side event error:', result);
+  }
 }
 
 /**

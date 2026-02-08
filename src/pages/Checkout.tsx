@@ -141,14 +141,15 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
      setCouponError(null);
    };
  
-   const {
-     register,
-     handleSubmit,
+  const {
+    register,
+    handleSubmit,
     setValue,
-     formState: { errors, isSubmitting },
-   } = useForm<CheckoutFormData>({
-     resolver: zodResolver(checkoutSchema),
-   });
+    getValues,
+    formState: { errors, isSubmitting },
+  } = useForm<CheckoutFormData>({
+    resolver: zodResolver(checkoutSchema),
+  });
  
   const [cepLoading, setCepLoading] = useState(false);
   const [cepError, setCepError] = useState<string | null>(null);
@@ -450,12 +451,15 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
       return;
     }
     
-    // Pass transactionId for Meta/TikTok deduplication
+    // Pass transactionId + customer data for Meta/TikTok deduplication and advanced matching
+    const formData = getValues();
     navigate('/obrigado', {
       state: {
         orderId: pixData?.transactionId ? `PWH${pixData.transactionId.toString().slice(-8)}` : undefined,
         amount: finalPrice,
         transactionId: pixData?.transactionId, // Critical for pixel tracking deduplication
+        email: formData.email,
+        phone: formData.phone,
       }
     });
    };

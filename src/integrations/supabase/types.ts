@@ -14,6 +14,66 @@ export type Database = {
   }
   public: {
     Tables: {
+      meta_events: {
+        Row: {
+          api_response: Json | null
+          client_ip: string | null
+          client_user_agent: string | null
+          created_at: string
+          currency: string
+          email_hash: string | null
+          event_id: string
+          event_name: string
+          event_time: number
+          fbc: string | null
+          fbp: string | null
+          id: string
+          order_id: string
+          phone_hash: string | null
+          sent_at: string
+          test_event_code: string | null
+          value: number
+        }
+        Insert: {
+          api_response?: Json | null
+          client_ip?: string | null
+          client_user_agent?: string | null
+          created_at?: string
+          currency?: string
+          email_hash?: string | null
+          event_id: string
+          event_name?: string
+          event_time: number
+          fbc?: string | null
+          fbp?: string | null
+          id?: string
+          order_id: string
+          phone_hash?: string | null
+          sent_at?: string
+          test_event_code?: string | null
+          value: number
+        }
+        Update: {
+          api_response?: Json | null
+          client_ip?: string | null
+          client_user_agent?: string | null
+          created_at?: string
+          currency?: string
+          email_hash?: string | null
+          event_id?: string
+          event_name?: string
+          event_time?: number
+          fbc?: string | null
+          fbp?: string | null
+          id?: string
+          order_id?: string
+          phone_hash?: string | null
+          sent_at?: string
+          test_event_code?: string | null
+          value?: number
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           amount: number

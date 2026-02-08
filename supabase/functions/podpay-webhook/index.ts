@@ -199,6 +199,28 @@ async function sendMetaEvent(order: OrderData) {
       return;
     }
 
+    const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+    
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
+      console.warn('⚠️ Supabase credentials not configured for idempotency check');
+      return;
+    }
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+
+    // IDEMPOTENCY CHECK: Check if event already sent by browser-side CAPI
+    const { data: existingEvent } = await supabase
+      .from('meta_events')
+      .select('id, sent_at')
+      .eq('order_id', order.transaction_id)
+      .maybeSingle();
+
+    if (existingEvent) {
+      console.log('⚠️ Meta event already sent by browser for order:', order.transaction_id, 'at:', existingEvent.sent_at);
+      return; // Skip - browser already sent this event
+    }
+
     const pixelId = '1198424312101245';
     
     // Hash email and phone for privacy (required by Meta)
@@ -213,12 +235,15 @@ async function sendMetaEvent(order: OrderData) {
       Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
     ) : undefined;
 
+    const eventTime = Math.floor(Date.now() / 1000);
+    const eventId = `webhook_${order.transaction_id}_${eventTime}`;
+
     const eventData = {
       data: [
         {
           event_name: 'Purchase',
-          event_time: Math.floor(Date.now() / 1000),
-          event_id: `purchase_${order.transaction_id}`, // Same format as client-side for deduplication
+          event_time: eventTime,
+          event_id: eventId,
           action_source: 'website',
           user_data: {
             em: emailHash ? [emailHash] : undefined,
@@ -238,7 +263,7 @@ async function sendMetaEvent(order: OrderData) {
       ],
     };
 
-    console.log('📤 Sending Meta server event for order:', order.transaction_id);
+    console.log('📤 Sending Meta server event (webhook fallback) for order:', order.transaction_id);
 
     const response = await fetch(`https://graph.facebook.com/v18.0/${pixelId}/events?access_token=${META_ACCESS_TOKEN}`, {
       method: 'POST',
@@ -251,7 +276,22 @@ async function sendMetaEvent(order: OrderData) {
     const result = await response.json();
     
     if (response.ok) {
-      console.log('✅ Meta event sent successfully for order:', order.transaction_id, result);
+      // Record event for idempotency (prevent future duplicates)
+      await supabase
+        .from('meta_events')
+        .insert({
+          order_id: order.transaction_id,
+          event_id: eventId,
+          event_name: 'Purchase',
+          event_time: eventTime,
+          value: order.amount / 100,
+          currency: 'BRL',
+          email_hash: emailHash || null,
+          phone_hash: phoneHash || null,
+          api_response: result,
+        });
+
+      console.log('✅ Meta event sent successfully (webhook) for order:', order.transaction_id, result);
     } else {
       console.error('❌ Meta API error:', JSON.stringify(result, null, 2));
     }
