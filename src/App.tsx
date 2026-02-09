@@ -15,6 +15,7 @@ import PaymentMethods from "./pages/PaymentMethods";
 import DeliveryInfo from "./pages/DeliveryInfo";
 import Checkout from "./pages/Checkout";
 import ThankYou from "./pages/ThankYou";
+import EmailPreview from "./pages/EmailPreview";
 
 const queryClient = new QueryClient();
 
@@ -35,7 +36,8 @@ const App = () => (
           <Route path="/formas-de-pagamento" element={<PaymentMethods />} />
           <Route path="/prazo-de-entrega" element={<DeliveryInfo />} />
           <Route path="/checkout" element={<Checkout />} />
-           <Route path="/obrigado" element={<ThankYou />} />
+          <Route path="/obrigado" element={<ThankYou />} />
+          <Route path="/email-preview" element={<EmailPreview />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
