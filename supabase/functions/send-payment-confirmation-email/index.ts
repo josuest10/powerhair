@@ -52,7 +52,7 @@ serve(async (req) => {
       `CEP: ${shippingCep}`,
     ].filter(Boolean).join('<br>');
 
-    const LOGO_URL = "https://zaqllkndnofeggnlmlrp.supabase.co/storage/v1/object/public/email-assets/powerhair-logo.png";
+    
 
     const emailHtml = `
 <!DOCTYPE html>
@@ -70,7 +70,7 @@ serve(async (req) => {
           <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #739926 0%, #608C1A 100%); padding: 32px; border-radius: 16px 16px 0 0; text-align: center;">
-              <img src="${LOGO_URL}" alt="PowerHair" style="max-width: 180px; height: auto; margin-bottom: 12px;">
+              <h2 style="margin: 0 0 8px 0; color: #ffffff; font-size: 24px; font-weight: bold;">PowerHair</h2>
               <div style="font-size: 48px; margin-bottom: 8px;">✅</div>
               <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Pagamento Confirmado!</h1>
               <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">Seu pedido foi aprovado com sucesso</p>

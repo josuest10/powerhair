@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 
-const LOGO_URL = "https://zaqllkndnofeggnlmlrp.supabase.co/storage/v1/object/public/email-assets/powerhair-logo.png";
+
 
 const sampleData = {
   firstName: "Maria",
@@ -28,7 +28,7 @@ const OrderConfirmationEmail = () => `
 <tr><td align="center" style="padding:40px 20px;">
 <table role="presentation" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:16px;box-shadow:0 4px 6px rgba(0,0,0,0.07);">
 <tr><td style="background:linear-gradient(135deg,#739926 0%,#608C1A 100%);padding:32px;border-radius:16px 16px 0 0;text-align:center;">
-<img src="${LOGO_URL}" alt="PowerHair" style="max-width:180px;height:auto;margin-bottom:12px;">
+<h2 style="margin:0 0 8px 0;color:#ffffff;font-size:24px;font-weight:bold;">PowerHair</h2>
 <p style="margin:0;color:rgba(255,255,255,0.95);font-size:16px;font-weight:500;">Pedido criado com sucesso! 🌿</p>
 </td></tr>
 <tr><td style="padding:32px 32px 0 32px;">
@@ -117,7 +117,7 @@ const PaymentConfirmationEmail = () => `
 <tr><td align="center" style="padding:40px 20px;">
 <table role="presentation" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:16px;box-shadow:0 4px 6px rgba(0,0,0,0.07);">
 <tr><td style="background:linear-gradient(135deg,#739926 0%,#608C1A 100%);padding:32px;border-radius:16px 16px 0 0;text-align:center;">
-<img src="${LOGO_URL}" alt="PowerHair" style="max-width:180px;height:auto;margin-bottom:12px;">
+<h2 style="margin:0 0 8px 0;color:#ffffff;font-size:24px;font-weight:bold;">PowerHair</h2>
 <div style="font-size:48px;margin-bottom:8px;">✅</div>
 <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:bold;">Pagamento Confirmado!</h1>
 <p style="margin:8px 0 0 0;color:rgba(255,255,255,0.9);font-size:14px;">Seu pedido foi aprovado com sucesso</p>
