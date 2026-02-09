@@ -107,7 +107,7 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
   };
 
    const originalPrice = 149.0;
-   const productPrice = 87.90;
+   const productPrice = 97.00;
    const shippingPrice = shippingOptions[selectedShipping].price;
    const subtotalWithShipping = productPrice + shippingPrice;
    
