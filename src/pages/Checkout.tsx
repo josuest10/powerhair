@@ -14,6 +14,7 @@ import { validateCPF } from "@/lib/cpf-validator";
 import { trackInitiateCheckout, identifyUser } from "@/lib/tiktok-pixel";
 import { trackMetaInitiateCheckout } from "@/lib/meta-pixel";
 import { getStoredUTMParams } from "@/lib/utm-tracker";
+import { saveCheckoutData } from "@/lib/checkout-storage";
 import CheckoutReviews from "@/components/CheckoutReviews";
 import { Separator } from "@/components/ui/separator";
 import { 
@@ -329,30 +330,33 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
              }
             
             // Auto redirect after 2 seconds - MUST include user data for Meta Advanced Matching
-            setTimeout(() => {
-               const formData = getValues();
-               
-               // Parse name into first and last name for Meta Advanced Matching
-               const nameParts = formData.name?.trim().split(/\s+/) || [];
-               const firstName = nameParts[0] || '';
-               const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
-               
-               navigate('/obrigado', {
-                 state: {
-                   orderId: `PWH${transactionId.toString().slice(-8)}`,
-                   amount: finalPrice,
-                   transactionId: transactionId, // Full transaction ID for Meta deduplication
-                   // User data for Meta Advanced Matching (90%+ match rate)
-                   email: formData.email,
-                   phone: formData.phone,
-                   firstName,
-                   lastName,
-                   city: formData.city,
-                   state: formData.state,
-                   zipCode: formData.cep,
-                 }
-               });
-            }, 2000);
+             setTimeout(() => {
+                const formData = getValues();
+                
+                // Parse name into first and last name for Meta Advanced Matching
+                const nameParts = formData.name?.trim().split(/\s+/) || [];
+                const firstName = nameParts[0] || '';
+                const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+                
+                const orderData = {
+                  orderId: `PWH${transactionId.toString().slice(-8)}`,
+                  amount: finalPrice,
+                  transactionId: transactionId, // Full transaction ID for Meta deduplication
+                  // User data for Meta Advanced Matching (90%+ match rate)
+                  email: formData.email,
+                  phone: formData.phone,
+                  firstName,
+                  lastName,
+                  city: formData.city,
+                  state: formData.state,
+                  zipCode: formData.cep,
+                };
+                
+                // Save to localStorage as fallback before navigating
+                saveCheckoutData(orderData);
+                
+                navigate('/obrigado', { state: orderData });
+             }, 2000);
          } else {
            setPaymentStatus("waiting");
          }
@@ -474,21 +478,24 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
     const firstName = nameParts[0] || '';
     const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
     
-    navigate('/obrigado', {
-      state: {
-        orderId: pixData?.transactionId ? `PWH${pixData.transactionId.toString().slice(-8)}` : undefined,
-        amount: finalPrice,
-        transactionId: pixData?.transactionId, // Critical for pixel tracking deduplication
-        // User data for Meta Advanced Matching (90%+ match rate)
-        email: formData.email,
-        phone: formData.phone,
-        firstName,
-        lastName,
-        city: formData.city,
-        state: formData.state,
-        zipCode: formData.cep,
-      }
-    });
+    const orderData = {
+      orderId: pixData?.transactionId ? `PWH${pixData.transactionId.toString().slice(-8)}` : undefined,
+      amount: finalPrice,
+      transactionId: pixData?.transactionId, // Critical for pixel tracking deduplication
+      // User data for Meta Advanced Matching (90%+ match rate)
+      email: formData.email,
+      phone: formData.phone,
+      firstName,
+      lastName,
+      city: formData.city,
+      state: formData.state,
+      zipCode: formData.cep,
+    };
+    
+    // Save to localStorage as fallback before navigating
+    saveCheckoutData(orderData);
+    
+    navigate('/obrigado', { state: orderData });
    };
  
    const formatTime = (seconds: number) => {

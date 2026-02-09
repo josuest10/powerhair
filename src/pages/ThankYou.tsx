@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { trackMetaPurchase } from "@/lib/meta-pixel";
 import { trackCompletePayment } from "@/lib/tiktok-pixel";
 import { clearUTMParams } from "@/lib/utm-tracker";
+import { getCheckoutData, clearCheckoutData, CheckoutUserData } from "@/lib/checkout-storage";
 
 const PowerHairLogo = () => (
   <div className="flex items-center gap-2">
@@ -46,12 +47,27 @@ interface OrderDetails {
 
 const ThankYou = () => {
   const location = useLocation();
-  const orderDetails = location.state as OrderDetails | undefined;
+  const locationState = location.state as OrderDetails | undefined;
   const hasTracked = useRef(false);
+
+  // Use location.state first, fallback to localStorage if state is empty
+  const orderDetails: OrderDetails | undefined = locationState?.orderId 
+    ? locationState 
+    : getCheckoutData() || undefined;
 
   const orderId = orderDetails?.orderId || `PWH${Date.now().toString().slice(-8)}`;
   const amount = orderDetails?.amount || 97.00;
   const transactionId = orderDetails?.transactionId;
+
+  // Log data source for debugging
+  useEffect(() => {
+    console.log('ThankYou: Data source', {
+      fromLocationState: !!locationState?.orderId,
+      fromLocalStorage: !locationState?.orderId && !!orderDetails?.orderId,
+      hasEmail: !!orderDetails?.email,
+      hasPhone: !!orderDetails?.phone,
+    });
+  }, []);
 
   // Track Purchase events when page loads
   useEffect(() => {
@@ -89,7 +105,11 @@ const ThankYou = () => {
         has_phone: !!orderDetails?.phone,
         has_name: !!(orderDetails?.firstName || orderDetails?.lastName),
         has_address: !!(orderDetails?.city || orderDetails?.state || orderDetails?.zipCode),
+        data_source: locationState?.orderId ? 'location.state' : 'localStorage',
       });
+      
+      // Clear localStorage after successful tracking
+      clearCheckoutData();
     });
 
     // TikTok Pixel CompletePayment
@@ -106,7 +126,7 @@ const ThankYou = () => {
     clearUTMParams();
 
     console.log('ThankYou: Purchase tracked (Meta + TikTok)', { orderId, amount, eventId });
-  }, [amount, orderId, transactionId, orderDetails]);
+  }, [amount, orderId, transactionId, orderDetails, locationState]);
  
    return (
      <div className="min-h-screen bg-background">
