@@ -56,7 +56,7 @@ const ThankYou = () => {
     : getCheckoutData() || undefined;
 
   const orderId = orderDetails?.orderId || `PWH${Date.now().toString().slice(-8)}`;
-  const amount = orderDetails?.amount || 97.00;
+  const amount = orderDetails?.amount || 77.91;
   const transactionId = orderDetails?.transactionId;
 
   // Log data source for debugging
