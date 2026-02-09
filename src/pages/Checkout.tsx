@@ -12,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { QRCodeSVG } from "qrcode.react";
 import { validateCPF } from "@/lib/cpf-validator";
 import { trackInitiateCheckout, identifyUser } from "@/lib/tiktok-pixel";
-import { trackMetaInitiateCheckout } from "@/lib/meta-pixel";
+import { trackMetaInitiateCheckout, trackMetaLead } from "@/lib/meta-pixel";
 import { getStoredUTMParams } from "@/lib/utm-tracker";
 import { saveCheckoutData } from "@/lib/checkout-storage";
 import CheckoutReviews from "@/components/CheckoutReviews";
@@ -157,6 +157,45 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
 
   // Track InitiateCheckout once on mount with base product price (no shipping variation)
   const hasTrackedInitiateCheckout = useRef(false);
+  
+  // Track Lead event once when user fills name + email
+  const hasTrackedLead = useRef(false);
+  
+  // Function to check and fire Lead event when name + email are filled
+  const checkAndFireLeadEvent = () => {
+    if (hasTrackedLead.current) return;
+    
+    const formData = getValues();
+    const name = formData.name?.trim();
+    const email = formData.email?.trim();
+    
+    // Only fire if both name and email have valid values
+    if (name && name.length >= 3 && email && email.includes('@')) {
+      hasTrackedLead.current = true;
+      
+      // Parse name for Advanced Matching
+      const nameParts = name.split(/\s+/);
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+      
+      // Fire Meta Lead event with user data
+      trackMetaLead({
+        value: productPrice,
+        currency: 'BRL',
+        userData: {
+          email,
+          firstName,
+          lastName,
+          phone: formData.phone,
+        },
+      });
+      
+      // Also identify user for TikTok
+      identifyUser({ email, phone: formData.phone });
+      
+      console.log('Lead event fired', { hasEmail: true, hasName: true });
+    }
+  };
   
   useEffect(() => {
     if (!hasTrackedInitiateCheckout.current) {
@@ -635,6 +674,7 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                       placeholder="seu@email.com"
                       autoComplete="email"
                       {...register("email")}
+                      onBlur={() => checkAndFireLeadEvent()}
                       className={`mt-1 transition-all duration-200 focus:scale-[1.01] focus:shadow-sm ${errors.email ? "border-destructive" : ""}`}
                     />
                     {errors.email && <p className="text-xs text-destructive mt-1">{errors.email.message}</p>}
