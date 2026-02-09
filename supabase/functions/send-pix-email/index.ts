@@ -31,32 +31,13 @@ interface OrderEmailRequest {
   expiresAt?: string;
 }
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    const body: OrderEmailRequest = await req.json();
-    const {
-      customerName, customerEmail, customerPhone, customerCpf,
-      amount, pixCode, pixQrCodeUrl, transactionId, productName,
-      quantity, shipping,
-    } = body;
-
-    if (!customerEmail || !pixCode || !transactionId) {
-      throw new Error("Campos obrigatórios ausentes");
-    }
-
-    const formattedAmount = (amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    const firstName = customerName.split(' ')[0];
-    const maskedCpf = customerCpf.replace(/(\d{3})\d{3}\d{3}(\d{2})/, '$1.***.***-$2');
-    const formattedCep = shipping.cep.replace(/(\d{5})(\d{3})/, '$1-$2');
-    const fullAddress = `${shipping.address}, ${shipping.number}${shipping.complement ? ` - ${shipping.complement}` : ''}, ${shipping.neighborhood}, ${shipping.city}/${shipping.state} - CEP ${formattedCep}`;
-
-    
-
-    const emailHtml = `
+function buildPixEmailHtml(
+  firstName: string, customerName: string, customerEmail: string,
+  customerPhone: string, maskedCpf: string, formattedAmount: string,
+  transactionId: string, productName: string, quantity: number,
+  fullAddress: string, pixQrCodeUrl: string, pixCode: string
+) {
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -81,7 +62,7 @@ serve(async (req) => {
           <tr>
             <td style="padding: 32px 32px 0 32px;">
               <p style="margin: 0 0 16px 0; font-size: 16px; color: #2d3319;">
-                Olá <strong>\${firstName}</strong>! 👋
+                Olá <strong>${firstName}</strong>! 👋
               </p>
               <p style="margin: 0 0 24px 0; font-size: 16px; color: #555555; line-height: 1.6;">
                 Recebemos seu pedido! Confira abaixo o resumo e realize o pagamento via PIX para garantir sua compra.
@@ -103,15 +84,15 @@ serve(async (req) => {
                     <table role="presentation" style="width: 100%;">
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Pedido nº</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right; font-weight: 600;">#\${transactionId}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right; font-weight: 600;">#${transactionId}</td>
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Produto</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">\${productName}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${productName}</td>
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Quantidade</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">\${quantity}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${quantity}</td>
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Frete</td>
@@ -122,7 +103,7 @@ serve(async (req) => {
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 16px; color: #111827; font-weight: bold;">Total</td>
-                        <td style="padding: 4px 0; font-size: 18px; color: #608C1A; text-align: right; font-weight: bold;">\${formattedAmount}</td>
+                        <td style="padding: 4px 0; font-size: 18px; color: #608C1A; text-align: right; font-weight: bold;">${formattedAmount}</td>
                       </tr>
                     </table>
                   </td>
@@ -145,19 +126,19 @@ serve(async (req) => {
                     <table role="presentation" style="width: 100%;">
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Nome</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">\${customerName}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${customerName}</td>
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">E-mail</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">\${customerEmail}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${customerEmail}</td>
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Telefone</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">\${customerPhone}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${customerPhone}</td>
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">CPF</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">\${maskedCpf}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${maskedCpf}</td>
                       </tr>
                     </table>
                   </td>
@@ -177,7 +158,7 @@ serve(async (req) => {
                 </tr>
                 <tr>
                   <td style="padding: 16px;">
-                    <p style="margin: 0; font-size: 14px; color: #111827; line-height: 1.6;">\${fullAddress}</p>
+                    <p style="margin: 0; font-size: 14px; color: #111827; line-height: 1.6;">${fullAddress}</p>
                   </td>
                 </tr>
               </table>
@@ -191,7 +172,7 @@ serve(async (req) => {
                 <tr>
                   <td style="background: linear-gradient(135deg, #739926 0%, #608C1A 100%); padding: 24px; border-radius: 12px; text-align: center;">
                     <p style="margin: 0 0 4px 0; font-size: 14px; color: rgba(255,255,255,0.9);">Valor a pagar via PIX:</p>
-                    <p style="margin: 0; font-size: 32px; font-weight: bold; color: #ffffff;">\${formattedAmount}</p>
+                    <p style="margin: 0; font-size: 32px; font-weight: bold; color: #ffffff;">${formattedAmount}</p>
                   </td>
                 </tr>
               </table>
@@ -205,7 +186,7 @@ serve(async (req) => {
                 <tr>
                   <td align="center" style="padding: 20px; background-color: #f4f7ec; border-radius: 12px;">
                     <p style="margin: 0 0 16px 0; font-size: 14px; color: #555;">Escaneie o QR Code abaixo:</p>
-                    <img src="\${pixQrCodeUrl}" alt="QR Code PIX" style="width: 200px; height: 200px; border-radius: 8px;">
+                    <img src="${pixQrCodeUrl}" alt="QR Code PIX" style="width: 200px; height: 200px; border-radius: 8px;">
                   </td>
                 </tr>
               </table>
@@ -220,7 +201,7 @@ serve(async (req) => {
                   <td style="padding: 16px; background-color: #f0f0f0; border-radius: 8px;">
                     <p style="margin: 0 0 8px 0; font-size: 12px; color: #666666; text-align: center;">Ou copie o código PIX:</p>
                     <p style="margin: 0; font-size: 11px; color: #333333; word-break: break-all; text-align: center; font-family: monospace; line-height: 1.4;">
-                      \${pixCode}
+                      ${pixCode}
                     </p>
                   </td>
                 </tr>
@@ -263,7 +244,7 @@ serve(async (req) => {
           <tr>
             <td style="padding: 24px; background-color: #f4f7ec; border-radius: 0 0 16px 16px; text-align: center;">
               <p style="margin: 0 0 8px 0; font-size: 12px; color: #888888;">
-                Pedido #\${transactionId}
+                Pedido #${transactionId}
               </p>
               <p style="margin: 0; font-size: 12px; color: #888888;">
                 © 2025 PowerHair. Todos os direitos reservados.
@@ -275,13 +256,42 @@ serve(async (req) => {
     </tr>
   </table>
 </body>
-</html>
-    `;
+</html>`;
+}
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const body: OrderEmailRequest = await req.json();
+    const {
+      customerName, customerEmail, customerPhone, customerCpf,
+      amount, pixCode, pixQrCodeUrl, transactionId, productName,
+      quantity, shipping,
+    } = body;
+
+    if (!customerEmail || !pixCode || !transactionId) {
+      throw new Error("Campos obrigatórios ausentes");
+    }
+
+    const formattedAmount = (amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const firstName = customerName.split(' ')[0];
+    const maskedCpf = customerCpf.replace(/(\d{3})\d{3}\d{3}(\d{2})/, '$1.***.***-$2');
+    const formattedCep = shipping.cep.replace(/(\d{5})(\d{3})/, '$1-$2');
+    const fullAddress = `${shipping.address}, ${shipping.number}${shipping.complement ? ` - ${shipping.complement}` : ''}, ${shipping.neighborhood}, ${shipping.city}/${shipping.state} - CEP ${formattedCep}`;
+
+    const emailHtml = buildPixEmailHtml(
+      firstName, customerName, customerEmail, customerPhone,
+      maskedCpf, formattedAmount, transactionId, productName,
+      quantity, fullAddress, pixQrCodeUrl, pixCode
+    );
 
     const emailResponse = await resend.emails.send({
       from: "PowerHair <noreply@ipolishbrasil.shop>",
       to: [customerEmail],
-      subject: `✅ Pedido #\${transactionId} criado - Finalize o pagamento via PIX`,
+      subject: `✅ Pedido #${transactionId} criado - Finalize o pagamento via PIX`,
       html: emailHtml,
     });
 
