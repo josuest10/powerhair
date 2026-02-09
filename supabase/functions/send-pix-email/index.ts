@@ -8,14 +8,26 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface PixEmailRequest {
+interface OrderEmailRequest {
   customerName: string;
   customerEmail: string;
+  customerPhone: string;
+  customerCpf: string;
   amount: number;
   pixCode: string;
   pixQrCodeUrl: string;
   transactionId: string;
   productName: string;
+  quantity: number;
+  shipping: {
+    address: string;
+    number: string;
+    complement?: string;
+    neighborhood: string;
+    city: string;
+    state: string;
+    cep: string;
+  };
   expiresAt?: string;
 }
 
@@ -25,9 +37,12 @@ serve(async (req) => {
   }
 
   try {
-    const body: PixEmailRequest = await req.json();
-
-    const { customerName, customerEmail, amount, pixCode, pixQrCodeUrl, transactionId, productName, expiresAt } = body;
+    const body: OrderEmailRequest = await req.json();
+    const {
+      customerName, customerEmail, customerPhone, customerCpf,
+      amount, pixCode, pixQrCodeUrl, transactionId, productName,
+      quantity, shipping, expiresAt,
+    } = body;
 
     if (!customerEmail || !pixCode || !transactionId) {
       throw new Error("Campos obrigatórios ausentes");
@@ -35,6 +50,9 @@ serve(async (req) => {
 
     const formattedAmount = (amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     const firstName = customerName.split(' ')[0];
+    const maskedCpf = customerCpf.replace(/(\d{3})\d{3}\d{3}(\d{2})/, '$1.***.***-$2');
+    const formattedCep = shipping.cep.replace(/(\d{5})(\d{3})/, '$1-$2');
+    const fullAddress = `${shipping.address}, ${shipping.number}${shipping.complement ? ` - ${shipping.complement}` : ''}, ${shipping.neighborhood}, ${shipping.city}/${shipping.state} - CEP ${formattedCep}`;
 
     const emailHtml = `
 <!DOCTYPE html>
@@ -42,7 +60,7 @@ serve(async (req) => {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PIX Gerado - PowerHair</title>
+  <title>Pedido Criado - PowerHair</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5;">
   <table role="presentation" style="width: 100%; border-collapse: collapse;">
@@ -53,44 +71,148 @@ serve(async (req) => {
           <tr>
             <td style="background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%); padding: 32px; border-radius: 16px 16px 0 0; text-align: center;">
               <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">💜 PowerHair</h1>
-              <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">Seu PIX foi gerado com sucesso!</p>
+              <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">Pedido criado com sucesso!</p>
             </td>
           </tr>
           
-          <!-- Content -->
+          <!-- Greeting -->
           <tr>
-            <td style="padding: 32px;">
-              <p style="margin: 0 0 24px 0; font-size: 16px; color: #333333;">
+            <td style="padding: 32px 32px 0 32px;">
+              <p style="margin: 0 0 16px 0; font-size: 16px; color: #333333;">
                 Olá <strong>${firstName}</strong>! 👋
               </p>
-              
               <p style="margin: 0 0 24px 0; font-size: 16px; color: #555555; line-height: 1.6;">
-                Seu pedido do <strong>${productName}</strong> está quase finalizado! Complete o pagamento via PIX para garantir sua compra.
+                Recebemos seu pedido! Confira abaixo o resumo e realize o pagamento via PIX para garantir sua compra.
               </p>
-              
-              <!-- Amount Box -->
-              <table role="presentation" style="width: 100%; margin-bottom: 24px;">
+            </td>
+          </tr>
+
+          <!-- Order Summary -->
+          <tr>
+            <td style="padding: 0 32px;">
+              <table role="presentation" style="width: 100%; margin-bottom: 24px; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden;">
                 <tr>
-                  <td style="background-color: #F3E8FF; padding: 20px; border-radius: 12px; text-align: center;">
-                    <p style="margin: 0 0 4px 0; font-size: 14px; color: #7C3AED;">Valor a pagar:</p>
-                    <p style="margin: 0 0 4px 0; font-size: 14px; color: #9CA3AF; text-decoration: line-through;">De R$ 179,90</p>
-                    <p style="margin: 0; font-size: 32px; font-weight: bold; color: #7C3AED;">\${formattedAmount}</p>
-                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #10B981; font-weight: bold;">Economize R$ 82,90! ✨</p>
+                  <td style="background-color: #F9FAFB; padding: 12px 16px; border-bottom: 1px solid #E5E7EB;">
+                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #374151;">📦 Resumo do Pedido</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 16px;">
+                    <table role="presentation" style="width: 100%;">
+                      <tr>
+                        <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Pedido nº</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right; font-weight: 600;">#${transactionId}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Produto</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${productName}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Quantidade</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${quantity}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Frete</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #10B981; text-align: right; font-weight: 600;">Grátis ✨</td>
+                      </tr>
+                      <tr>
+                        <td colspan="2" style="padding: 8px 0 0 0; border-top: 1px solid #E5E7EB;"></td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 4px 0; font-size: 16px; color: #111827; font-weight: bold;">Total</td>
+                        <td style="padding: 4px 0; font-size: 18px; color: #7C3AED; text-align: right; font-weight: bold;">${formattedAmount}</td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
               </table>
-              
-              <!-- QR Code -->
+            </td>
+          </tr>
+
+          <!-- Customer Data -->
+          <tr>
+            <td style="padding: 0 32px;">
+              <table role="presentation" style="width: 100%; margin-bottom: 24px; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden;">
+                <tr>
+                  <td style="background-color: #F9FAFB; padding: 12px 16px; border-bottom: 1px solid #E5E7EB;">
+                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #374151;">👤 Seus Dados</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 16px;">
+                    <table role="presentation" style="width: 100%;">
+                      <tr>
+                        <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Nome</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${customerName}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">E-mail</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${customerEmail}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Telefone</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${customerPhone}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">CPF</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${maskedCpf}</td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Shipping Address -->
+          <tr>
+            <td style="padding: 0 32px;">
+              <table role="presentation" style="width: 100%; margin-bottom: 24px; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden;">
+                <tr>
+                  <td style="background-color: #F9FAFB; padding: 12px 16px; border-bottom: 1px solid #E5E7EB;">
+                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #374151;">🚚 Endereço de Entrega</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 16px;">
+                    <p style="margin: 0; font-size: 14px; color: #111827; line-height: 1.6;">${fullAddress}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- PIX Payment -->
+          <tr>
+            <td style="padding: 0 32px;">
+              <table role="presentation" style="width: 100%; margin-bottom: 24px;">
+                <tr>
+                  <td style="background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%); padding: 24px; border-radius: 12px; text-align: center;">
+                    <p style="margin: 0 0 4px 0; font-size: 14px; color: rgba(255,255,255,0.9);">Valor a pagar via PIX:</p>
+                    <p style="margin: 0; font-size: 32px; font-weight: bold; color: #ffffff;">${formattedAmount}</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- QR Code -->
+          <tr>
+            <td style="padding: 0 32px;">
               <table role="presentation" style="width: 100%; margin-bottom: 24px;">
                 <tr>
                   <td align="center" style="padding: 20px; background-color: #fafafa; border-radius: 12px;">
-                    <p style="margin: 0 0 16px 0; font-size: 14px; color: #666666;">Escaneie o QR Code:</p>
+                    <p style="margin: 0 0 16px 0; font-size: 14px; color: #666666;">Escaneie o QR Code abaixo:</p>
                     <img src="${pixQrCodeUrl}" alt="QR Code PIX" style="width: 200px; height: 200px; border-radius: 8px;">
                   </td>
                 </tr>
               </table>
-              
-              <!-- PIX Code -->
+            </td>
+          </tr>
+
+          <!-- PIX Code -->
+          <tr>
+            <td style="padding: 0 32px;">
               <table role="presentation" style="width: 100%; margin-bottom: 24px;">
                 <tr>
                   <td style="padding: 16px; background-color: #f0f0f0; border-radius: 8px;">
@@ -101,19 +223,27 @@ serve(async (req) => {
                   </td>
                 </tr>
               </table>
-              
-              <!-- Warning -->
+            </td>
+          </tr>
+
+          <!-- Warning -->
+          <tr>
+            <td style="padding: 0 32px;">
               <table role="presentation" style="width: 100%; margin-bottom: 24px;">
                 <tr>
                   <td style="padding: 16px; background-color: #FEF3C7; border-radius: 8px; border-left: 4px solid #F59E0B;">
                     <p style="margin: 0; font-size: 14px; color: #92400E;">
-                      ⏰ <strong>Atenção:</strong> Este PIX expira em 30 minutos. Realize o pagamento o mais rápido possível para garantir sua compra.
+                      ⏰ <strong>Atenção:</strong> Este PIX expira em 30 minutos. Realize o pagamento o mais rápido possível.
                     </p>
                   </td>
                 </tr>
               </table>
-              
-              <!-- Steps -->
+            </td>
+          </tr>
+
+          <!-- Steps -->
+          <tr>
+            <td style="padding: 0 32px 32px 32px;">
               <p style="margin: 0 0 16px 0; font-size: 14px; color: #555555; font-weight: bold;">Como pagar:</p>
               <ol style="margin: 0 0 24px 0; padding-left: 20px; color: #555555; font-size: 14px; line-height: 1.8;">
                 <li>Abra o app do seu banco</li>
@@ -121,9 +251,8 @@ serve(async (req) => {
                 <li>Escaneie o QR Code ou cole o código</li>
                 <li>Confirme o pagamento</li>
               </ol>
-              
               <p style="margin: 0; font-size: 14px; color: #555555; line-height: 1.6;">
-                Após a confirmação do pagamento, você receberá um e-mail com os detalhes da entrega. 📦
+                Após a confirmação, você receberá um e-mail com os detalhes da entrega. 📦
               </p>
             </td>
           </tr>
@@ -150,27 +279,21 @@ serve(async (req) => {
     const emailResponse = await resend.emails.send({
       from: "PowerHair <noreply@ipolishbrasil.shop>",
       to: [customerEmail],
-      subject: `💜 PIX Gerado - Complete seu pagamento de ${formattedAmount}`,
+      subject: `✅ Pedido #${transactionId} criado - Finalize o pagamento via PIX`,
       html: emailHtml,
     });
 
-    console.log("PIX email sent successfully:", emailResponse);
+    console.log("Order confirmation email sent successfully:", emailResponse);
 
     return new Response(
       JSON.stringify({ success: true, data: emailResponse }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error) {
-    console.error("Error sending PIX email:", error);
+    console.error("Error sending order email:", error);
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
 });

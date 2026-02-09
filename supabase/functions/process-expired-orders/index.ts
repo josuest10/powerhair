@@ -21,20 +21,16 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // Find orders that:
-    // 1. Status is 'waiting_payment'
-    // 2. Created more than 35 minutes ago (PIX expires in 30 min + 5 min buffer)
-    // 3. Haven't been sent a recovery email yet (we'll track this)
+    // Find orders that are waiting_payment and created more than 35 minutes ago
     const thirtyFiveMinutesAgo = new Date(Date.now() - 35 * 60 * 1000).toISOString();
     const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
 
     const { data: expiredOrders, error: fetchError } = await supabase
       .from("orders")
-      .select("*")
+      .select("id, transaction_id, customer_email")
       .eq("status", "waiting_payment")
       .lt("created_at", thirtyFiveMinutesAgo)
-      .gt("created_at", twentyFourHoursAgo) // Only process orders from last 24 hours
-      .order("created_at", { ascending: false });
+      .gt("created_at", twentyFourHoursAgo);
 
     if (fetchError) {
       console.error("Error fetching expired orders:", fetchError);
@@ -43,85 +39,30 @@ serve(async (req) => {
 
     console.log(`Found ${expiredOrders?.length || 0} expired orders to process`);
 
-    const results = [];
-
+    let marked = 0;
     for (const order of expiredOrders || []) {
-      try {
-        // Send recovery email
-        const emailPayload = {
-          customerName: order.customer_name,
-          customerEmail: order.customer_email,
-          amount: order.amount,
-          productName: order.product_name,
-          transactionId: order.transaction_id,
-        };
+      const { error } = await supabase
+        .from("orders")
+        .update({ status: "expired" })
+        .eq("id", order.id);
 
-        console.log(`Sending recovery email to ${order.customer_email} for order ${order.transaction_id}`);
-
-        const emailResponse = await fetch(`${SUPABASE_URL}/functions/v1/send-recovery-email`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-          },
-          body: JSON.stringify(emailPayload),
-        });
-
-        const emailResult = await emailResponse.json();
-
-        if (emailResult.success) {
-          // Mark order as expired (so we don't send another recovery email)
-          await supabase
-            .from("orders")
-            .update({ status: "expired" })
-            .eq("id", order.id);
-
-          results.push({
-            transactionId: order.transaction_id,
-            email: order.customer_email,
-            status: "sent",
-          });
-
-          console.log(`✅ Recovery email sent and order marked as expired: ${order.transaction_id}`);
-        } else {
-          results.push({
-            transactionId: order.transaction_id,
-            email: order.customer_email,
-            status: "failed",
-            error: emailResult.error,
-          });
-          console.error(`❌ Failed to send recovery email for order ${order.transaction_id}:`, emailResult.error);
-        }
-      } catch (orderError) {
-        console.error(`Error processing order ${order.transaction_id}:`, orderError);
-        results.push({
-          transactionId: order.transaction_id,
-          email: order.customer_email,
-          status: "error",
-          error: orderError.message,
-        });
+      if (!error) {
+        marked++;
+        console.log(`✅ Order ${order.transaction_id} marked as expired`);
+      } else {
+        console.error(`❌ Failed to expire order ${order.transaction_id}:`, error);
       }
     }
 
     return new Response(
-      JSON.stringify({
-        success: true,
-        processed: results.length,
-        results,
-      }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      JSON.stringify({ success: true, processed: expiredOrders?.length || 0, marked }),
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error) {
     console.error("Error processing expired orders:", error);
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
 });
