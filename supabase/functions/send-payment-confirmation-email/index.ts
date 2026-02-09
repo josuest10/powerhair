@@ -23,38 +23,11 @@ interface PaymentConfirmationRequest {
   shippingCep: string;
 }
 
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders });
-  }
-
-  try {
-    const body: PaymentConfirmationRequest = await req.json();
-
-    const {
-      customerName, customerEmail, amount, transactionId, productName,
-      shippingAddress, shippingNumber, shippingComplement,
-      shippingNeighborhood, shippingCity, shippingState, shippingCep,
-    } = body;
-
-    if (!customerEmail || !transactionId) {
-      throw new Error("Campos obrigatórios ausentes");
-    }
-
-    const formattedAmount = (amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-    const firstName = customerName.split(' ')[0];
-    
-    const fullAddress = [
-      `${shippingAddress}, ${shippingNumber}`,
-      shippingComplement,
-      shippingNeighborhood,
-      `${shippingCity} - ${shippingState}`,
-      `CEP: ${shippingCep}`,
-    ].filter(Boolean).join('<br>');
-
-    
-
-    const emailHtml = `
+function buildConfirmationEmailHtml(
+  firstName: string, transactionId: string, productName: string,
+  formattedAmount: string, fullAddress: string
+) {
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -81,7 +54,7 @@ serve(async (req) => {
           <tr>
             <td style="padding: 32px;">
               <p style="margin: 0 0 24px 0; font-size: 16px; color: #2d3319;">
-                Olá <strong>\${firstName}</strong>! 🎉
+                Olá <strong>${firstName}</strong>! 🎉
               </p>
               
               <p style="margin: 0 0 24px 0; font-size: 16px; color: #555555; line-height: 1.6;">
@@ -100,15 +73,15 @@ serve(async (req) => {
                     <table role="presentation" style="width: 100%;">
                       <tr>
                         <td style="padding: 8px 0; font-size: 14px; color: #666666;">Pedido:</td>
-                        <td style="padding: 8px 0; font-size: 14px; color: #333333; text-align: right; font-weight: bold;">#\${transactionId}</td>
+                        <td style="padding: 8px 0; font-size: 14px; color: #333333; text-align: right; font-weight: bold;">#${transactionId}</td>
                       </tr>
                       <tr>
                         <td style="padding: 8px 0; font-size: 14px; color: #666666;">Produto:</td>
-                        <td style="padding: 8px 0; font-size: 14px; color: #333333; text-align: right;">\${productName}</td>
+                        <td style="padding: 8px 0; font-size: 14px; color: #333333; text-align: right;">${productName}</td>
                       </tr>
                       <tr>
                         <td style="padding: 8px 0; font-size: 14px; color: #666666; border-top: 1px solid #dde4cc; padding-top: 16px;">Total pago:</td>
-                        <td style="padding: 8px 0; font-size: 18px; color: #608C1A; text-align: right; font-weight: bold; border-top: 1px solid #dde4cc; padding-top: 16px;">\${formattedAmount}</td>
+                        <td style="padding: 8px 0; font-size: 18px; color: #608C1A; text-align: right; font-weight: bold; border-top: 1px solid #dde4cc; padding-top: 16px;">${formattedAmount}</td>
                       </tr>
                     </table>
                   </td>
@@ -125,7 +98,7 @@ serve(async (req) => {
                 <tr>
                   <td style="padding: 16px;">
                     <p style="margin: 0; font-size: 14px; color: #555555; line-height: 1.8;">
-                      \${fullAddress}
+                      ${fullAddress}
                     </p>
                   </td>
                 </tr>
@@ -168,13 +141,46 @@ serve(async (req) => {
     </tr>
   </table>
 </body>
-</html>
-    `;
+</html>`;
+}
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    const body: PaymentConfirmationRequest = await req.json();
+
+    const {
+      customerName, customerEmail, amount, transactionId, productName,
+      shippingAddress, shippingNumber, shippingComplement,
+      shippingNeighborhood, shippingCity, shippingState, shippingCep,
+    } = body;
+
+    if (!customerEmail || !transactionId) {
+      throw new Error("Campos obrigatórios ausentes");
+    }
+
+    const formattedAmount = (amount / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    const firstName = customerName.split(' ')[0];
+    
+    const fullAddress = [
+      `${shippingAddress}, ${shippingNumber}`,
+      shippingComplement,
+      shippingNeighborhood,
+      `${shippingCity} - ${shippingState}`,
+      `CEP: ${shippingCep}`,
+    ].filter(Boolean).join('<br>');
+
+    const emailHtml = buildConfirmationEmailHtml(
+      firstName, transactionId, productName, formattedAmount, fullAddress
+    );
 
     const emailResponse = await resend.emails.send({
       from: "PowerHair <noreply@ipolishbrasil.shop>",
       to: [customerEmail],
-      subject: `✅ Pagamento Confirmado! Pedido #\${transactionId}`,
+      subject: `✅ Pagamento Confirmado! Pedido #${transactionId}`,
       html: emailHtml,
     });
 
