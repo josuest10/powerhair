@@ -50,7 +50,7 @@ const ThankYou = () => {
   const hasTracked = useRef(false);
 
   const orderId = orderDetails?.orderId || `PWH${Date.now().toString().slice(-8)}`;
-  const amount = orderDetails?.amount || 87.90;
+  const amount = orderDetails?.amount || 97.00;
   const transactionId = orderDetails?.transactionId;
 
   // Track Purchase events when page loads
