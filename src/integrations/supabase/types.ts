@@ -85,6 +85,7 @@ export type Database = {
           id: string
           paid_at: string | null
           product_name: string
+          recovery_email_sent: boolean
           sck: string | null
           shipping_address: string
           shipping_cep: string
@@ -113,6 +114,7 @@ export type Database = {
           id?: string
           paid_at?: string | null
           product_name: string
+          recovery_email_sent?: boolean
           sck?: string | null
           shipping_address: string
           shipping_cep: string
@@ -141,6 +143,7 @@ export type Database = {
           id?: string
           paid_at?: string | null
           product_name?: string
+          recovery_email_sent?: boolean
           sck?: string | null
           shipping_address?: string
           shipping_cep?: string
