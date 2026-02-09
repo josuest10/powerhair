@@ -32,18 +32,9 @@ serve(async (req) => {
     const body: PaymentConfirmationRequest = await req.json();
 
     const {
-      customerName,
-      customerEmail,
-      amount,
-      transactionId,
-      productName,
-      shippingAddress,
-      shippingNumber,
-      shippingComplement,
-      shippingNeighborhood,
-      shippingCity,
-      shippingState,
-      shippingCep,
+      customerName, customerEmail, amount, transactionId, productName,
+      shippingAddress, shippingNumber, shippingComplement,
+      shippingNeighborhood, shippingCity, shippingState, shippingCep,
     } = body;
 
     if (!customerEmail || !transactionId) {
@@ -61,6 +52,8 @@ serve(async (req) => {
       `CEP: ${shippingCep}`,
     ].filter(Boolean).join('<br>');
 
+    const LOGO_URL = "https://zaqllkndnofeggnlmlrp.supabase.co/storage/v1/object/public/email-assets/powerhair-logo.png";
+
     const emailHtml = `
 <!DOCTYPE html>
 <html>
@@ -69,15 +62,15 @@ serve(async (req) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pagamento Confirmado - PowerHair</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5;">
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7f8f3;">
   <table role="presentation" style="width: 100%; border-collapse: collapse;">
     <tr>
       <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <table role="presentation" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
           <!-- Header -->
           <tr>
-            <td style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); padding: 32px; border-radius: 16px 16px 0 0; text-align: center;">
-              <img src="https://zaqllkndnofeggnlmlrp.supabase.co/storage/v1/object/public/email-assets/powerhair-logo.png" alt="PowerHair" style="max-width: 180px; height: auto; margin-bottom: 12px;">
+            <td style="background: linear-gradient(135deg, #739926 0%, #608C1A 100%); padding: 32px; border-radius: 16px 16px 0 0; text-align: center;">
+              <img src="${LOGO_URL}" alt="PowerHair" style="max-width: 180px; height: auto; margin-bottom: 12px;">
               <div style="font-size: 48px; margin-bottom: 8px;">✅</div>
               <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">Pagamento Confirmado!</h1>
               <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 14px;">Seu pedido foi aprovado com sucesso</p>
@@ -87,8 +80,8 @@ serve(async (req) => {
           <!-- Content -->
           <tr>
             <td style="padding: 32px;">
-              <p style="margin: 0 0 24px 0; font-size: 16px; color: #333333;">
-                Olá <strong>${firstName}</strong>! 🎉
+              <p style="margin: 0 0 24px 0; font-size: 16px; color: #2d3319;">
+                Olá <strong>\${firstName}</strong>! 🎉
               </p>
               
               <p style="margin: 0 0 24px 0; font-size: 16px; color: #555555; line-height: 1.6;">
@@ -96,10 +89,10 @@ serve(async (req) => {
               </p>
               
               <!-- Order Summary -->
-              <table role="presentation" style="width: 100%; margin-bottom: 24px; border: 1px solid #e5e5e5; border-radius: 12px; overflow: hidden;">
+              <table role="presentation" style="width: 100%; margin-bottom: 24px; border: 1px solid #dde4cc; border-radius: 12px; overflow: hidden;">
                 <tr>
-                  <td style="padding: 16px; background-color: #fafafa; border-bottom: 1px solid #e5e5e5;">
-                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #333333;">📦 Resumo do Pedido</p>
+                  <td style="padding: 16px; background-color: #f4f7ec; border-bottom: 1px solid #dde4cc;">
+                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #3d4a24;">📦 Resumo do Pedido</p>
                   </td>
                 </tr>
                 <tr>
@@ -107,15 +100,15 @@ serve(async (req) => {
                     <table role="presentation" style="width: 100%;">
                       <tr>
                         <td style="padding: 8px 0; font-size: 14px; color: #666666;">Pedido:</td>
-                        <td style="padding: 8px 0; font-size: 14px; color: #333333; text-align: right; font-weight: bold;">#${transactionId}</td>
+                        <td style="padding: 8px 0; font-size: 14px; color: #333333; text-align: right; font-weight: bold;">#\${transactionId}</td>
                       </tr>
                       <tr>
                         <td style="padding: 8px 0; font-size: 14px; color: #666666;">Produto:</td>
-                        <td style="padding: 8px 0; font-size: 14px; color: #333333; text-align: right;">${productName}</td>
+                        <td style="padding: 8px 0; font-size: 14px; color: #333333; text-align: right;">\${productName}</td>
                       </tr>
                       <tr>
-                        <td style="padding: 8px 0; font-size: 14px; color: #666666; border-top: 1px solid #e5e5e5; padding-top: 16px;">Total pago:</td>
-                        <td style="padding: 8px 0; font-size: 18px; color: #10B981; text-align: right; font-weight: bold; border-top: 1px solid #e5e5e5; padding-top: 16px;">${formattedAmount}</td>
+                        <td style="padding: 8px 0; font-size: 14px; color: #666666; border-top: 1px solid #dde4cc; padding-top: 16px;">Total pago:</td>
+                        <td style="padding: 8px 0; font-size: 18px; color: #608C1A; text-align: right; font-weight: bold; border-top: 1px solid #dde4cc; padding-top: 16px;">\${formattedAmount}</td>
                       </tr>
                     </table>
                   </td>
@@ -123,16 +116,16 @@ serve(async (req) => {
               </table>
               
               <!-- Shipping Address -->
-              <table role="presentation" style="width: 100%; margin-bottom: 24px; border: 1px solid #e5e5e5; border-radius: 12px; overflow: hidden;">
+              <table role="presentation" style="width: 100%; margin-bottom: 24px; border: 1px solid #dde4cc; border-radius: 12px; overflow: hidden;">
                 <tr>
-                  <td style="padding: 16px; background-color: #fafafa; border-bottom: 1px solid #e5e5e5;">
-                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #333333;">🚚 Endereço de Entrega</p>
+                  <td style="padding: 16px; background-color: #f4f7ec; border-bottom: 1px solid #dde4cc;">
+                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #3d4a24;">🚚 Endereço de Entrega</p>
                   </td>
                 </tr>
                 <tr>
                   <td style="padding: 16px;">
                     <p style="margin: 0; font-size: 14px; color: #555555; line-height: 1.8;">
-                      ${fullAddress}
+                      \${fullAddress}
                     </p>
                   </td>
                 </tr>
@@ -141,9 +134,9 @@ serve(async (req) => {
               <!-- Next Steps -->
               <table role="presentation" style="width: 100%; margin-bottom: 24px;">
                 <tr>
-                  <td style="padding: 20px; background-color: #EFF6FF; border-radius: 12px; border-left: 4px solid #3B82F6;">
-                    <p style="margin: 0 0 12px 0; font-size: 14px; color: #1E40AF; font-weight: bold;">📬 Próximos passos:</p>
-                    <ul style="margin: 0; padding-left: 20px; color: #1E40AF; font-size: 14px; line-height: 1.8;">
+                  <td style="padding: 20px; background-color: #f4f7ec; border-radius: 12px; border-left: 4px solid #739926;">
+                    <p style="margin: 0 0 12px 0; font-size: 14px; color: #3d4a24; font-weight: bold;">📬 Próximos passos:</p>
+                    <ul style="margin: 0; padding-left: 20px; color: #3d4a24; font-size: 14px; line-height: 1.8;">
                       <li>Seu pedido será enviado em até 2 dias úteis</li>
                       <li>Você receberá o código de rastreio por e-mail</li>
                       <li>O prazo de entrega é de 5-12 dias úteis</li>
@@ -153,7 +146,7 @@ serve(async (req) => {
               </table>
               
               <p style="margin: 0; font-size: 14px; color: #555555; line-height: 1.6; text-align: center;">
-                Obrigado por escolher a PowerHair! 💜<br>
+                Obrigado por escolher a PowerHair! 🌿<br>
                 Estamos animados para você receber seu kit e começar sua transformação capilar.
               </p>
             </td>
@@ -161,7 +154,7 @@ serve(async (req) => {
           
           <!-- Footer -->
           <tr>
-            <td style="padding: 24px; background-color: #fafafa; border-radius: 0 0 16px 16px; text-align: center;">
+            <td style="padding: 24px; background-color: #f4f7ec; border-radius: 0 0 16px 16px; text-align: center;">
               <p style="margin: 0 0 8px 0; font-size: 12px; color: #888888;">
                 Dúvidas? Responda este e-mail que teremos prazer em ajudar.
               </p>
@@ -181,7 +174,7 @@ serve(async (req) => {
     const emailResponse = await resend.emails.send({
       from: "PowerHair <noreply@ipolishbrasil.shop>",
       to: [customerEmail],
-      subject: `✅ Pagamento Confirmado! Pedido #${transactionId}`,
+      subject: `✅ Pagamento Confirmado! Pedido #\${transactionId}`,
       html: emailHtml,
     });
 
@@ -189,19 +182,13 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify({ success: true, data: emailResponse }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (error) {
     console.error("Error sending payment confirmation email:", error);
     return new Response(
       JSON.stringify({ success: false, error: error.message }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json", ...corsHeaders },
-      }
+      { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   }
 });
