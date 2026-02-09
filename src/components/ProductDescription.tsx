@@ -303,6 +303,36 @@ const ProductDescription = () => {
               </div>
             </div>
 
+            {/* Expert Video Section */}
+            <div className="mt-10">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">Especialista Explica</h3>
+                  <p className="text-sm text-muted-foreground">Veja o que os profissionais dizem</p>
+                </div>
+              </div>
+              
+              <div className="relative overflow-hidden rounded-2xl border border-border bg-card shadow-lg">
+                <div className="aspect-video w-full">
+                  <iframe
+                    src="https://www.youtube.com/embed/9gmWiQ1EzrU"
+                    title="Especialista fala sobre o Kit SOS Crescimento"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    className="w-full h-full"
+                  />
+                </div>
+              </div>
+              
+              <p className="text-center text-sm text-muted-foreground mt-4 flex items-center justify-center gap-2">
+                <Shield className="w-4 h-4 text-primary" />
+                Produto aprovado e recomendado por especialistas
+              </p>
+            </div>
+
           </>
         )}
       </div>
