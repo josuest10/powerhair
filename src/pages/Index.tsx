@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import PromoBanner from "@/components/PromoBanner";
 import Header from "@/components/Header";
 import Breadcrumb from "@/components/Breadcrumb";
@@ -9,26 +9,46 @@ import ProductDescription from "@/components/ProductDescription";
 import ProductReviews from "@/components/ProductReviews";
 import ProductFAQ from "@/components/ProductFAQ";
 import Footer from "@/components/Footer";
+import StickyProductCTA from "@/components/StickyProductCTA";
 import { trackViewContent } from "@/lib/tiktok-pixel";
 import { trackMetaViewContent } from "@/lib/meta-pixel";
 import productGallery5 from "@/assets/product-gallery-5.png";
+
+const PRODUCT_PRICE = 97.00;
+const ORIGINAL_PRICE = 179.90;
  
 const Index = () => {
   const hasTrackedViewContent = useRef(false);
+  const [showStickyCTA, setShowStickyCTA] = useState(false);
+  const productInfoRef = useRef<HTMLDivElement>(null);
   
+  // Show sticky CTA when user scrolls past the product info section
+  useEffect(() => {
+    const handleScroll = () => {
+      if (productInfoRef.current) {
+        const rect = productInfoRef.current.getBoundingClientRect();
+        // Show when product info is out of view (scrolled past)
+        setShowStickyCTA(rect.bottom < 0);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   useEffect(() => {
     if (!hasTrackedViewContent.current) {
       hasTrackedViewContent.current = true;
       // TikTok ViewContent
       trackViewContent({
-        value: 97.00,
+        value: PRODUCT_PRICE,
         currency: 'BRL',
         content_id: 'kit-sos-crescimento',
         content_name: 'Kit SOS Crescimento e Antiqueda',
       });
       // Meta ViewContent
       trackMetaViewContent({
-        value: 97.00,
+        value: PRODUCT_PRICE,
         currency: 'BRL',
         content_ids: ['kit-sos-crescimento'],
         content_name: 'Kit SOS Crescimento e Antiqueda',
@@ -97,36 +117,43 @@ const Index = () => {
              />
            </div>
            
-           {/* Right column - Product Info */}
-           <div>
-             <ProductInfo
-               title="Kit SOS Crescimento e Antiqueda: Shampoo 300ml + Máscara 300g + Tônico Fortalecedor 100ml"
-               brand="LIZZANTE"
-               rating={5}
-                 reviewCount={847}
-                 kitItems={kitItems}
-                  totalPrice={97.00}
-                  installmentPrice={24.25}
-                  installmentCount={4}
-               />
-           </div>
-         </div>
- 
-         {/* Product Attributes */}
-         <ProductAttributes attributes={attributes} />
- 
-         {/* Product Description */}
-         <ProductDescription />
- 
+            {/* Right column - Product Info */}
+            <div ref={productInfoRef}>
+              <ProductInfo
+                title="Kit SOS Crescimento e Antiqueda: Shampoo 300ml + Máscara 300g + Tônico Fortalecedor 100ml"
+                brand="LIZZANTE"
+                rating={5}
+                reviewCount={847}
+                kitItems={kitItems}
+                totalPrice={PRODUCT_PRICE}
+                installmentPrice={24.25}
+                installmentCount={4}
+              />
+            </div>
+          </div>
+  
+          {/* Product Attributes */}
+          <ProductAttributes attributes={attributes} />
+  
+          {/* Product Description */}
+          <ProductDescription />
+  
           {/* Product Reviews */}
           <ProductReviews />
 
           {/* FAQ Section */}
           <ProductFAQ />
         </main>
-       
-       <Footer />
-     </div>
+        
+        <Footer />
+        
+        {/* Sticky CTA for Mobile */}
+        <StickyProductCTA 
+          price={PRODUCT_PRICE} 
+          originalPrice={ORIGINAL_PRICE} 
+          isVisible={showStickyCTA} 
+        />
+      </div>
   );
 };
 
