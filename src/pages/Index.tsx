@@ -14,7 +14,7 @@ import { trackViewContent } from "@/lib/tiktok-pixel";
 import { trackMetaViewContent } from "@/lib/meta-pixel";
 import productGallery5 from "@/assets/product-gallery-5.png";
 
-const PRODUCT_PRICE = 97.00;
+const PRODUCT_PRICE = 77.91;
 const ORIGINAL_PRICE = 179.90;
  
 const Index = () => {
@@ -129,7 +129,7 @@ const Index = () => {
                 reviewCount={847}
                 kitItems={kitItems}
                 totalPrice={PRODUCT_PRICE}
-                installmentPrice={24.25}
+                installmentPrice={19.48}
                 installmentCount={4}
               />
             </div>
