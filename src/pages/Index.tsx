@@ -71,26 +71,29 @@ const Index = () => {
      productGallery5,
    ];
  
-   const kitItems = [
-     {
-       image: "https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg",
-       price: 97.00,
-       installments: "Shampoo 300ml",
-       name: "Shampoo SOS",
-     },
-     {
-       image: "https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg",
-       price: 97.00,
-       installments: "Máscara 300g",
-       name: "Máscara SOS",
-     },
-     {
-       image: "https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg",
-       price: 59.90,
-       installments: "Tônico 100ml",
-       name: "Tônico SOS",
-     },
-   ];
+  const kitItems = [
+    {
+      // Shampoo individual image
+      image: "https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg",
+      price: 97.00,
+      installments: "Shampoo 300ml",
+      name: "Shampoo SOS",
+    },
+    {
+      // Máscara individual image
+      image: "https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg",
+      price: 97.00,
+      installments: "Máscara 300g",
+      name: "Máscara SOS",
+    },
+    {
+      // Tônico individual image
+      image: "https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--3--ih0818emza-mu3hsn7l0f.jpeg",
+      price: 59.90,
+      installments: "Tônico 100ml",
+      name: "Tônico SOS",
+    },
+  ];
  
    const attributes = [
      { label: "Marca", value: "Lizzante Profissional" },
