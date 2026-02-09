@@ -52,7 +52,7 @@ const StickyProductCTA = ({ price, originalPrice, isVisible }: StickyProductCTAP
           <Button 
             onClick={handleBuyClick}
             disabled={isLoading}
-            className="h-12 px-6 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/30"
+            className="h-12 px-6 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/30 animate-pulse-subtle"
           >
             {isLoading ? (
               <>
