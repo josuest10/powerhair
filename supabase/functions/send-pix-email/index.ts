@@ -70,8 +70,8 @@ serve(async (req) => {
           <!-- Header -->
           <tr>
             <td style="background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%); padding: 32px; border-radius: 16px 16px 0 0; text-align: center;">
-              <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: bold;">💜 PowerHair</h1>
-              <p style="margin: 8px 0 0 0; color: rgba(255,255,255,0.9); font-size: 16px;">Pedido criado com sucesso!</p>
+              <img src="https://zaqllkndnofeggnlmlrp.supabase.co/storage/v1/object/public/email-assets/powerhair-logo.png" alt="PowerHair" style="max-width: 180px; height: auto; margin-bottom: 12px;">
+              <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 16px;">Pedido criado com sucesso!</p>
             </td>
           </tr>
           
