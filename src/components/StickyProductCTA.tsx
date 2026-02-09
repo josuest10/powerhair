@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ShoppingBag, Loader2, Truck, Shield } from "lucide-react";
+import { ShoppingBag, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -27,12 +27,6 @@ const StickyProductCTA = ({ price, originalPrice, isVisible }: StickyProductCTAP
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-card/95 backdrop-blur-md border-t-2 border-primary/20 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] animate-slide-up">
       <div className="container max-w-4xl mx-auto px-4 py-3">
-        {/* Free Shipping Badge */}
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <Truck className="w-3.5 h-3.5 text-primary" />
-          <span className="text-xs font-medium text-primary">Frete Grátis para todo Brasil</span>
-        </div>
-        
         <div className="flex items-center gap-3">
           {/* Price Summary */}
           <div className="flex-1 min-w-0">
@@ -72,16 +66,6 @@ const StickyProductCTA = ({ price, originalPrice, isVisible }: StickyProductCTAP
               </>
             )}
           </Button>
-        </div>
-        
-        {/* Trust Indicator */}
-        <div className="flex items-center justify-center gap-4 mt-2 text-[10px] text-muted-foreground">
-          <span className="flex items-center gap-1">
-            <Shield className="w-3 h-3" />
-            Compra Segura
-          </span>
-          <span>•</span>
-          <span>4x de R$ {(price / 4).toFixed(2).replace(".", ",")}</span>
         </div>
       </div>
     </div>
