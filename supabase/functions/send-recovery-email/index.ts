@@ -51,12 +51,12 @@ function buildRecoveryEmailHtml(firstName: string, productName: string, formatte
               <!-- Coupon -->
               <table role="presentation" style="width: 100%; margin-bottom: 24px;">
                 <tr>
-                  <td style="background: linear-gradient(135deg, #d4a017 0%, #b8860b 100%); padding: 24px; border-radius: 12px; text-align: center;">
+                  <td style="background: linear-gradient(135deg, #739926 0%, #608C1A 100%); padding: 24px; border-radius: 12px; text-align: center;">
                     <p style="margin: 0 0 4px 0; font-size: 14px; color: rgba(255,255,255,0.9);">🎁 Presente especial só pra você:</p>
                     <p style="margin: 0 0 8px 0; font-size: 36px; font-weight: bold; color: #ffffff;">10% OFF</p>
                     <p style="margin: 0 0 12px 0; font-size: 14px; color: rgba(255,255,255,0.9);">Use o cupom no checkout:</p>
                     <div style="background-color: rgba(255,255,255,0.95); display: inline-block; padding: 10px 24px; border-radius: 8px;">
-                      <span style="font-size: 20px; font-weight: bold; color: #b8860b; letter-spacing: 3px; font-family: monospace;">VOLTEI10</span>
+                      <span style="font-size: 20px; font-weight: bold; color: #608C1A; letter-spacing: 3px; font-family: monospace;">VOLTEI10</span>
                     </div>
                   </td>
                 </tr>

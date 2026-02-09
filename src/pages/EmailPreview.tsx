@@ -173,12 +173,12 @@ const RecoveryEmail = () => `
 <p style="margin:0 0 16px 0;font-size:16px;color:#555;line-height:1.7;">Seu pedido do <strong>${sampleData.productName}</strong> ainda está esperando por você. O pagamento não foi concluído e seu pedido será cancelado em breve.</p>
 <p style="margin:0 0 16px 0;font-size:16px;color:#555;line-height:1.7;">Sabemos que às vezes a vida corrida atrapalha, mas pense: <strong>quantos dias mais você vai deixar seu cabelo sem os cuidados que ele precisa?</strong></p>
 <p style="margin:0 0 24px 0;font-size:16px;color:#555;line-height:1.7;">Cada dia que passa sem tratamento é um dia a mais de queda, ressecamento e danos. Seu cabelo está pedindo socorro. 🥺</p>
-<table role="presentation" style="width:100%;margin-bottom:24px;"><tr><td style="background:linear-gradient(135deg,#d4a017 0%,#b8860b 100%);padding:24px;border-radius:12px;text-align:center;">
+<table role="presentation" style="width:100%;margin-bottom:24px;"><tr><td style="background:linear-gradient(135deg,#739926 0%,#608C1A 100%);padding:24px;border-radius:12px;text-align:center;">
 <p style="margin:0 0 4px 0;font-size:14px;color:rgba(255,255,255,0.9);">🎁 Presente especial só pra você:</p>
 <p style="margin:0 0 8px 0;font-size:36px;font-weight:bold;color:#ffffff;">10% OFF</p>
 <p style="margin:0 0 12px 0;font-size:14px;color:rgba(255,255,255,0.9);">Use o cupom no checkout:</p>
 <div style="background-color:rgba(255,255,255,0.95);display:inline-block;padding:10px 24px;border-radius:8px;">
-<span style="font-size:20px;font-weight:bold;color:#b8860b;letter-spacing:3px;font-family:monospace;">VOLTEI10</span>
+<span style="font-size:20px;font-weight:bold;color:#608C1A;letter-spacing:3px;font-family:monospace;">VOLTEI10</span>
 </div>
 </td></tr></table>
 <table role="presentation" style="width:100%;margin-bottom:24px;border:1px solid #dde4cc;border-radius:12px;overflow:hidden;">
