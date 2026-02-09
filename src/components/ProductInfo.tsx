@@ -48,7 +48,7 @@ const ProductInfo = ({
   const [shippingResult, setShippingResult] = useState<ShippingResult | null>(null);
   const [cepError, setCepError] = useState<string | null>(null);
   
-  const originalPrice = 149.90;
+  const originalPrice = 179.90;
   const unitPrice = totalPrice;
   const currentTotalPrice = unitPrice * quantity;
   const discount = Math.round(((originalPrice - unitPrice) / originalPrice) * 100);

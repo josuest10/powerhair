@@ -73,9 +73,9 @@ serve(async (req) => {
                 <tr>
                   <td style="background-color: #F3E8FF; padding: 20px; border-radius: 12px; text-align: center;">
                     <p style="margin: 0 0 4px 0; font-size: 14px; color: #7C3AED;">Valor a pagar:</p>
-                    <p style="margin: 0 0 4px 0; font-size: 14px; color: #9CA3AF; text-decoration: line-through;">De R$ 149,00</p>
+                    <p style="margin: 0 0 4px 0; font-size: 14px; color: #9CA3AF; text-decoration: line-through;">De R$ 179,90</p>
                     <p style="margin: 0; font-size: 32px; font-weight: bold; color: #7C3AED;">\${formattedAmount}</p>
-                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #10B981; font-weight: bold;">Economize R$ 52,00! ✨</p>
+                    <p style="margin: 4px 0 0 0; font-size: 12px; color: #10B981; font-weight: bold;">Economize R$ 82,90! ✨</p>
                   </td>
                 </tr>
               </table>
