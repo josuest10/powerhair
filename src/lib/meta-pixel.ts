@@ -154,6 +154,43 @@ export function trackMetaPageView() {
 }
 
 /**
+ * Track Lead event - fires when user provides contact info
+ * Used when user fills name + email in checkout form
+ */
+export function trackMetaLead(params: {
+  value?: number;
+  currency?: string;
+  userData?: MetaUserData;
+}) {
+  if (typeof window !== 'undefined' && window.fbq) {
+    const eventId = generateEventId();
+    
+    const eventData: Record<string, unknown> = {
+      value: params.value || 0,
+      currency: params.currency || 'BRL',
+      content_name: 'Kit SOS Crescimento e Antiqueda',
+    };
+
+    // Add Advanced Matching data if available
+    if (params.userData) {
+      const amData = buildAdvancedMatchingData(params.userData);
+      if (amData) {
+        Object.assign(eventData, amData);
+      }
+    }
+
+    window.fbq('track', 'Lead', eventData, { eventID: eventId });
+    
+    console.log('Meta Pixel: Lead tracked', {
+      event_id: eventId,
+      has_email: !!params.userData?.email,
+      has_phone: !!params.userData?.phone,
+      has_name: !!(params.userData?.firstName || params.userData?.lastName),
+    });
+  }
+}
+
+/**
  * Track ViewContent event
  */
 export function trackMetaViewContent(params: {
