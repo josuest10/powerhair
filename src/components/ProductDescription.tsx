@@ -31,7 +31,7 @@ const ProductDescription = () => {
   const resultImages = [
     { src: result1, name: "Ana Paula", time: "45 dias" },
     { src: result2, name: "Fernanda", time: "60 dias" },
-    { src: result3, name: "Juliana", time: "30 dias" },
+    { src: result3, name: "Juliana", time: "5 meses" },
     { src: result4, name: "Mariana", time: "90 dias" },
   ];
 
