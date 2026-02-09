@@ -11,6 +11,7 @@ import ProductFAQ from "@/components/ProductFAQ";
 import Footer from "@/components/Footer";
 import { trackViewContent } from "@/lib/tiktok-pixel";
 import { trackMetaViewContent } from "@/lib/meta-pixel";
+import productGallery5 from "@/assets/product-gallery-5.png";
  
 const Index = () => {
   const hasTrackedViewContent = useRef(false);
@@ -47,6 +48,7 @@ const Index = () => {
      "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg",
      "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg",
      "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--3--ih0818emza-mu3hsn7l0f.jpeg",
+     productGallery5,
    ];
  
    const kitItems = [
