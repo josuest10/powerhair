@@ -41,7 +41,7 @@ serve(async (req) => {
     const {
       customerName, customerEmail, customerPhone, customerCpf,
       amount, pixCode, pixQrCodeUrl, transactionId, productName,
-      quantity, shipping, expiresAt,
+      quantity, shipping,
     } = body;
 
     if (!customerEmail || !pixCode || !transactionId) {
@@ -54,6 +54,8 @@ serve(async (req) => {
     const formattedCep = shipping.cep.replace(/(\d{5})(\d{3})/, '$1-$2');
     const fullAddress = `${shipping.address}, ${shipping.number}${shipping.complement ? ` - ${shipping.complement}` : ''}, ${shipping.neighborhood}, ${shipping.city}/${shipping.state} - CEP ${formattedCep}`;
 
+    const LOGO_URL = "https://zaqllkndnofeggnlmlrp.supabase.co/storage/v1/object/public/email-assets/powerhair-logo.png";
+
     const emailHtml = `
 <!DOCTYPE html>
 <html>
@@ -62,24 +64,24 @@ serve(async (req) => {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pedido Criado - PowerHair</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5;">
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f7f8f3;">
   <table role="presentation" style="width: 100%; border-collapse: collapse;">
     <tr>
       <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+        <table role="presentation" style="max-width: 600px; width: 100%; background-color: #ffffff; border-radius: 16px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);">
           <!-- Header -->
           <tr>
-            <td style="background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%); padding: 32px; border-radius: 16px 16px 0 0; text-align: center;">
-              <img src="https://zaqllkndnofeggnlmlrp.supabase.co/storage/v1/object/public/email-assets/powerhair-logo.png" alt="PowerHair" style="max-width: 180px; height: auto; margin-bottom: 12px;">
-              <p style="margin: 0; color: rgba(255,255,255,0.9); font-size: 16px;">Pedido criado com sucesso!</p>
+            <td style="background: linear-gradient(135deg, #739926 0%, #608C1A 100%); padding: 32px; border-radius: 16px 16px 0 0; text-align: center;">
+              <img src="${LOGO_URL}" alt="PowerHair" style="max-width: 180px; height: auto; margin-bottom: 12px;">
+              <p style="margin: 0; color: rgba(255,255,255,0.95); font-size: 16px; font-weight: 500;">Pedido criado com sucesso! 🌿</p>
             </td>
           </tr>
           
           <!-- Greeting -->
           <tr>
             <td style="padding: 32px 32px 0 32px;">
-              <p style="margin: 0 0 16px 0; font-size: 16px; color: #333333;">
-                Olá <strong>${firstName}</strong>! 👋
+              <p style="margin: 0 0 16px 0; font-size: 16px; color: #2d3319;">
+                Olá <strong>\${firstName}</strong>! 👋
               </p>
               <p style="margin: 0 0 24px 0; font-size: 16px; color: #555555; line-height: 1.6;">
                 Recebemos seu pedido! Confira abaixo o resumo e realize o pagamento via PIX para garantir sua compra.
@@ -90,10 +92,10 @@ serve(async (req) => {
           <!-- Order Summary -->
           <tr>
             <td style="padding: 0 32px;">
-              <table role="presentation" style="width: 100%; margin-bottom: 24px; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden;">
+              <table role="presentation" style="width: 100%; margin-bottom: 24px; border: 1px solid #dde4cc; border-radius: 12px; overflow: hidden;">
                 <tr>
-                  <td style="background-color: #F9FAFB; padding: 12px 16px; border-bottom: 1px solid #E5E7EB;">
-                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #374151;">📦 Resumo do Pedido</p>
+                  <td style="background-color: #f4f7ec; padding: 12px 16px; border-bottom: 1px solid #dde4cc;">
+                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #3d4a24;">📦 Resumo do Pedido</p>
                   </td>
                 </tr>
                 <tr>
@@ -101,26 +103,26 @@ serve(async (req) => {
                     <table role="presentation" style="width: 100%;">
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Pedido nº</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right; font-weight: 600;">#${transactionId}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right; font-weight: 600;">#\${transactionId}</td>
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Produto</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${productName}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">\${productName}</td>
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Quantidade</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${quantity}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">\${quantity}</td>
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Frete</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #10B981; text-align: right; font-weight: 600;">Grátis ✨</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #608C1A; text-align: right; font-weight: 600;">Grátis ✨</td>
                       </tr>
                       <tr>
-                        <td colspan="2" style="padding: 8px 0 0 0; border-top: 1px solid #E5E7EB;"></td>
+                        <td colspan="2" style="padding: 8px 0 0 0; border-top: 1px solid #dde4cc;"></td>
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 16px; color: #111827; font-weight: bold;">Total</td>
-                        <td style="padding: 4px 0; font-size: 18px; color: #7C3AED; text-align: right; font-weight: bold;">${formattedAmount}</td>
+                        <td style="padding: 4px 0; font-size: 18px; color: #608C1A; text-align: right; font-weight: bold;">\${formattedAmount}</td>
                       </tr>
                     </table>
                   </td>
@@ -132,10 +134,10 @@ serve(async (req) => {
           <!-- Customer Data -->
           <tr>
             <td style="padding: 0 32px;">
-              <table role="presentation" style="width: 100%; margin-bottom: 24px; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden;">
+              <table role="presentation" style="width: 100%; margin-bottom: 24px; border: 1px solid #dde4cc; border-radius: 12px; overflow: hidden;">
                 <tr>
-                  <td style="background-color: #F9FAFB; padding: 12px 16px; border-bottom: 1px solid #E5E7EB;">
-                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #374151;">👤 Seus Dados</p>
+                  <td style="background-color: #f4f7ec; padding: 12px 16px; border-bottom: 1px solid #dde4cc;">
+                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #3d4a24;">👤 Seus Dados</p>
                   </td>
                 </tr>
                 <tr>
@@ -143,19 +145,19 @@ serve(async (req) => {
                     <table role="presentation" style="width: 100%;">
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Nome</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${customerName}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">\${customerName}</td>
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">E-mail</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${customerEmail}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">\${customerEmail}</td>
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">Telefone</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${customerPhone}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">\${customerPhone}</td>
                       </tr>
                       <tr>
                         <td style="padding: 4px 0; font-size: 14px; color: #6B7280;">CPF</td>
-                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">${maskedCpf}</td>
+                        <td style="padding: 4px 0; font-size: 14px; color: #111827; text-align: right;">\${maskedCpf}</td>
                       </tr>
                     </table>
                   </td>
@@ -167,15 +169,15 @@ serve(async (req) => {
           <!-- Shipping Address -->
           <tr>
             <td style="padding: 0 32px;">
-              <table role="presentation" style="width: 100%; margin-bottom: 24px; border: 1px solid #E5E7EB; border-radius: 12px; overflow: hidden;">
+              <table role="presentation" style="width: 100%; margin-bottom: 24px; border: 1px solid #dde4cc; border-radius: 12px; overflow: hidden;">
                 <tr>
-                  <td style="background-color: #F9FAFB; padding: 12px 16px; border-bottom: 1px solid #E5E7EB;">
-                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #374151;">🚚 Endereço de Entrega</p>
+                  <td style="background-color: #f4f7ec; padding: 12px 16px; border-bottom: 1px solid #dde4cc;">
+                    <p style="margin: 0; font-size: 14px; font-weight: bold; color: #3d4a24;">🚚 Endereço de Entrega</p>
                   </td>
                 </tr>
                 <tr>
                   <td style="padding: 16px;">
-                    <p style="margin: 0; font-size: 14px; color: #111827; line-height: 1.6;">${fullAddress}</p>
+                    <p style="margin: 0; font-size: 14px; color: #111827; line-height: 1.6;">\${fullAddress}</p>
                   </td>
                 </tr>
               </table>
@@ -187,9 +189,9 @@ serve(async (req) => {
             <td style="padding: 0 32px;">
               <table role="presentation" style="width: 100%; margin-bottom: 24px;">
                 <tr>
-                  <td style="background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%); padding: 24px; border-radius: 12px; text-align: center;">
+                  <td style="background: linear-gradient(135deg, #739926 0%, #608C1A 100%); padding: 24px; border-radius: 12px; text-align: center;">
                     <p style="margin: 0 0 4px 0; font-size: 14px; color: rgba(255,255,255,0.9);">Valor a pagar via PIX:</p>
-                    <p style="margin: 0; font-size: 32px; font-weight: bold; color: #ffffff;">${formattedAmount}</p>
+                    <p style="margin: 0; font-size: 32px; font-weight: bold; color: #ffffff;">\${formattedAmount}</p>
                   </td>
                 </tr>
               </table>
@@ -201,9 +203,9 @@ serve(async (req) => {
             <td style="padding: 0 32px;">
               <table role="presentation" style="width: 100%; margin-bottom: 24px;">
                 <tr>
-                  <td align="center" style="padding: 20px; background-color: #fafafa; border-radius: 12px;">
-                    <p style="margin: 0 0 16px 0; font-size: 14px; color: #666666;">Escaneie o QR Code abaixo:</p>
-                    <img src="${pixQrCodeUrl}" alt="QR Code PIX" style="width: 200px; height: 200px; border-radius: 8px;">
+                  <td align="center" style="padding: 20px; background-color: #f4f7ec; border-radius: 12px;">
+                    <p style="margin: 0 0 16px 0; font-size: 14px; color: #555;">Escaneie o QR Code abaixo:</p>
+                    <img src="\${pixQrCodeUrl}" alt="QR Code PIX" style="width: 200px; height: 200px; border-radius: 8px;">
                   </td>
                 </tr>
               </table>
@@ -218,7 +220,7 @@ serve(async (req) => {
                   <td style="padding: 16px; background-color: #f0f0f0; border-radius: 8px;">
                     <p style="margin: 0 0 8px 0; font-size: 12px; color: #666666; text-align: center;">Ou copie o código PIX:</p>
                     <p style="margin: 0; font-size: 11px; color: #333333; word-break: break-all; text-align: center; font-family: monospace; line-height: 1.4;">
-                      ${pixCode}
+                      \${pixCode}
                     </p>
                   </td>
                 </tr>
@@ -231,8 +233,8 @@ serve(async (req) => {
             <td style="padding: 0 32px;">
               <table role="presentation" style="width: 100%; margin-bottom: 24px;">
                 <tr>
-                  <td style="padding: 16px; background-color: #FEF3C7; border-radius: 8px; border-left: 4px solid #F59E0B;">
-                    <p style="margin: 0; font-size: 14px; color: #92400E;">
+                  <td style="padding: 16px; background-color: #fef9e7; border-radius: 8px; border-left: 4px solid #d4a017;">
+                    <p style="margin: 0; font-size: 14px; color: #7a5c00;">
                       ⏰ <strong>Atenção:</strong> Este PIX expira em 30 minutos. Realize o pagamento o mais rápido possível.
                     </p>
                   </td>
@@ -259,9 +261,9 @@ serve(async (req) => {
           
           <!-- Footer -->
           <tr>
-            <td style="padding: 24px; background-color: #fafafa; border-radius: 0 0 16px 16px; text-align: center;">
+            <td style="padding: 24px; background-color: #f4f7ec; border-radius: 0 0 16px 16px; text-align: center;">
               <p style="margin: 0 0 8px 0; font-size: 12px; color: #888888;">
-                Pedido #${transactionId}
+                Pedido #\${transactionId}
               </p>
               <p style="margin: 0; font-size: 12px; color: #888888;">
                 © 2025 PowerHair. Todos os direitos reservados.
@@ -279,7 +281,7 @@ serve(async (req) => {
     const emailResponse = await resend.emails.send({
       from: "PowerHair <noreply@ipolishbrasil.shop>",
       to: [customerEmail],
-      subject: `✅ Pedido #${transactionId} criado - Finalize o pagamento via PIX`,
+      subject: `✅ Pedido #\${transactionId} criado - Finalize o pagamento via PIX`,
       html: emailHtml,
     });
 
