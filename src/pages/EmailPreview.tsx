@@ -14,8 +14,8 @@ const sampleData = {
   quantity: 1,
   formattedAmount: "R$ 77,91",
   fullAddress: "Rua das Flores, 123, Centro, São Paulo/SP - CEP 01234-567",
-  pixCode: "00020126580014br.gov.bcb.pix0136example-pix-code-here5204000053039865802BR5925POWERHAIR6009SAO PAULO",
-  pixQrCodeUrl: "https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=example",
+  pixCode: "00020126580014br.gov.bcb.pix0136a1b2c3d4-e5f6-7890-abcd-ef1234567890520400005303986540577.915802BR5925POWERHAIR COMERCIO LTDA6009SAO PAULO62070503***6304ABCD",
+  pixQrCodeUrl: "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=00020126580014br.gov.bcb.pix0136example",
 };
 
 const OrderConfirmationEmail = () => `
@@ -76,6 +76,12 @@ const OrderConfirmationEmail = () => `
 <table role="presentation" style="width:100%;margin-bottom:24px;"><tr><td align="center" style="padding:20px;background-color:#fafafa;border-radius:12px;">
 <p style="margin:0 0 16px 0;font-size:14px;color:#666;">Escaneie o QR Code abaixo:</p>
 <img src="${sampleData.pixQrCodeUrl}" alt="QR Code PIX" style="width:200px;height:200px;border-radius:8px;">
+</td></tr></table>
+</td></tr>
+<tr><td style="padding:0 32px;">
+<table role="presentation" style="width:100%;margin-bottom:24px;"><tr><td style="padding:16px;background-color:#f0f0f0;border-radius:8px;">
+<p style="margin:0 0 8px 0;font-size:12px;color:#666;text-align:center;">Ou copie o código PIX:</p>
+<p style="margin:0;font-size:11px;color:#333;word-break:break-all;text-align:center;font-family:monospace;line-height:1.4;">${sampleData.pixCode}</p>
 </td></tr></table>
 </td></tr>
 <tr><td style="padding:0 32px;">
