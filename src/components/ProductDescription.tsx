@@ -231,6 +231,9 @@ const ProductDescription = () => {
               <p className="text-center text-xs text-muted-foreground mt-4">
                 * Resultados podem variar de pessoa para pessoa. Clique nas imagens para ampliar.
               </p>
+              <p className="text-center text-sm font-medium text-foreground mt-3 flex items-center justify-center gap-2">
+                ✨ Funciona para todos os tipos de cabelo: <span className="text-primary">liso, ondulado e cacheado</span>
+              </p>
             </div>
 
           </>
