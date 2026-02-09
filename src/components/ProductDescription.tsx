@@ -1,8 +1,15 @@
 import { useState } from "react";
-import { ChevronDown, ChevronUp, Check, Leaf, Droplets, Sparkles, Zap, Heart, Shield, Star } from "lucide-react";
+import { ChevronDown, ChevronUp, Check, Leaf, Droplets, Sparkles, Zap, Heart, Shield, Star, TrendingUp, X } from "lucide-react";
+
+// Import result images
+import result1 from "@/assets/results/result-1.png";
+import result2 from "@/assets/results/result-2.png";
+import result3 from "@/assets/results/result-3.png";
+import result4 from "@/assets/results/result-4.png";
 
 const ProductDescription = () => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const benefits = [
     { icon: Star, text: "Recupere sua autoconfiança", highlight: true },
@@ -19,6 +26,13 @@ const ProductDescription = () => {
     { name: "Keratina", desc: "Reconstrução da fibra capilar", icon: "✨" },
     { name: "Extrato de Bardana", desc: "Ação anti-inflamatória", icon: "🍃" },
     { name: "Extrato de Café", desc: "Controle da alopecia", icon: "☕" },
+  ];
+
+  const resultImages = [
+    { src: result1, name: "Ana Paula", time: "45 dias" },
+    { src: result2, name: "Fernanda", time: "60 dias" },
+    { src: result3, name: "Juliana", time: "30 dias" },
+    { src: result4, name: "Mariana", time: "90 dias" },
   ];
 
   return (
@@ -174,9 +188,75 @@ const ProductDescription = () => {
               </div>
             </div>
 
+            {/* Results Gallery */}
+            <div className="mt-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <TrendingUp className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground">Resultados Reais</h3>
+                  <p className="text-sm text-muted-foreground">Veja a transformação de quem já usou</p>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {resultImages.map((result, index) => (
+                  <div 
+                    key={index}
+                    onClick={() => setSelectedImage(result.src)}
+                    className="group relative cursor-pointer overflow-hidden rounded-xl border-2 border-border hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10"
+                  >
+                    <div className="aspect-[3/4] overflow-hidden">
+                      <img 
+                        src={result.src} 
+                        alt={`Resultado de ${result.name}`}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute bottom-0 left-0 right-0 p-3 translate-y-full group-hover:translate-y-0 transition-transform duration-300">
+                      <p className="text-white font-medium text-sm">{result.name}</p>
+                      <p className="text-white/80 text-xs flex items-center gap-1">
+                        <Sparkles className="w-3 h-3" /> {result.time} de uso
+                      </p>
+                    </div>
+                    <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      Ver foto
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <p className="text-center text-xs text-muted-foreground mt-4">
+                * Resultados podem variar de pessoa para pessoa. Clique nas imagens para ampliar.
+              </p>
+            </div>
+
           </>
         )}
       </div>
+
+      {/* Image Modal */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 animate-fade-in"
+          onClick={() => setSelectedImage(null)}
+        >
+          <button 
+            onClick={() => setSelectedImage(null)}
+            className="absolute top-4 right-4 text-white/80 hover:text-white transition-colors"
+          >
+            <X className="w-8 h-8" />
+          </button>
+          <img 
+            src={selectedImage} 
+            alt="Resultado ampliado"
+            className="max-w-full max-h-[90vh] object-contain rounded-lg animate-scale-in"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
 
       {/* Toggle button */}
       <button
