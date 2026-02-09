@@ -195,35 +195,46 @@
       const pixQrCodeUrl = `https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=${encodeURIComponent(data.pix?.qrcode || '')}`;
 
       // Send PIX generated email (non-blocking)
-      try {
-        const emailPayload = {
-          customerName: body.customer.name,
-          customerEmail: body.customer.email,
-          amount: body.amount,
-          pixCode: data.pix?.qrcode || '',
-          pixQrCodeUrl: pixQrCodeUrl,
-          transactionId: data.id.toString(),
-          productName: body.items[0]?.name || 'Kit SOS Crescimento e Antiqueda',
-          expiresAt: data.pix?.expirationDate,
-        };
+       try {
+         const emailPayload = {
+           customerName: body.customer.name,
+           customerEmail: body.customer.email,
+           customerPhone: body.customer.phone,
+           customerCpf: body.customer.document,
+           amount: body.amount,
+           pixCode: data.pix?.qrcode || '',
+           pixQrCodeUrl: pixQrCodeUrl,
+           transactionId: data.id.toString(),
+           productName: body.items[0]?.name || 'Kit SOS Crescimento e Antiqueda',
+           quantity: body.items[0]?.quantity || 1,
+           shipping: {
+             address: body.shipping.address,
+             number: body.shipping.number,
+             complement: body.shipping.complement || '',
+             neighborhood: body.shipping.neighborhood,
+             city: body.shipping.city,
+             state: body.shipping.state,
+             cep: body.shipping.zipCode,
+           },
+           expiresAt: data.pix?.expirationDate,
+         };
 
-        // Fire and forget - don't await to not delay the response
-        fetch(`${SUPABASE_URL}/functions/v1/send-pix-email`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-          },
-          body: JSON.stringify(emailPayload),
-        }).then(res => res.json()).then(result => {
-          console.log('PIX email sent:', result);
-        }).catch(err => {
-          console.error('Error sending PIX email:', err);
-        });
-      } catch (emailError) {
-        console.error('Error preparing PIX email:', emailError);
-        // Don't fail the payment if email fails
-      }
+         // Fire and forget - don't await to not delay the response
+         fetch(`${SUPABASE_URL}/functions/v1/send-pix-email`, {
+           method: 'POST',
+           headers: {
+             'Content-Type': 'application/json',
+             'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+           },
+           body: JSON.stringify(emailPayload),
+         }).then(res => res.json()).then(result => {
+           console.log('Order confirmation email sent:', result);
+         }).catch(err => {
+           console.error('Error sending order email:', err);
+         });
+       } catch (emailError) {
+         console.error('Error preparing order email:', emailError);
+       }
 
       return new Response(
         JSON.stringify({
