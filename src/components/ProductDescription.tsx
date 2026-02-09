@@ -231,9 +231,76 @@ const ProductDescription = () => {
               <p className="text-center text-xs text-muted-foreground mt-4">
                 * Resultados podem variar de pessoa para pessoa. Clique nas imagens para ampliar.
               </p>
-              <p className="text-center text-sm font-medium text-foreground mt-3 flex items-center justify-center gap-2">
-                ✨ Funciona para todos os tipos de cabelo: <span className="text-primary">liso, ondulado e cacheado</span>
-              </p>
+            </div>
+
+            {/* Hair Types Section */}
+            <div className="mt-10 relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/5 via-secondary/30 to-primary/10 border border-primary/20 p-6 md:p-8">
+              {/* Decorative elements */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl" />
+              
+              <div className="relative">
+                <div className="text-center mb-8">
+                  <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-semibold rounded-full mb-3">
+                    PARA TODOS
+                  </span>
+                  <h3 className="text-xl md:text-2xl font-bold text-foreground">
+                    Funciona para todos os tipos de cabelo
+                  </h3>
+                  <p className="text-muted-foreground mt-2 text-sm">
+                    Nossa fórmula foi desenvolvida para atender qualquer textura capilar
+                  </p>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-4 md:gap-6">
+                  {/* Liso */}
+                  <div className="flex flex-col items-center text-center group">
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-card border-2 border-primary/30 flex items-center justify-center mb-3 group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20 transition-all duration-300">
+                      <svg viewBox="0 0 48 48" className="w-8 h-8 md:w-10 md:h-10 text-primary">
+                        <path d="M12 8 L12 40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                        <path d="M18 8 L18 40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                        <path d="M24 8 L24 40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                        <path d="M30 8 L30 40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                        <path d="M36 8 L36 40" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" />
+                      </svg>
+                    </div>
+                    <h4 className="font-semibold text-foreground text-sm md:text-base">Liso</h4>
+                    <p className="text-xs text-muted-foreground mt-1 hidden md:block">Força e brilho intenso</p>
+                  </div>
+                  
+                  {/* Ondulado */}
+                  <div className="flex flex-col items-center text-center group">
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-card border-2 border-primary/30 flex items-center justify-center mb-3 group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20 transition-all duration-300">
+                      <svg viewBox="0 0 48 48" className="w-8 h-8 md:w-10 md:h-10 text-primary">
+                        <path d="M10 8 Q14 16, 10 24 Q6 32, 10 40" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                        <path d="M18 8 Q22 16, 18 24 Q14 32, 18 40" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                        <path d="M26 8 Q30 16, 26 24 Q22 32, 26 40" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                        <path d="M34 8 Q38 16, 34 24 Q30 32, 34 40" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                      </svg>
+                    </div>
+                    <h4 className="font-semibold text-foreground text-sm md:text-base">Ondulado</h4>
+                    <p className="text-xs text-muted-foreground mt-1 hidden md:block">Definição e volume</p>
+                  </div>
+                  
+                  {/* Cacheado */}
+                  <div className="flex flex-col items-center text-center group">
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-card border-2 border-primary/30 flex items-center justify-center mb-3 group-hover:border-primary group-hover:shadow-lg group-hover:shadow-primary/20 transition-all duration-300">
+                      <svg viewBox="0 0 48 48" className="w-8 h-8 md:w-10 md:h-10 text-primary">
+                        <path d="M10 10 Q16 10, 16 16 Q16 22, 10 22 Q4 22, 4 28 Q4 34, 10 34 Q16 34, 16 40" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                        <path d="M24 8 Q30 8, 30 14 Q30 20, 24 20 Q18 20, 18 26 Q18 32, 24 32 Q30 32, 30 38" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                        <path d="M38 10 Q44 10, 44 16 Q44 22, 38 22 Q32 22, 32 28 Q32 34, 38 34 Q44 34, 44 40" stroke="currentColor" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                      </svg>
+                    </div>
+                    <h4 className="font-semibold text-foreground text-sm md:text-base">Cacheado</h4>
+                    <p className="text-xs text-muted-foreground mt-1 hidden md:block">Hidratação e cachos definidos</p>
+                  </div>
+                </div>
+                
+                <div className="mt-8 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <Check className="w-4 h-4 text-primary" />
+                  <span>Testado e aprovado em todos os tipos de fio</span>
+                </div>
+              </div>
             </div>
 
           </>
