@@ -13,14 +13,13 @@
    }
  
    try {
-     const PODPAY_PUBLIC_KEY = Deno.env.get('PODPAY_PUBLIC_KEY');
-     const PODPAY_SECRET_KEY = Deno.env.get('PODPAY_SECRET_KEY');
-     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-     const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
- 
-     if (!PODPAY_PUBLIC_KEY || !PODPAY_SECRET_KEY) {
-       throw new Error('PODPAY credentials are not configured');
-     }
+      const PAYEVO_SECRET_KEY = Deno.env.get('PAYEVO_SECRET_KEY');
+      const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+      const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
+
+      if (!PAYEVO_SECRET_KEY) {
+        throw new Error('PAYEVO_SECRET_KEY is not configured');
+      }
  
      const { transactionId } = await req.json();
  
@@ -55,13 +54,13 @@
       }
     }
  
-    // Fallback to Podpay API check
-     // Create Basic Auth header
-     const auth = 'Basic ' + btoa(`${PODPAY_PUBLIC_KEY}:${PODPAY_SECRET_KEY}`);
- 
-     console.log('Checking payment status for transaction:', transactionId);
- 
-     const response = await fetch(`https://api.podpay.pro/v1/transactions/${transactionId}`, {
+     // Fallback to PayEvo API check
+      // Create Basic Auth header (PayEvo format: SECRET_KEY:x)
+      const auth = 'Basic ' + btoa(`${PAYEVO_SECRET_KEY}:x`);
+
+      console.log('Checking payment status for transaction:', transactionId);
+
+      const response = await fetch(`https://apiv2.payevo.com.br/functions/v1/transactions/${transactionId}`, {
        method: 'GET',
        headers: {
          'Authorization': auth,
@@ -71,10 +70,10 @@
  
      const data = await response.json();
  
-     console.log('Podpay transaction status:', data.status);
- 
-     if (!response.ok) {
-       console.error('Podpay error:', data);
+      console.log('PayEvo transaction status:', data.status);
+
+      if (!response.ok) {
+        console.error('PayEvo error:', data);
        return new Response(
          JSON.stringify({ 
            success: false, 
@@ -84,7 +83,7 @@
        );
      }
  
-     // Possible statuses from Podpay: waiting_payment, paid, refused, refunded, chargedback
+     // Possible statuses from PayEvo: waiting_payment, paid, refused, refunded, chargedback
      const isPaid = data.status === 'paid';
  
      return new Response(

@@ -48,17 +48,13 @@
    }
  
    try {
-     const PODPAY_PUBLIC_KEY = Deno.env.get('PODPAY_PUBLIC_KEY');
-     const PODPAY_SECRET_KEY = Deno.env.get('PODPAY_SECRET_KEY');
-     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
-     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
- 
-     if (!PODPAY_PUBLIC_KEY) {
-       throw new Error('PODPAY_PUBLIC_KEY is not configured');
-     }
-     if (!PODPAY_SECRET_KEY) {
-       throw new Error('PODPAY_SECRET_KEY is not configured');
-     }
+      const PAYEVO_SECRET_KEY = Deno.env.get('PAYEVO_SECRET_KEY');
+      const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+      const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+      if (!PAYEVO_SECRET_KEY) {
+        throw new Error('PAYEVO_SECRET_KEY is not configured');
+      }
      if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
        throw new Error('Supabase credentials are not configured');
      }
@@ -82,8 +78,8 @@
        );
      }
  
-     // Create Basic Auth header
-     const auth = 'Basic ' + btoa(`${PODPAY_PUBLIC_KEY}:${PODPAY_SECRET_KEY}`);
+      // Create Basic Auth header (PayEvo format: SECRET_KEY:x)
+      const auth = 'Basic ' + btoa(`${PAYEVO_SECRET_KEY}:x`);
  
      // Format phone number (remove non-digits)
      const phoneDigits = body.customer.phone.replace(/\D/g, '');
@@ -95,9 +91,9 @@
      const webhookUrl = `https://${projectId}.supabase.co/functions/v1/podpay-webhook`;
  
      // Build Podpay payload
-     const payload = {
-       amount: body.amount, // Already in cents
-       paymentMethod: 'pix',
+      const payload = {
+        amount: body.amount, // Already in cents
+        paymentMethod: 'PIX',
        pix: {
          expiresIn: 1800, // 30 minutes
        },
@@ -131,9 +127,9 @@
        },
      };
  
-     console.log('Sending payment request to Podpay:', JSON.stringify(payload, null, 2));
- 
-     const response = await fetch('https://api.podpay.pro/v1/transactions', {
+      console.log('Sending payment request to PayEvo:', JSON.stringify(payload, null, 2));
+
+      const response = await fetch('https://apiv2.payevo.com.br/functions/v1/transactions', {
        method: 'POST',
        headers: {
          'Authorization': auth,
@@ -144,10 +140,10 @@
  
      const data = await response.json();
  
-     console.log('Podpay response:', JSON.stringify(data, null, 2));
- 
-     if (!response.ok) {
-       console.error('Podpay error:', data);
+      console.log('PayEvo response:', JSON.stringify(data, null, 2));
+
+      if (!response.ok) {
+        console.error('PayEvo error:', data);
        return new Response(
          JSON.stringify({ 
            success: false, 
@@ -251,7 +247,7 @@
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
    } catch (error) {
-     console.error('Error creating PIX payment:', error);
+      console.error('Error creating PIX payment:', error);
      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
      return new Response(
        JSON.stringify({ success: false, error: errorMessage }),
