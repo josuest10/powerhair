@@ -27,6 +27,7 @@ import {
 import { SecurityBadges } from "@/components/checkout/TrustElements";
 import StickyCheckoutCTA from "@/components/checkout/StickyCheckoutCTA";
 import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
+import OrderBump from "@/components/checkout/OrderBump";
 
  const PowerHairLogo = () => (
    <div className="flex items-center gap-2">
@@ -98,9 +99,11 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
    const [showShippingOptions, setShowShippingOptions] = useState(false);
    
    // Coupon state
-   const [couponCode, setCouponCode] = useState(urlCoupon || "");
-   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(urlCoupon === "VOLTEI10" ? "VOLTEI10" : null);
-   const [couponError, setCouponError] = useState<string | null>(null);
+    const [couponCode, setCouponCode] = useState(urlCoupon || "");
+    const [appliedCoupon, setAppliedCoupon] = useState<string | null>(urlCoupon === "VOLTEI10" ? "VOLTEI10" : null);
+    const [couponError, setCouponError] = useState<string | null>(null);
+    const [orderBumpSelected, setOrderBumpSelected] = useState(false);
+    const orderBumpPrice = 29.90;
 
   const shippingOptions = {
     free: { label: "Frete Grátis", price: 0, days: "5 a 9 dias úteis" },
@@ -110,11 +113,12 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
    const originalPrice = 179.90;
    const productPrice = 77.91;
    const shippingPrice = shippingOptions[selectedShipping].price;
-   const subtotalWithShipping = productPrice + shippingPrice;
-   
-   // Apply coupon discount (10% off) - sem desconto PIX adicional
-   const couponDiscount = appliedCoupon === "VOLTEI10" ? subtotalWithShipping * 0.10 : 0;
-   const priceAfterCoupon = subtotalWithShipping - couponDiscount;
+    const bumpTotal = orderBumpSelected ? orderBumpPrice : 0;
+    const subtotalWithShipping = productPrice + shippingPrice + bumpTotal;
+    
+    // Apply coupon discount (10% off) - sem desconto PIX adicional
+    const couponDiscount = appliedCoupon === "VOLTEI10" ? subtotalWithShipping * 0.10 : 0;
+    const priceAfterCoupon = subtotalWithShipping - couponDiscount;
    
    const pixDiscount = 0; // Preço PIX já é o valor final
    const finalPrice = priceAfterCoupon;
@@ -420,14 +424,14 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
            document: data.cpf,
            phone: data.phone,
          },
-         items: [
-           {
-             name: "Kit SOS Crescimento e Antiqueda",
-             description: "Shampoo + Máscara + Tônico",
-             quantity: 1,
-             amount: amountInCents,
-           },
-         ],
+          items: [
+            {
+              name: orderBumpSelected ? "Kit SOS Crescimento e Antiqueda + Máscara Extra" : "Kit SOS Crescimento e Antiqueda",
+              description: orderBumpSelected ? "Shampoo + Máscara + Tônico + Máscara Extra" : "Shampoo + Máscara + Tônico",
+              quantity: 1,
+              amount: amountInCents,
+            },
+          ],
          shipping: {
            name: data.name,
            address: data.address,
@@ -873,6 +877,12 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                 </div>
               </div>
 
+              {/* Order Bump */}
+              <OrderBump 
+                isSelected={orderBumpSelected} 
+                onToggle={setOrderBumpSelected} 
+              />
+
               {/* Summary and Submit */}
               <div className="bg-gradient-to-b from-card to-secondary/30 border-2 border-primary/20 rounded-2xl p-5 transition-all duration-300 shadow-lg animate-fade-in" style={{ animationDelay: '300ms' }}>
                 {/* Coupon Section - Discrete collapsible */}
@@ -953,6 +963,15 @@ import FreeShippingBanner from "@/components/checkout/FreeShippingBanner";
                       {shippingPrice === 0 ? "Grátis" : `R$ ${shippingPrice.toFixed(2).replace(".", ",")}`}
                     </span>
                   </div>
+                  {orderBumpSelected && (
+                    <div className="flex items-center justify-between text-sm py-1">
+                      <span className="text-foreground font-medium flex items-center gap-1.5">
+                        <Sparkles className="w-4 h-4 text-primary" />
+                        +1 Máscara SOS Extra
+                      </span>
+                      <span className="text-foreground font-medium">R$ {orderBumpPrice.toFixed(2).replace(".", ",")}</span>
+                    </div>
+                  )}
                   {appliedCoupon && (
                     <div className="flex items-center justify-between text-sm py-1">
                       <span className="text-primary font-medium flex items-center gap-1.5">
