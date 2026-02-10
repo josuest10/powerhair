@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Sparkles, Check, ArrowRight } from "lucide-react";
+import condicionadorImg from "@/assets/product-condicionador.png";
 
 interface OrderBumpProps {
   isSelected: boolean;
@@ -43,7 +44,7 @@ const OrderBump = ({ isSelected, onToggle }: OrderBumpProps) => {
               {/* Product Image */}
               <div className="w-16 h-16 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
                 <img
-                  src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg"
+                  src={condicionadorImg}
                   alt="Condicionador SOS Crescimento 300ml"
                   className="w-full h-full object-contain"
                 />
