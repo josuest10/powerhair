@@ -17,7 +17,7 @@ const sampleData = {
   checkoutUrl: "https://powerhair.lovable.app/checkout",
   trackingCode: "NX123456789BR",
   carrier: "Correios",
-  trackingUrl: "https://www.linkcorreios.com.br/?id=NX123456789BR",
+  trackingUrl: "https://jadvialogistica.com/rastreio?codigo=NX123456789BR",
 };
 
 // Brand colors: HSL(75, 60%, 45%) = #739926, HSL(75, 70%, 40%) = #608C1A
