@@ -21,7 +21,7 @@ const OrderBump = ({ isSelected, onToggle }: OrderBumpProps) => {
       <div className="bg-gradient-to-r from-primary to-primary/80 px-4 py-2 flex items-center justify-center gap-2">
         <Sparkles className="w-4 h-4 text-primary-foreground" />
         <span className="text-xs font-bold text-primary-foreground uppercase tracking-wide">
-          Oferta Exclusiva — Apenas neste checkout
+          Oferta Exclusiva — Complete seu Kit
         </span>
       </div>
 
