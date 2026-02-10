@@ -75,6 +75,7 @@ import OrderBump from "@/components/checkout/OrderBump";
   const urlParams = new URLSearchParams(window.location.search);
   const isPreviewMode = urlParams.get('preview') === 'pix';
   const urlCoupon = urlParams.get('cupom')?.toUpperCase();
+  const VALID_COUPONS: Record<string, number> = { "VOLTEI10": 0.10, "TESTE90": 0.90 };
  
  const Checkout = () => {
    const { toast } = useToast();
@@ -100,7 +101,7 @@ import OrderBump from "@/components/checkout/OrderBump";
    
    // Coupon state
     const [couponCode, setCouponCode] = useState(urlCoupon || "");
-    const [appliedCoupon, setAppliedCoupon] = useState<string | null>(urlCoupon === "VOLTEI10" ? "VOLTEI10" : null);
+    const [appliedCoupon, setAppliedCoupon] = useState<string | null>(urlCoupon && VALID_COUPONS[urlCoupon] ? urlCoupon : null);
     const [couponError, setCouponError] = useState<string | null>(null);
     const [orderBumpSelected, setOrderBumpSelected] = useState(false);
     const orderBumpPrice = 29.90;
@@ -116,8 +117,8 @@ import OrderBump from "@/components/checkout/OrderBump";
     const bumpTotal = orderBumpSelected ? orderBumpPrice : 0;
     const subtotalWithShipping = productPrice + shippingPrice + bumpTotal;
     
-    // Apply coupon discount (10% off) - sem desconto PIX adicional
-    const couponDiscount = appliedCoupon === "VOLTEI10" ? subtotalWithShipping * 0.10 : 0;
+    // Apply coupon discount - sem desconto PIX adicional
+    const couponDiscount = appliedCoupon && VALID_COUPONS[appliedCoupon] ? subtotalWithShipping * VALID_COUPONS[appliedCoupon] : 0;
     const priceAfterCoupon = subtotalWithShipping - couponDiscount;
    
    const pixDiscount = 0; // Preço PIX já é o valor final
@@ -133,12 +134,12 @@ import OrderBump from "@/components/checkout/OrderBump";
        return;
      }
      
-     if (code === "VOLTEI10") {
-       setAppliedCoupon("VOLTEI10");
-       setCouponCode("");
-     } else {
-       setCouponError("Cupom inválido ou expirado");
-     }
+      if (VALID_COUPONS[code]) {
+        setAppliedCoupon(code);
+        setCouponCode("");
+      } else {
+        setCouponError("Cupom inválido ou expirado");
+      }
    };
    
    const removeCoupon = () => {
