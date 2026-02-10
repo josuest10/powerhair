@@ -426,8 +426,8 @@ import OrderBump from "@/components/checkout/OrderBump";
          },
           items: [
             {
-              name: orderBumpSelected ? "Kit SOS Crescimento e Antiqueda + Máscara Extra" : "Kit SOS Crescimento e Antiqueda",
-              description: orderBumpSelected ? "Shampoo + Máscara + Tônico + Máscara Extra" : "Shampoo + Máscara + Tônico",
+              name: orderBumpSelected ? "Kit SOS Crescimento e Antiqueda + Condicionador" : "Kit SOS Crescimento e Antiqueda",
+              description: orderBumpSelected ? "Shampoo + Máscara + Tônico + Condicionador" : "Shampoo + Máscara + Tônico",
               quantity: 1,
               amount: amountInCents,
             },
@@ -967,7 +967,7 @@ import OrderBump from "@/components/checkout/OrderBump";
                     <div className="flex items-center justify-between text-sm py-1">
                       <span className="text-foreground font-medium flex items-center gap-1.5">
                         <Sparkles className="w-4 h-4 text-primary" />
-                        +1 Máscara SOS Extra
+                        Condicionador SOS
                       </span>
                       <span className="text-foreground font-medium">R$ {orderBumpPrice.toFixed(2).replace(".", ",")}</span>
                     </div>
