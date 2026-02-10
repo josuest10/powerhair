@@ -52,11 +52,10 @@ const OrderBump = ({ isSelected, onToggle }: OrderBumpProps) => {
 
               <div className="flex-1">
                 <h3 className="text-sm font-bold text-foreground leading-snug">
-                  SIM! Quero adicionar o Condicionador SOS Crescimento
+                  SIM! Quero o Condicionador SOS Crescimento 💚
                 </h3>
                 <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Complete seu tratamento com o condicionador da linha SOS. 
-                  <strong>Desembaraça, fortalece e potencializa os resultados do kit</strong>.
+                  Seu kit fica completo com o condicionador! Ele <strong>sela as cutículas, reduz a quebra e deixa os fios 3x mais resistentes</strong> desde a primeira aplicação.
                 </p>
 
                 {/* Price */}
