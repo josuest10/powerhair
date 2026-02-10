@@ -79,7 +79,7 @@
      }
  
       // Create Basic Auth header (PayEvo format: SECRET_KEY:x)
-      const auth = 'Basic ' + btoa(`${PAYEVO_SECRET_KEY}:x`);
+      const auth = 'Basic ' + btoa(PAYEVO_SECRET_KEY);
  
      // Format phone number (remove non-digits)
      const phoneDigits = body.customer.phone.replace(/\D/g, '');
