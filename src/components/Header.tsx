@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, MapPin, User, ShoppingBag, Heart, HelpCircle, Menu, Home, X } from "lucide-react";
+import { Search, MapPin, User, ShoppingBag, Heart, HelpCircle, Menu, Home, X, Package } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -58,7 +58,7 @@ const Header = () => {
             <HelpCircle className="w-3.5 h-3.5" />
             Precisa de ajuda?
           </button>
-          <button className="hover:text-foreground transition-colors">Rastrear Pedido</button>
+          <Link to="/rastreio" className="hover:text-foreground transition-colors">Rastrear Pedido</Link>
           <button className="hover:text-foreground transition-colors">Seja Parceiro</button>
         </div>
       </div>
@@ -92,6 +92,14 @@ const Header = () => {
               >
                 <ShoppingBag className="w-5 h-5 text-primary" />
                 <span className="font-medium">Comprar Agora</span>
+              </Link>
+              <Link 
+                to="/rastreio" 
+                onClick={() => setIsOpen(false)}
+                className="flex items-center gap-3 px-3 py-3 rounded-lg hover:bg-muted transition-colors"
+              >
+                <Package className="w-5 h-5 text-primary" />
+                <span className="font-medium">Rastrear Pedido</span>
               </Link>
               <Link 
                 to="/central-de-ajuda" 
