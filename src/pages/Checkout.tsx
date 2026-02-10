@@ -107,7 +107,7 @@ import OrderBump from "@/components/checkout/OrderBump";
 
   const shippingOptions = {
     free: { label: "Frete Grátis", price: 0, days: "5 a 9 dias úteis" },
-    sedex: { label: "Sedex", price: 12.49, days: "3 a 5 dias úteis" },
+    sedex: { label: "Sedex", price: 9.41, days: "4 a 7 dias úteis" },
   };
 
    const originalPrice = 179.90;
