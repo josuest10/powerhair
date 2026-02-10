@@ -24,6 +24,7 @@ interface PurchaseEventRequest {
   fbp?: string;
   fbc?: string;
   client_user_agent?: string;
+  event_source_url?: string;
   test_event_code?: string;
 }
 
@@ -199,6 +200,10 @@ serve(async (req) => {
     if (body.fbp) userData.fbp = body.fbp;
     if (body.fbc) userData.fbc = body.fbc;
     
+    // Add External ID (order_id) for improved matching - Meta recommends this
+    const externalIdHash = await hashIfPresent(body.order_id);
+    if (externalIdHash) userData.external_id = [externalIdHash];
+    
     // Add IP and user agent for advanced matching
     if (clientIp) userData.client_ip_address = clientIp;
     if (userAgent) userData.client_user_agent = userAgent;
@@ -230,6 +235,7 @@ serve(async (req) => {
           event_time: eventTime,
           event_id: body.event_id,
           action_source: 'website',
+          event_source_url: body.event_source_url || 'https://powerhair.lovable.app/obrigado',
           user_data: userData,
           custom_data: {
             value: body.value,
