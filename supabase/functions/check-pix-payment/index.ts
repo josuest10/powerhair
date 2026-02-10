@@ -56,7 +56,7 @@
  
      // Fallback to PayEvo API check
       // Create Basic Auth header (PayEvo format: SECRET_KEY:x)
-      const auth = 'Basic ' + btoa(`${PAYEVO_SECRET_KEY}:x`);
+      const auth = 'Basic ' + btoa(PAYEVO_SECRET_KEY);
 
       console.log('Checking payment status for transaction:', transactionId);
 
