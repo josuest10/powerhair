@@ -38,45 +38,43 @@ const OrderBump = ({ isSelected, onToggle }: OrderBumpProps) => {
             {isSelected && <Check className="w-3.5 h-3.5 text-primary-foreground" />}
           </div>
 
-          {/* Content */}
+          {/* Product Image */}
+          <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+            <img
+              src={condicionadorImg}
+              alt="Condicionador SOS Crescimento 300ml"
+              className="w-full h-full object-contain"
+            />
+          </div>
+
+          {/* Text + Price */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-start gap-3">
-              {/* Product Image */}
-              <div className="w-16 h-16 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
-                <img
-                  src={condicionadorImg}
-                  alt="Condicionador SOS Crescimento 300ml"
-                  className="w-full h-full object-contain"
-                />
-              </div>
-
-              <div className="flex-1">
-                <h3 className="text-sm font-bold text-foreground leading-snug">
-                  SIM! Quero o Condicionador SOS Crescimento 💚
-                </h3>
-                <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Seu kit fica completo com o condicionador! Ele <strong>sela as cutículas, reduz a quebra e deixa os fios 3x mais resistentes</strong> desde a primeira aplicação.
-                </p>
-
-                {/* Price */}
-                <div className="flex items-baseline gap-2 mt-2">
-                  <span className="text-xs text-muted-foreground line-through">R$ 59,90</span>
-                  <span className="text-lg font-bold text-primary">R$ 29,90</span>
-                  <span className="text-[10px] font-semibold text-primary-foreground bg-primary px-1.5 py-0.5 rounded">
-                    50% OFF
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {isSelected && (
-              <div className="mt-3 flex items-center gap-1.5 text-xs text-primary font-medium animate-fade-in">
-                <Check className="w-3.5 h-3.5" />
-                Adicionado ao seu pedido!
-              </div>
-            )}
+            <h3 className="text-sm font-bold text-foreground leading-snug">
+              SIM! Quero o Condicionador SOS 💚
+            </h3>
+            <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed line-clamp-2">
+              Sela as cutículas, reduz a quebra e deixa os fios <strong>3x mais resistentes</strong>.
+            </p>
           </div>
         </div>
+
+        {/* Price Row - separate for better mobile layout */}
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground line-through">R$ 59,90</span>
+            <span className="text-[10px] font-semibold text-primary-foreground bg-primary px-1.5 py-0.5 rounded">
+              50% OFF
+            </span>
+          </div>
+          <span className="text-xl font-bold text-primary">R$ 29,90</span>
+        </div>
+
+        {isSelected && (
+          <div className="mt-2 flex items-center gap-1.5 text-xs text-primary font-medium animate-fade-in">
+            <Check className="w-3.5 h-3.5" />
+            Adicionado ao seu pedido!
+          </div>
+        )}
       </div>
     </div>
   );
