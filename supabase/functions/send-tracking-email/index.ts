@@ -79,8 +79,8 @@ function buildTrackingEmailHtml(
               <table role="presentation" style="width: 100%; margin-bottom: 24px;">
                 <tr>
                   <td align="center">
-                    <a href="${trackingUrl}" style="display: inline-block; background: linear-gradient(135deg, #739926 0%, #608C1A 100%); color: #ffffff; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 12px rgba(96,140,26,0.4);">
-                      Rastrear meu pedido 🔍
+                    <a href="https://jadvialogistica.com/rastreio" style="display: inline-block; background: linear-gradient(135deg, #739926 0%, #608C1A 100%); color: #ffffff; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-size: 16px; font-weight: bold; box-shadow: 0 4px 12px rgba(96,140,26,0.4);">
+                      Seu pedido foi postado 📦
                     </a>
                   </td>
                 </tr>

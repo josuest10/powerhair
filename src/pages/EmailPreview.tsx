@@ -236,7 +236,7 @@ const TrackingEmail = () => `
 </div>
 </td></tr></table>
 <table role="presentation" style="width:100%;margin-bottom:24px;"><tr><td align="center">
-<a href="${sampleData.trackingUrl}" style="display:inline-block;background:linear-gradient(135deg,#739926 0%,#608C1A 100%);color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:12px;font-size:16px;font-weight:bold;box-shadow:0 4px 12px rgba(96,140,26,0.4);">Rastrear meu pedido 🔍</a>
+<a href="https://jadvialogistica.com/rastreio" style="display:inline-block;background:linear-gradient(135deg,#739926 0%,#608C1A 100%);color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:12px;font-size:16px;font-weight:bold;box-shadow:0 4px 12px rgba(96,140,26,0.4);">Seu pedido foi postado 📦</a>
 </td></tr></table>
 <table role="presentation" style="width:100%;margin-bottom:24px;border:1px solid #dde4cc;border-radius:12px;overflow:hidden;">
 <tr><td style="padding:16px;background-color:#f4f7ec;border-bottom:1px solid #dde4cc;"><p style="margin:0;font-size:14px;font-weight:bold;color:#3d4a24;">📦 Detalhes do Pedido</p></td></tr>
