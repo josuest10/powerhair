@@ -201,7 +201,7 @@ serve(async (req) => {
       `CEP: ${formattedCep}`,
     ].filter(Boolean).join('<br>');
 
-    const trackingUrl = `https://www.linkcorreios.com.br/?id=${encodeURIComponent(trackingCode)}`;
+    const trackingUrl = `https://jadvialogistica.com/rastreio?codigo=${encodeURIComponent(trackingCode)}`;
 
     const emailHtml = buildTrackingEmailHtml(
       firstName, transactionId, productName,
