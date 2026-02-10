@@ -430,6 +430,7 @@ export async function trackMetaPurchase(params: {
     fbp: fbp || undefined,
     fbc: fbc || undefined,
     client_user_agent: navigator.userAgent,
+    event_source_url: typeof window !== 'undefined' ? window.location.href : undefined,
     test_event_code: params.test_event_code,
   }).catch((error) => {
     console.error('Meta CAPI: Server-side event failed:', error);
@@ -457,6 +458,7 @@ async function sendServerSideEvent(params: {
   fbp?: string;
   fbc?: string;
   client_user_agent?: string;
+  event_source_url?: string;
   test_event_code?: string;
 }): Promise<void> {
   const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
