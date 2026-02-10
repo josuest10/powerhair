@@ -43,19 +43,19 @@ const OrderBump = ({ isSelected, onToggle }: OrderBumpProps) => {
               {/* Product Image */}
               <div className="w-16 h-16 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
                 <img
-                  src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg"
-                  alt="Máscara SOS Crescimento Extra"
+                  src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg"
+                  alt="Condicionador SOS Crescimento 300ml"
                   className="w-full h-full object-contain"
                 />
               </div>
 
               <div className="flex-1">
                 <h3 className="text-sm font-bold text-foreground leading-snug">
-                  SIM! Quero adicionar +1 Máscara SOS Crescimento
+                  SIM! Quero adicionar o Condicionador SOS Crescimento
                 </h3>
                 <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-                  Potencialize seus resultados com uma unidade extra da máscara. 
-                  Tratamento intensivo para <strong>reduzir queda em até 2x mais rápido</strong>.
+                  Complete seu tratamento com o condicionador da linha SOS. 
+                  <strong>Desembaraça, fortalece e potencializa os resultados do kit</strong>.
                 </p>
 
                 {/* Price */}
