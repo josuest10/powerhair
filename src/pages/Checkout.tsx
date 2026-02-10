@@ -488,9 +488,12 @@ import OrderBump from "@/components/checkout/OrderBump";
          transactionId: responseData.transactionId || null,
        });
        
-       setStep("pix");
-       
-       // Start polling for payment status
+        setStep("pix");
+        
+        // Scroll to top so user sees QR code immediately
+        window.scrollTo({ top: 0, behavior: 'instant' });
+        
+        // Start polling for payment status
        if (responseData.transactionId) {
          startPaymentPolling(responseData.transactionId);
        }
