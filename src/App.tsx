@@ -13,6 +13,7 @@ import ReturnsPolicy from "./pages/ReturnsPolicy";
 import HelpCenter from "./pages/HelpCenter";
 import PaymentMethods from "./pages/PaymentMethods";
 import DeliveryInfo from "./pages/DeliveryInfo";
+import OrderTracking from "./pages/OrderTracking";
 import Checkout from "./pages/Checkout";
 import ThankYou from "./pages/ThankYou";
 import EmailPreview from "./pages/EmailPreview";
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/central-de-ajuda" element={<HelpCenter />} />
           <Route path="/formas-de-pagamento" element={<PaymentMethods />} />
           <Route path="/prazo-de-entrega" element={<DeliveryInfo />} />
+          <Route path="/rastreio" element={<OrderTracking />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/obrigado" element={<ThankYou />} />
           <Route path="/email-preview" element={<EmailPreview />} />
