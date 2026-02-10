@@ -144,6 +144,23 @@ function buildAdvancedMatchingData(userData: MetaUserData): Record<string, strin
 }
 
 /**
+ * Update Meta Pixel Advanced Matching data globally
+ * Re-initializes fbq with user data so ALL subsequent events include it
+ * This boosts coverage for em, ph, fn, ln, ct, st, zp, country
+ */
+export function updateMetaAdvancedMatching(userData: MetaUserData) {
+  if (typeof window === 'undefined' || !window.fbq) return;
+
+  const amData = buildAdvancedMatchingData(userData);
+  if (!amData) return;
+
+  window.fbq('init', '1198424312101245', amData);
+  console.log('Meta Pixel: Advanced Matching updated globally', {
+    fields: Object.keys(amData),
+  });
+}
+
+/**
  * Track PageView event (for SPA navigation)
  */
 export function trackMetaPageView() {

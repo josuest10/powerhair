@@ -12,7 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { QRCodeSVG } from "qrcode.react";
 import { validateCPF } from "@/lib/cpf-validator";
 import { trackInitiateCheckout, identifyUser } from "@/lib/tiktok-pixel";
-import { trackMetaInitiateCheckout, trackMetaLead } from "@/lib/meta-pixel";
+import { trackMetaInitiateCheckout, trackMetaLead, updateMetaAdvancedMatching } from "@/lib/meta-pixel";
 import { getStoredUTMParams } from "@/lib/utm-tracker";
 import { saveCheckoutData } from "@/lib/checkout-storage";
 import CheckoutReviews from "@/components/CheckoutReviews";
@@ -182,16 +182,25 @@ import OrderBump from "@/components/checkout/OrderBump";
       const firstName = nameParts[0] || '';
       const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
       
-      // Fire Meta Lead event with user data
+      const userData = {
+        email,
+        firstName,
+        lastName,
+        phone: formData.phone,
+        city: formData.city,
+        state: formData.state,
+        zipCode: formData.cep,
+        country: 'br',
+      };
+      
+      // Update global Advanced Matching so ALL future events include user data
+      updateMetaAdvancedMatching(userData);
+      
+      // Fire Meta Lead event with full user data
       trackMetaLead({
         value: productPrice,
         currency: 'BRL',
-        userData: {
-          email,
-          firstName,
-          lastName,
-          phone: formData.phone,
-        },
+        userData,
       });
       
       // Also identify user for TikTok
@@ -305,6 +314,22 @@ import OrderBump from "@/components/checkout/OrderBump";
       
       // Show shipping options after address is filled
       setShowShippingOptions(true);
+      
+      // Update Meta Advanced Matching with address data for better EMQ
+      const formData = getValues();
+      if (formData.email || formData.name) {
+        const nameParts = (formData.name || '').trim().split(/\s+/);
+        updateMetaAdvancedMatching({
+          email: formData.email,
+          phone: formData.phone,
+          firstName: nameParts[0],
+          lastName: nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined,
+          city: data.localidade,
+          state: data.uf,
+          zipCode: cleanCep,
+          country: 'br',
+        });
+      }
       
       // Focus on the number field after auto-fill
       setTimeout(() => {
