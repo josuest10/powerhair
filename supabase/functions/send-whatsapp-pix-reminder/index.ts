@@ -59,17 +59,21 @@ serve(async (req) => {
         currency: 'BRL',
       });
 
-      const message = `Oi, ${firstName}! 😊
+      const message = `Oi, ${firstName}! 💚
 
-Vi aqui que seu pedido de *${order.product_name}* no valor de *${amountBRL}* ainda está aguardando pagamento.
+Passando aqui porque notei que seu *${order.product_name}* ainda está esperando por você! 🧴✨
 
-⏳ O PIX expira em breve! Não perca essa oportunidade.
+Milhares de mulheres já estão transformando seus cabelos com o Kit SOS — e o seu está *reservado* e pronto pra sair!
 
-Se tiver qualquer dificuldade para pagar, é só me chamar aqui que te ajudo! 💚
+⏳ Mas atenção: *seu PIX expira em poucos minutos* e não conseguimos garantir o estoque por muito tempo.
 
-Caso já tenha pago, pode desconsiderar esta mensagem. 😉
+💰 Valor: *${amountBRL}* com *frete grátis* pra todo o Brasil!
 
-_PowerHair - Cuidados Capilares_`;
+👉 É só abrir o app do banco, colar o código PIX e pronto — seu kit já entra na fila de envio *hoje mesmo*!
+
+Se precisar de ajuda com o pagamento ou tiver qualquer dúvida, me chama aqui que te ajudo na hora! 😊
+
+_PowerHair - Cuidados Capilares_ 🌿`;
 
       try {
         const response = await fetch(
