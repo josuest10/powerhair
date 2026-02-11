@@ -95,6 +95,7 @@ import OrderBump from "@/components/checkout/OrderBump";
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const timerRef = useRef<number | null>(null);
    const pollingRef = useRef<number | null>(null);
+   const savedFormDataRef = useRef<CheckoutFormData | null>(null);
    const [paymentStatus, setPaymentStatus] = useState<"waiting" | "checking" | "paid">("waiting");
    const [selectedShipping, setSelectedShipping] = useState<"free" | "sedex">("free");
    const [showShippingOptions, setShowShippingOptions] = useState(false);
@@ -400,26 +401,26 @@ import OrderBump from "@/components/checkout/OrderBump";
             
             // Auto redirect after 2 seconds - MUST include user data for Meta Advanced Matching
              setTimeout(() => {
-                const formData = getValues();
-                
-                // Parse name into first and last name for Meta Advanced Matching
-                const nameParts = formData.name?.trim().split(/\s+/) || [];
-                const firstName = nameParts[0] || '';
-                const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
-                
-                const orderData = {
-                  orderId: `PWH${transactionId.toString().slice(-8)}`,
-                  amount: finalPrice,
-                  transactionId: transactionId, // Full transaction ID for Meta deduplication
-                  // User data for Meta Advanced Matching (90%+ match rate)
-                  email: formData.email,
-                  phone: formData.phone,
-                  firstName,
-                  lastName,
-                  city: formData.city,
-                  state: formData.state,
-                  zipCode: formData.cep,
-                };
+                 // Use saved form data (form is unmounted when step=pix)
+                 const formData = savedFormDataRef.current;
+                 
+                 // Parse name into first and last name for Meta Advanced Matching
+                 const nameParts = formData?.name?.trim().split(/\s+/) || [];
+                 const firstName = nameParts[0] || '';
+                 const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+                 
+                 const orderData = {
+                   orderId: `PWH${transactionId.toString().slice(-8)}`,
+                   amount: finalPrice,
+                   transactionId: transactionId,
+                   email: formData?.email,
+                   phone: formData?.phone,
+                   firstName,
+                   lastName,
+                   city: formData?.city,
+                   state: formData?.state,
+                   zipCode: formData?.cep,
+                 };
                 
                 // Save to localStorage as fallback before navigating
                 saveCheckoutData(orderData);
@@ -489,6 +490,9 @@ import OrderBump from "@/components/checkout/OrderBump";
          transactionId: responseData.transactionId || null,
        });
        
+        // Save form data BEFORE unmounting the form (step change destroys it)
+        savedFormDataRef.current = data;
+        
         setStep("pix");
         
         // Scroll to top after React renders the PIX screen
@@ -547,25 +551,25 @@ import OrderBump from "@/components/checkout/OrderBump";
     }
     
     // Pass transactionId + customer data for Meta/TikTok deduplication and advanced matching
-    const formData = getValues();
+    // Use saved form data (form is unmounted when step=pix)
+    const formData = savedFormDataRef.current;
     
     // Parse name into first and last name for Meta Advanced Matching
-    const nameParts = formData.name?.trim().split(/\s+/) || [];
+    const nameParts = formData?.name?.trim().split(/\s+/) || [];
     const firstName = nameParts[0] || '';
     const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
     
     const orderData = {
       orderId: pixData?.transactionId ? `PWH${pixData.transactionId.toString().slice(-8)}` : undefined,
       amount: finalPrice,
-      transactionId: pixData?.transactionId, // Critical for pixel tracking deduplication
-      // User data for Meta Advanced Matching (90%+ match rate)
-      email: formData.email,
-      phone: formData.phone,
+      transactionId: pixData?.transactionId,
+      email: formData?.email,
+      phone: formData?.phone,
       firstName,
       lastName,
-      city: formData.city,
-      state: formData.state,
-      zipCode: formData.cep,
+      city: formData?.city,
+      state: formData?.state,
+      zipCode: formData?.cep,
     };
     
     // Save to localStorage as fallback before navigating
