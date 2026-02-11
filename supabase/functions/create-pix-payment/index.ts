@@ -77,7 +77,8 @@ serve(async (req) => {
     }
 
     // PayEvo uses Basic Auth with secret key only
-    const auth = 'Basic ' + btoa(PAYEVO_SECRET_KEY);
+    // PayEvo v1 uses Basic Auth with secret_key:x
+    const auth = 'Basic ' + btoa(`${PAYEVO_SECRET_KEY}:x`);
 
     // Format phone number (remove non-digits)
     const phoneDigits = body.customer.phone.replace(/\D/g, '');
@@ -120,7 +121,7 @@ serve(async (req) => {
 
     console.log('Sending payment request to PayEvo:', JSON.stringify(payload, null, 2));
 
-    const response = await fetch('https://apiv2.payevo.com.br/functions/v1/transactions', {
+    const response = await fetch('https://api.payevo.com.br/functions/v1/transactions', {
       method: 'POST',
       headers: {
         'Authorization': auth,
