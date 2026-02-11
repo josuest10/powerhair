@@ -45,7 +45,7 @@ serve(async (req) => {
 
     const message = `Olá, ${body.customerName.split(' ')[0]}! 🎉
 
-Seu pedido *${body.transactionId}* foi gerado com sucesso!
+Seu pedido foi gerado com sucesso!
 
 📦 *Produto:* ${body.productName}
 💰 *Valor:* ${amountBRL}
