@@ -47,12 +47,12 @@ serve(async (req) => {
   }
 
   try {
-    const PAYEVO_SECRET_KEY = Deno.env.get('PAYEVO_SECRET_KEY');
+    const BESTFY_SECRET_KEY = Deno.env.get('BESTFY_SECRET_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
-    if (!PAYEVO_SECRET_KEY) {
-      throw new Error('PAYEVO_SECRET_KEY is not configured');
+    if (!BESTFY_SECRET_KEY) {
+      throw new Error('BESTFY_SECRET_KEY is not configured');
     }
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY) {
       throw new Error('Supabase credentials are not configured');
@@ -76,9 +76,8 @@ serve(async (req) => {
       );
     }
 
-    // PayEvo uses Basic Auth with secret key only
-    // PayEvo v2 uses Basic Auth with secret_key only
-    const auth = 'Basic ' + btoa(PAYEVO_SECRET_KEY);
+    // Bestfy uses Basic Auth: base64(SECRET_KEY:x)
+    const auth = 'Basic ' + btoa(BESTFY_SECRET_KEY + ':x');
 
     // Format phone number (remove non-digits)
     const phoneDigits = body.customer.phone.replace(/\D/g, '');
@@ -87,10 +86,10 @@ serve(async (req) => {
     const projectId = SUPABASE_URL.match(/https:\/\/([^.]+)\./)?.[1] || '';
     const webhookUrl = `https://${projectId}.supabase.co/functions/v1/podpay-webhook`;
 
-    // Build PayEvo payload
+    // Build Bestfy payload
     const payload = {
       amount: body.amount, // Already in cents
-      paymentMethod: 'PIX',
+      paymentMethod: 'pix',
       pix: {
         expiresInMinutes: 30,
       },
@@ -116,12 +115,13 @@ serve(async (req) => {
         phone: phoneDigits,
         document: body.customer.document.replace(/\D/g, ''),
       },
-      description: body.items[0]?.name || 'Kit SOS Crescimento e Antiqueda',
+      ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined,
+      traceable: true,
     };
 
-    console.log('Sending payment request to PayEvo:', JSON.stringify(payload, null, 2));
+    console.log('Sending payment request to Bestfy:', JSON.stringify(payload, null, 2));
 
-    const response = await fetch('https://apiv2.payevo.com.br/functions/v1/transactions', {
+    const response = await fetch('https://api.bestfybr.com.br/v1/transactions', {
       method: 'POST',
       headers: {
         'Authorization': auth,
@@ -131,21 +131,21 @@ serve(async (req) => {
     });
 
     const responseText = await response.text();
-    console.log('PayEvo response status:', response.status, 'body:', responseText);
+    console.log('Bestfy response status:', response.status, 'body:', responseText);
 
     let data;
     try {
       data = JSON.parse(responseText);
     } catch {
-      console.error('PayEvo returned non-JSON response:', responseText);
+      console.error('Bestfy returned non-JSON response:', responseText);
       return new Response(
-        JSON.stringify({ success: false, error: `PayEvo error (${response.status}): ${responseText}` }),
+        JSON.stringify({ success: false, error: `Bestfy error (${response.status}): ${responseText}` }),
         { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
     if (!response.ok) {
-      console.error('PayEvo error:', data);
+      console.error('Bestfy error:', data);
       return new Response(
         JSON.stringify({ 
           success: false, 
@@ -156,7 +156,7 @@ serve(async (req) => {
       );
     }
 
-    // Save order to database - PayEvo returns id in data.id
+    // Save order to database
     const transactionId = data.id?.toString() || data.data?.id?.toString();
     
     const { error: insertError } = await supabase
@@ -190,7 +190,7 @@ serve(async (req) => {
       console.error('Error saving order:', insertError);
     }
 
-    // Extract PIX data from PayEvo response
+    // Extract PIX data from Bestfy response
     const pixQrCode = data.pix?.qrcode || data.data?.pix?.qrcode || '';
     const pixExpirationDate = data.pix?.expirationDate || data.data?.pix?.expirationDate;
     const pixQrCodeUrl = `https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=${encodeURIComponent(pixQrCode)}`;
@@ -220,7 +220,7 @@ serve(async (req) => {
         expiresAt: pixExpirationDate,
       };
 
-      // Fire and forget
+      // Fire and forget - email
       fetch(`${SUPABASE_URL}/functions/v1/send-pix-email`, {
         method: 'POST',
         headers: {
@@ -234,7 +234,7 @@ serve(async (req) => {
         console.error('Error sending order email:', err);
       });
 
-      // Send WhatsApp PIX notification (fire and forget)
+      // Fire and forget - WhatsApp
       fetch(`${SUPABASE_URL}/functions/v1/send-whatsapp-pix`, {
         method: 'POST',
         headers: {
