@@ -36,11 +36,29 @@ function removeAccents(str: string): string {
 }
 
 /**
- * Normalize a string for Meta: trim, lowercase, remove accents
+ * Normalize a generic string for Meta: trim, lowercase, remove accents
  */
 function normalizeString(value: string | undefined | null): string | null {
   if (!value || value.trim() === '') return null;
   return removeAccents(value.trim().toLowerCase());
+}
+
+/**
+ * Normalize name fields for Meta: trim + lowercase, KEEP accents (Meta preserves UTF-8)
+ * Per Meta docs: "Valéry" → "valéry" (accents kept)
+ */
+function normalizeName(value: string | undefined | null): string | null {
+  if (!value || value.trim() === '') return null;
+  return value.trim().toLowerCase();
+}
+
+/**
+ * Normalize city for Meta: trim, lowercase, remove accents AND spaces
+ * Per Meta docs: "newyork", "saopaulo" (no spaces, no special chars)
+ */
+function normalizeCity(value: string | undefined | null): string | null {
+  if (!value || value.trim() === '') return null;
+  return removeAccents(value.trim().toLowerCase()).replace(/\s+/g, '');
 }
 
 /**
@@ -162,12 +180,15 @@ serve(async (req) => {
       );
     }
 
-    // Normalize all user data
+    // Normalize all user data per Meta documentation
     const normalizedEmail = normalizeString(body.email);
     const normalizedPhone = normalizePhone(body.phone);
-    const normalizedFirstName = normalizeString(body.first_name);
-    const normalizedLastName = normalizeString(body.last_name);
-    const normalizedCity = normalizeString(body.city);
+    // Names: keep accents (Meta preserves UTF-8 chars)
+    const normalizedFirstName = normalizeName(body.first_name);
+    const normalizedLastName = normalizeName(body.last_name);
+    // City: remove accents AND spaces ("saopaulo" not "são paulo")
+    const normalizedCity = normalizeCity(body.city);
+    // State: 2-char abbreviation in lowercase
     const normalizedState = normalizeString(body.state);
     const normalizedZip = normalizeZipCode(body.zip_code);
     const normalizedCountry = normalizeString(body.country) || 'br';

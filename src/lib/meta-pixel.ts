@@ -65,7 +65,25 @@ function removeAccents(str: string): string {
 }
 
 /**
- * Normalize a string for Meta Advanced Matching: trim, lowercase, remove accents
+ * Normalize name fields for Meta: trim + lowercase, KEEP accents (Meta preserves UTF-8)
+ * Per Meta docs: "Valéry" → "valéry" (accents kept)
+ */
+function normalizeNameForMeta(value: string | undefined | null): string | undefined {
+  if (!value || value.trim() === '') return undefined;
+  return value.trim().toLowerCase();
+}
+
+/**
+ * Normalize city for Meta: trim, lowercase, remove accents AND spaces
+ * Per Meta docs: "newyork", "saopaulo" (no spaces, no special chars)
+ */
+function normalizeCityForMeta(value: string | undefined | null): string | undefined {
+  if (!value || value.trim() === '') return undefined;
+  return removeAccents(value.trim().toLowerCase()).replace(/\s+/g, '');
+}
+
+/**
+ * Normalize generic string for Meta: trim, lowercase, remove accents
  */
 function normalizeForMeta(value: string | undefined | null): string | undefined {
   if (!value || value.trim() === '') return undefined;
@@ -121,16 +139,18 @@ function buildAdvancedMatchingData(userData: MetaUserData): Record<string, strin
   const phone = normalizePhone(userData.phone);
   if (phone) data.ph = phone;
 
-  // Parse name if firstName/lastName not provided
-  let fn = normalizeForMeta(userData.firstName);
-  let ln = normalizeForMeta(userData.lastName);
+  // Names: keep accents per Meta docs (UTF-8 preserved)
+  const fn = normalizeNameForMeta(userData.firstName);
+  const ln = normalizeNameForMeta(userData.lastName);
   
   if (fn) data.fn = fn;
   if (ln) data.ln = ln;
 
-  const city = normalizeForMeta(userData.city);
+  // City: remove spaces and accents per Meta docs ("saopaulo" not "são paulo")
+  const city = normalizeCityForMeta(userData.city);
   if (city) data.ct = city;
 
+  // State: 2-char abbreviation in lowercase per Meta docs
   const state = normalizeForMeta(userData.state);
   if (state) data.st = state;
 
