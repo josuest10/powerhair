@@ -23,8 +23,9 @@ serve(async (req) => {
   try {
     const ZAPI_INSTANCE_ID = Deno.env.get('ZAPI_INSTANCE_ID');
     const ZAPI_TOKEN = Deno.env.get('ZAPI_TOKEN');
+    const ZAPI_CLIENT_TOKEN = Deno.env.get('ZAPI_CLIENT_TOKEN');
 
-    if (!ZAPI_INSTANCE_ID || !ZAPI_TOKEN) {
+    if (!ZAPI_INSTANCE_ID || !ZAPI_TOKEN || !ZAPI_CLIENT_TOKEN) {
       throw new Error('Z-API credentials are not configured');
     }
 
@@ -68,7 +69,10 @@ _PowerHair - Cuidados Capilares_`;
       `https://api.z-api.io/instances/${ZAPI_INSTANCE_ID}/token/${ZAPI_TOKEN}/send-text`,
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Client-Token': ZAPI_CLIENT_TOKEN,
+        },
         body: JSON.stringify({
           phone,
           message,
