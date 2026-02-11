@@ -929,7 +929,7 @@ import OrderBump from "@/components/checkout/OrderBump";
                       <div className="flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 text-primary" />
                         <span className="text-sm font-medium text-primary">{appliedCoupon}</span>
-                        <span className="text-xs text-muted-foreground">(-10%)</span>
+                        <span className="text-xs text-muted-foreground">(-{Math.round((VALID_COUPONS[appliedCoupon] || 0) * 100)}%)</span>
                       </div>
                       <button
                         type="button"
@@ -1013,7 +1013,7 @@ import OrderBump from "@/components/checkout/OrderBump";
                     <div className="flex items-center justify-between text-sm py-1">
                       <span className="text-primary font-medium flex items-center gap-1.5">
                         <Gift className="w-4 h-4" />
-                        Cupom {appliedCoupon} (10%)
+                        Cupom {appliedCoupon} ({Math.round((VALID_COUPONS[appliedCoupon] || 0) * 100)}%)
                       </span>
                       <span className="text-primary font-semibold">- R$ {couponDiscount.toFixed(2).replace(".", ",")}</span>
                     </div>
