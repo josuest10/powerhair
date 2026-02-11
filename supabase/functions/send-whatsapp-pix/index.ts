@@ -56,7 +56,7 @@ Copie o código PIX abaixo para efetuar o pagamento:
 
 ⏰ *Atenção:* O PIX expira em 30 minutos.
 
-Após o pagamento, você receberá a confirmação automaticamente. 
+Após o pagamento, *envie o comprovante aqui nesta conversa* para agilizarmos o envio do seu pedido! 📸
 
 Qualquer dúvida, estamos à disposição! 💚
 
