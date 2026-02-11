@@ -47,10 +47,10 @@ interface OrderData {
     
     console.log('📥 Webhook received at', new Date().toISOString());
     console.log('📦 Payload:', JSON.stringify(body, null, 2));
- 
-    // Podpay sends transaction updates - data can be in body directly or in body.data
+
+    // PayEvo sends postback with { type, objectId, data: { id, status, paidAt, ... } }
     const transactionData = body.data || body;
-    const id = transactionData.id;
+    const id = transactionData.id || body.objectId;
     const status = transactionData.status;
     const paidAt = transactionData.paidAt;
  
