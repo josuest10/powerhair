@@ -12,12 +12,12 @@ serve(async (req) => {
   }
 
   try {
-    const PAYEVO_SECRET_KEY = Deno.env.get('PAYEVO_SECRET_KEY');
+    const BESTFY_SECRET_KEY = Deno.env.get('BESTFY_SECRET_KEY');
     const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
     const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY');
 
-    if (!PAYEVO_SECRET_KEY) {
-      throw new Error('PAYEVO_SECRET_KEY is not configured');
+    if (!BESTFY_SECRET_KEY) {
+      throw new Error('BESTFY_SECRET_KEY is not configured');
     }
 
     const { transactionId } = await req.json();
@@ -53,13 +53,12 @@ serve(async (req) => {
       }
     }
 
-    // Fallback to PayEvo API check
-    // PayEvo v2 uses secret_key only
-    const auth = 'Basic ' + btoa(PAYEVO_SECRET_KEY);
+    // Fallback to Bestfy API check
+    const auth = 'Basic ' + btoa(BESTFY_SECRET_KEY + ':x');
 
     console.log('Checking payment status for transaction:', transactionId);
 
-    const response = await fetch(`https://apiv2.payevo.com.br/functions/v1/transactions/${transactionId}`, {
+    const response = await fetch(`https://api.bestfybr.com.br/v1/transactions/${transactionId}`, {
       method: 'GET',
       headers: {
         'Authorization': auth,
@@ -68,10 +67,10 @@ serve(async (req) => {
     });
 
     const data = await response.json();
-    console.log('PayEvo transaction status:', data.status);
+    console.log('Bestfy transaction status:', data.status);
 
     if (!response.ok) {
-      console.error('PayEvo error:', data);
+      console.error('Bestfy error:', data);
       return new Response(
         JSON.stringify({ 
           success: false, 
@@ -81,7 +80,6 @@ serve(async (req) => {
       );
     }
 
-    // PayEvo statuses: waiting_payment, paid, refused, refunded, chargedback
     const isPaid = data.status === 'paid';
 
     return new Response(

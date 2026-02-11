@@ -51,11 +51,12 @@ interface OrderData {
     console.log('📥 Webhook received at', new Date().toISOString());
     console.log('📦 Payload:', JSON.stringify(body, null, 2));
 
-    // PayEvo sends postback with { type, objectId, data: { id, status, paidAt, ... } }
+    // Bestfy sends postback with transaction data (id, status, paidAt, etc.)
+    // Also supports nested { data: { ... } } format for backwards compatibility
     const transactionData = body.data || body;
-    const id = transactionData.id || body.objectId;
-    const status = transactionData.status;
-    const paidAt = transactionData.paidAt;
+    const id = transactionData.id || body.objectId || body.id;
+    const status = transactionData.status || body.status;
+    const paidAt = transactionData.paidAt || body.paidAt;
  
      if (!id) {
        return new Response(
