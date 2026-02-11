@@ -98,6 +98,7 @@ serve(async (req) => {
         title: item.name,
         quantity: item.quantity,
         unitPrice: item.amount,
+        tangible: true,
         externalRef: 'kit-sos-crescimento',
       })),
       shipping: {
@@ -113,7 +114,10 @@ serve(async (req) => {
         name: body.customer.name,
         email: body.customer.email,
         phone: phoneDigits,
-        document: body.customer.document.replace(/\D/g, ''),
+        document: {
+          number: body.customer.document.replace(/\D/g, ''),
+          type: body.customer.document.replace(/\D/g, '').length > 11 ? 'cnpj' : 'cpf',
+        },
       },
       ip: req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || undefined,
       traceable: true,
