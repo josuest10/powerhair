@@ -54,11 +54,12 @@ serve(async (req) => {
     }
 
     // Fallback to PayEvo API check
-    const auth = 'Basic ' + btoa(PAYEVO_SECRET_KEY);
+    // PayEvo v1 uses secret_key:x
+    const auth = 'Basic ' + btoa(`${PAYEVO_SECRET_KEY}:x`);
 
     console.log('Checking payment status for transaction:', transactionId);
 
-    const response = await fetch(`https://apiv2.payevo.com.br/functions/v1/transactions/${transactionId}`, {
+    const response = await fetch(`https://api.payevo.com.br/functions/v1/transactions/${transactionId}`, {
       method: 'GET',
       headers: {
         'Authorization': auth,
