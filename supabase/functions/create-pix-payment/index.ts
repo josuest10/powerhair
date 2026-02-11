@@ -130,8 +130,19 @@ serve(async (req) => {
       body: JSON.stringify(payload),
     });
 
-    const data = await response.json();
-    console.log('PayEvo response:', JSON.stringify(data, null, 2));
+    const responseText = await response.text();
+    console.log('PayEvo response status:', response.status, 'body:', responseText);
+
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch {
+      console.error('PayEvo returned non-JSON response:', responseText);
+      return new Response(
+        JSON.stringify({ success: false, error: `PayEvo error (${response.status}): ${responseText}` }),
+        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     if (!response.ok) {
       console.error('PayEvo error:', data);
