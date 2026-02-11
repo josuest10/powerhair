@@ -180,17 +180,55 @@ serve(async (req) => {
       );
     }
 
+    // ENRICHMENT: If email/phone missing from browser request, look up from orders table
+    let enrichedEmail = body.email;
+    let enrichedPhone = body.phone;
+    let enrichedFirstName = body.first_name;
+    let enrichedLastName = body.last_name;
+    let enrichedCity = body.city;
+    let enrichedState = body.state;
+    let enrichedZipCode = body.zip_code;
+
+    if (!enrichedEmail || !enrichedPhone) {
+      console.log('📥 Browser missing user data, enriching from orders table...');
+      const { data: orderData } = await supabase
+        .from('orders')
+        .select('customer_email, customer_phone, customer_name, shipping_city, shipping_state, shipping_cep')
+        .eq('transaction_id', body.order_id)
+        .maybeSingle();
+
+      if (orderData) {
+        if (!enrichedEmail && orderData.customer_email) enrichedEmail = orderData.customer_email;
+        if (!enrichedPhone && orderData.customer_phone) enrichedPhone = orderData.customer_phone;
+        if (!enrichedFirstName && orderData.customer_name) {
+          const parts = orderData.customer_name.trim().split(/\s+/);
+          enrichedFirstName = parts[0];
+          if (parts.length > 1) enrichedLastName = parts.slice(1).join(' ');
+        }
+        if (!enrichedCity && orderData.shipping_city) enrichedCity = orderData.shipping_city;
+        if (!enrichedState && orderData.shipping_state) enrichedState = orderData.shipping_state;
+        if (!enrichedZipCode && orderData.shipping_cep) enrichedZipCode = orderData.shipping_cep;
+        
+        console.log('✅ Enriched from orders table:', {
+          email: !!enrichedEmail,
+          phone: !!enrichedPhone,
+          name: !!(enrichedFirstName || enrichedLastName),
+          city: !!enrichedCity,
+          state: !!enrichedState,
+        });
+      } else {
+        console.log('⚠️ Order not found in DB for enrichment:', body.order_id);
+      }
+    }
+
     // Normalize all user data per Meta documentation
-    const normalizedEmail = normalizeString(body.email);
-    const normalizedPhone = normalizePhone(body.phone);
-    // Names: keep accents (Meta preserves UTF-8 chars)
-    const normalizedFirstName = normalizeName(body.first_name);
-    const normalizedLastName = normalizeName(body.last_name);
-    // City: remove accents AND spaces ("saopaulo" not "são paulo")
-    const normalizedCity = normalizeCity(body.city);
-    // State: 2-char abbreviation in lowercase
-    const normalizedState = normalizeString(body.state);
-    const normalizedZip = normalizeZipCode(body.zip_code);
+    const normalizedEmail = normalizeString(enrichedEmail);
+    const normalizedPhone = normalizePhone(enrichedPhone);
+    const normalizedFirstName = normalizeName(enrichedFirstName);
+    const normalizedLastName = normalizeName(enrichedLastName);
+    const normalizedCity = normalizeCity(enrichedCity);
+    const normalizedState = normalizeString(enrichedState);
+    const normalizedZip = normalizeZipCode(enrichedZipCode);
     const normalizedCountry = normalizeString(body.country) || 'br';
 
     // Hash all user data fields

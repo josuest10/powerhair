@@ -18,6 +18,9 @@ interface OrderData {
   product_name: string;
   created_at: string;
   paid_at: string | null;
+  shipping_city: string;
+  shipping_state: string;
+  shipping_cep: string;
   utm_source: string | null;
   utm_campaign: string | null;
   utm_medium: string | null;
@@ -209,34 +212,88 @@ async function sendMetaEvent(order: OrderData) {
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
-    // IDEMPOTENCY CHECK: Check if event already sent by browser-side CAPI
+    // IDEMPOTENCY CHECK: Check if event already sent (by browser or previous webhook)
     const { data: existingEvent } = await supabase
       .from('meta_events')
-      .select('id, sent_at')
+      .select('id, sent_at, email_hash')
       .eq('order_id', order.transaction_id)
       .maybeSingle();
 
     if (existingEvent) {
-      console.log('⚠️ Meta event already sent by browser for order:', order.transaction_id, 'at:', existingEvent.sent_at);
-      return; // Skip - browser already sent this event
+      console.log('⚠️ Meta event already sent for order:', order.transaction_id, 'at:', existingEvent.sent_at);
+      return;
     }
 
     const pixelId = '1198424312101245';
-    
-    // Hash email and phone for privacy (required by Meta)
-    const email = order.customer_email;
-    const phone = order.customer_phone?.replace(/\D/g, '');
-    
     const encoder = new TextEncoder();
-    const emailHash = email ? await crypto.subtle.digest('SHA-256', encoder.encode(email.toLowerCase().trim())).then(buf => 
-      Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
-    ) : undefined;
-    const phoneHash = phone ? await crypto.subtle.digest('SHA-256', encoder.encode(`55${phone}`)).then(buf =>
-      Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
-    ) : undefined;
+    
+    // Helper to SHA-256 hash
+    const sha256 = async (value: string): Promise<string> => {
+      const buf = await crypto.subtle.digest('SHA-256', encoder.encode(value));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    };
+
+    // Remove accents helper
+    const removeAccents = (str: string): string => str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    // Normalize and hash ALL user data from order (guaranteed to have email/phone/name/address)
+    const email = order.customer_email?.trim().toLowerCase();
+    const phone = order.customer_phone?.replace(/\D/g, '');
+    const phoneWithCountry = phone ? (phone.length === 10 || phone.length === 11 ? `55${phone}` : phone) : null;
+    
+    // Parse name into first/last (keep accents per Meta docs)
+    const nameParts = order.customer_name?.trim().split(/\s+/) || [];
+    const firstName = nameParts[0]?.toLowerCase() || null;
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ').toLowerCase() : null;
+    
+    // City: remove accents AND spaces per Meta docs ("saopaulo")
+    const city = order.shipping_city ? removeAccents(order.shipping_city.trim().toLowerCase()).replace(/\s+/g, '') : null;
+    // State: 2-char lowercase
+    const state = order.shipping_state?.trim().toLowerCase() || null;
+    // ZIP: digits only
+    const zip = order.shipping_cep?.replace(/\D/g, '') || null;
+
+    // Hash all fields
+    const [emailHash, phoneHash, fnHash, lnHash, ctHash, stHash, zpHash, countryHash, externalIdHash] = await Promise.all([
+      email ? sha256(email) : Promise.resolve(null),
+      phoneWithCountry ? sha256(phoneWithCountry) : Promise.resolve(null),
+      firstName ? sha256(firstName) : Promise.resolve(null),
+      lastName ? sha256(lastName) : Promise.resolve(null),
+      city ? sha256(city) : Promise.resolve(null),
+      state ? sha256(state) : Promise.resolve(null),
+      zip ? sha256(zip) : Promise.resolve(null),
+      sha256('br'),
+      sha256(order.transaction_id),
+    ]);
 
     const eventTime = Math.floor(Date.now() / 1000);
-    const eventId = `webhook_${order.transaction_id}_${eventTime}`;
+    // CRITICAL: Use same event_id format as browser pixel for deduplication
+    const eventId = `purchase_${order.transaction_id}`;
+
+    // Build user_data with ALL available fields
+    const userData: Record<string, unknown> = {};
+    if (emailHash) userData.em = [emailHash];
+    if (phoneHash) userData.ph = [phoneHash];
+    if (fnHash) userData.fn = [fnHash];
+    if (lnHash) userData.ln = [lnHash];
+    if (ctHash) userData.ct = [ctHash];
+    if (stHash) userData.st = [stHash];
+    if (zpHash) userData.zp = [zpHash];
+    if (countryHash) userData.country = [countryHash];
+    if (externalIdHash) userData.external_id = [externalIdHash];
+
+    console.log('📊 Webhook Meta CAPI - user_data fields:', {
+      email: email ? '✓' : '✗',
+      phone: phoneWithCountry ? '✓' : '✗',
+      first_name: firstName ? '✓' : '✗',
+      last_name: lastName ? '✓' : '✗',
+      city: city ? '✓' : '✗',
+      state: state ? '✓' : '✗',
+      zip: zip ? '✓' : '✗',
+      country: '✓',
+      external_id: '✓',
+      event_id: eventId,
+    });
 
     const eventData = {
       data: [
@@ -245,13 +302,10 @@ async function sendMetaEvent(order: OrderData) {
           event_time: eventTime,
           event_id: eventId,
           action_source: 'website',
-          user_data: {
-            em: emailHash ? [emailHash] : undefined,
-            ph: phoneHash ? [phoneHash] : undefined,
-            country: ['br'],
-          },
+          event_source_url: 'https://powerhair.lovable.app/obrigado',
+          user_data: userData,
           custom_data: {
-            value: order.amount / 100, // Convert from cents
+            value: order.amount / 100,
             currency: 'BRL',
             content_ids: ['kit-sos-crescimento'],
             content_name: order.product_name,
@@ -263,20 +317,17 @@ async function sendMetaEvent(order: OrderData) {
       ],
     };
 
-    console.log('📤 Sending Meta server event (webhook fallback) for order:', order.transaction_id);
+    console.log('📤 Sending Meta CAPI event (webhook) for order:', order.transaction_id);
 
     const response = await fetch(`https://graph.facebook.com/v18.0/${pixelId}/events?access_token=${META_ACCESS_TOKEN}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(eventData),
     });
 
     const result = await response.json();
     
     if (response.ok) {
-      // Record event for idempotency (prevent future duplicates)
       await supabase
         .from('meta_events')
         .insert({
@@ -291,13 +342,17 @@ async function sendMetaEvent(order: OrderData) {
           api_response: result,
         });
 
-      console.log('✅ Meta event sent successfully (webhook) for order:', order.transaction_id, result);
+      console.log('✅ Meta CAPI event sent (webhook) with FULL user data:', {
+        order_id: order.transaction_id,
+        event_id: eventId,
+        events_received: result.events_received,
+        user_data_fields: Object.keys(userData).length,
+      });
     } else {
       console.error('❌ Meta API error:', JSON.stringify(result, null, 2));
     }
   } catch (error) {
     console.error('❌ Error sending Meta event:', error);
-    // Don't throw - this is non-critical
   }
 }
 
