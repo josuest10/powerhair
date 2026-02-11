@@ -1,4 +1,7 @@
 project_id = "zaqllkndnofeggnlmlrp"
  
- [functions.create-pix-payment]
- verify_jwt = false
+[functions.create-pix-payment]
+verify_jwt = false
+
+[functions.send-whatsapp-pix]
+verify_jwt = false
