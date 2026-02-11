@@ -75,8 +75,8 @@ import OrderBump from "@/components/checkout/OrderBump";
   const urlParams = new URLSearchParams(window.location.search);
   const isPreviewMode = urlParams.get('preview') === 'pix';
   const urlCoupon = urlParams.get('cupom')?.toUpperCase();
-  const VALID_COUPONS: Record<string, number> = { "BOASVINDAS": 0.05, "VOLTEI10": 0.10, "TESTE90": 0.90 };
-  const AUTO_COUPON = "BOASVINDAS";
+  const VALID_COUPONS: Record<string, number> = { "PRIMEIRACOMPRA": 0.05, "VOLTEI10": 0.10, "TESTE90": 0.90 };
+  const AUTO_COUPON = "PRIMEIRACOMPRA";
  
  const Checkout = () => {
    const { toast } = useToast();
