@@ -75,7 +75,8 @@ import OrderBump from "@/components/checkout/OrderBump";
   const urlParams = new URLSearchParams(window.location.search);
   const isPreviewMode = urlParams.get('preview') === 'pix';
   const urlCoupon = urlParams.get('cupom')?.toUpperCase();
-  const VALID_COUPONS: Record<string, number> = { "VOLTEI10": 0.10, "TESTE90": 0.90 };
+  const VALID_COUPONS: Record<string, number> = { "BOASVINDAS": 0.05, "VOLTEI10": 0.10, "TESTE90": 0.90 };
+  const AUTO_COUPON = "BOASVINDAS";
  
  const Checkout = () => {
    const { toast } = useToast();
@@ -102,7 +103,8 @@ import OrderBump from "@/components/checkout/OrderBump";
    
    // Coupon state
     const [couponCode, setCouponCode] = useState(urlCoupon || "");
-    const [appliedCoupon, setAppliedCoupon] = useState<string | null>(urlCoupon && VALID_COUPONS[urlCoupon] ? urlCoupon : null);
+     const initialCoupon = urlCoupon && VALID_COUPONS[urlCoupon] ? urlCoupon : AUTO_COUPON;
+     const [appliedCoupon, setAppliedCoupon] = useState<string | null>(initialCoupon);
     const [couponError, setCouponError] = useState<string | null>(null);
     const [orderBumpSelected, setOrderBumpSelected] = useState(false);
     const orderBumpPrice = 29.90;
@@ -216,7 +218,7 @@ import OrderBump from "@/components/checkout/OrderBump";
     if (!hasTrackedInitiateCheckout.current) {
       hasTrackedInitiateCheckout.current = true;
       // Use base product price to avoid variation from shipping options
-      const basePrice = productPrice * 0.95; // Product price with PIX discount
+      const basePrice = productPrice; // Base product price
       // TikTok InitiateCheckout
       trackInitiateCheckout({
         value: basePrice,
@@ -587,11 +589,11 @@ import OrderBump from "@/components/checkout/OrderBump";
   return (
       <div className="min-h-screen bg-background">
        {/* Promo Banner */}
-       <div className="bg-primary py-2.5 px-4 text-center">
-         <p className="text-primary-foreground text-sm font-medium">
-           Frete Grátis em todo Brasil • <span className="font-semibold bg-primary-foreground/20 px-2 py-0.5 rounded">5% OFF no PIX</span>
-         </p>
-       </div>
+        <div className="bg-primary py-2.5 px-4 text-center">
+          <p className="text-primary-foreground text-sm font-medium">
+            Frete Grátis em todo Brasil • <span className="font-semibold bg-primary-foreground/20 px-2 py-0.5 rounded">Cupom de Boas-Vindas Aplicado 🎉</span>
+          </p>
+        </div>
        
        {/* Header */}
        <header className="border-b border-border bg-background py-3 sticky top-0 z-40 backdrop-blur-sm bg-background/95">
@@ -614,7 +616,7 @@ import OrderBump from "@/components/checkout/OrderBump";
            <OfferCountdown />
            
            {/* Order Summary - Collapsible */}
-           <details className="bg-card border-2 border-primary/20 rounded-2xl overflow-hidden transition-all duration-300 shadow-md group" open>
+           <details className="bg-card border-2 border-primary/20 rounded-2xl overflow-hidden transition-all duration-300 shadow-md group">
              <summary className="bg-gradient-to-r from-primary/10 to-primary/5 px-4 py-3 cursor-pointer list-none flex items-center justify-between">
                <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
                  <Gift className="w-4 h-4 text-primary" />
@@ -1025,7 +1027,7 @@ import OrderBump from "@/components/checkout/OrderBump";
                   <span className="text-lg font-semibold text-foreground">Total</span>
                   <div className="text-right">
                     <span className="text-3xl font-bold text-primary">R$ {finalPrice.toFixed(2).replace(".", ",")}</span>
-                    <p className="text-xs text-muted-foreground mt-0.5">à vista no PIX</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">à vista no PIX {appliedCoupon === AUTO_COUPON && "• cupom aplicado ✓"}</p>
                   </div>
                 </div>
                 
@@ -1044,8 +1046,8 @@ import OrderBump from "@/components/checkout/OrderBump";
                     </>
                   ) : (
                     <>
-                      <Lock className="w-5 h-5 mr-2" />
-                      FINALIZAR COMPRA
+                       <Lock className="w-5 h-5 mr-2" />
+                       PAGAR COM PIX
                     </>
                   )}
                 </Button>
@@ -1072,8 +1074,8 @@ import OrderBump from "@/components/checkout/OrderBump";
           </div>
         )}
 
-        {/* Recent Purchase Notification */}
-        <RecentPurchase />
+        {/* Recent Purchase Notification - only on form step */}
+        {step === "form" && <RecentPurchase />}
 
         {step === "pix" && (
            <div className="max-w-lg mx-auto animate-fade-in">

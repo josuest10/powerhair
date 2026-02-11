@@ -56,7 +56,7 @@ const StickyCheckoutCTA = ({
             ) : (
               <>
                 <Lock className="w-4 h-4 mr-2" />
-                Finalizar Compra
+                Pagar com PIX
               </>
             )}
           </Button>
