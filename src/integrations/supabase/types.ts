@@ -103,6 +103,7 @@ export type Database = {
           utm_medium: string | null
           utm_source: string | null
           utm_term: string | null
+          whatsapp_reminder_sent: boolean
         }
         Insert: {
           amount: number
@@ -132,6 +133,7 @@ export type Database = {
           utm_medium?: string | null
           utm_source?: string | null
           utm_term?: string | null
+          whatsapp_reminder_sent?: boolean
         }
         Update: {
           amount?: number
@@ -161,6 +163,7 @@ export type Database = {
           utm_medium?: string | null
           utm_source?: string | null
           utm_term?: string | null
+          whatsapp_reminder_sent?: boolean
         }
         Relationships: []
       }
