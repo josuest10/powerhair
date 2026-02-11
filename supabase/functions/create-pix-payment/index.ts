@@ -220,18 +220,40 @@
          };
 
          // Fire and forget - don't await to not delay the response
-         fetch(`${SUPABASE_URL}/functions/v1/send-pix-email`, {
-           method: 'POST',
-           headers: {
-             'Content-Type': 'application/json',
-             'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-           },
-           body: JSON.stringify(emailPayload),
-         }).then(res => res.json()).then(result => {
-           console.log('Order confirmation email sent:', result);
-         }).catch(err => {
-           console.error('Error sending order email:', err);
-         });
+      fetch(`${SUPABASE_URL}/functions/v1/send-pix-email`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+            },
+            body: JSON.stringify(emailPayload),
+          }).then(res => res.json()).then(result => {
+            console.log('Order confirmation email sent:', result);
+          }).catch(err => {
+            console.error('Error sending order email:', err);
+          });
+
+          // Send WhatsApp PIX notification via Z-API (fire and forget)
+          fetch(`${SUPABASE_URL}/functions/v1/send-whatsapp-pix`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
+            },
+            body: JSON.stringify({
+              customerPhone: body.customer.phone,
+              customerName: body.customer.name,
+              pixCode: data.pix?.qrcode || '',
+              amount: body.amount,
+              transactionId: data.id.toString(),
+              productName: body.items[0]?.name || 'Kit SOS Crescimento e Antiqueda',
+              expiresAt: data.pix?.expirationDate,
+            }),
+          }).then(res => res.json()).then(result => {
+            console.log('WhatsApp PIX notification sent:', result);
+          }).catch(err => {
+            console.error('Error sending WhatsApp notification:', err);
+          });
        } catch (emailError) {
          console.error('Error preparing order email:', emailError);
        }
