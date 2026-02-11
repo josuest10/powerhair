@@ -491,8 +491,12 @@ import OrderBump from "@/components/checkout/OrderBump";
        
         setStep("pix");
         
-        // Scroll to top so user sees QR code immediately
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        // Scroll to top after React renders the PIX screen
+        setTimeout(() => {
+          window.scrollTo({ top: 0, behavior: 'instant' });
+          document.documentElement.scrollTop = 0;
+          document.body.scrollTop = 0;
+        }, 100);
         
         // Start polling for payment status
        if (responseData.transactionId) {
