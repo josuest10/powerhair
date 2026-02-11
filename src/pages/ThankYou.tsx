@@ -7,6 +7,8 @@ import { trackCompletePayment } from "@/lib/tiktok-pixel";
 import { clearUTMParams } from "@/lib/utm-tracker";
 import { getCheckoutData, clearCheckoutData, CheckoutUserData } from "@/lib/checkout-storage";
 
+const TRACKED_ORDERS_KEY = 'powerhair_tracked_purchases';
+
 const PowerHairLogo = () => (
   <div className="flex items-center gap-2">
     <div className="relative w-8 h-8">
@@ -59,6 +61,30 @@ const ThankYou = () => {
   const amount = orderDetails?.amount || 77.91;
   const transactionId = orderDetails?.transactionId;
 
+  /**
+   * Check if this order was already tracked (persists across page refreshes)
+   * This is CRITICAL for deduplication: prevents orphan browser events
+   * that have no matching server event (server blocks via idempotency)
+   */
+  const isOrderAlreadyTracked = (oid: string): boolean => {
+    try {
+      const tracked = JSON.parse(localStorage.getItem(TRACKED_ORDERS_KEY) || '[]') as string[];
+      return tracked.includes(oid);
+    } catch { return false; }
+  };
+
+  const markOrderAsTracked = (oid: string): void => {
+    try {
+      const tracked = JSON.parse(localStorage.getItem(TRACKED_ORDERS_KEY) || '[]') as string[];
+      if (!tracked.includes(oid)) {
+        tracked.push(oid);
+        // Keep only last 50 orders to avoid localStorage bloat
+        if (tracked.length > 50) tracked.shift();
+        localStorage.setItem(TRACKED_ORDERS_KEY, JSON.stringify(tracked));
+      }
+    } catch { /* ignore */ }
+  };
+
   // Log data source for debugging
   useEffect(() => {
     console.log('ThankYou: Data source', {
@@ -74,8 +100,19 @@ const ThankYou = () => {
     if (hasTracked.current) return;
     hasTracked.current = true;
 
-    // Generate consistent event_id for deduplication
-    const eventId = `purchase_${transactionId || orderId}_${Date.now()}`;
+    const effectiveOrderId = transactionId || orderId;
+
+    // CRITICAL: Prevent duplicate browser events on page refresh
+    // Without this, browser fires new event_id but server blocks (idempotency)
+    // → Meta receives orphan browser event → deduplication fails
+    if (isOrderAlreadyTracked(effectiveOrderId)) {
+      console.log('ThankYou: Purchase already tracked for order', effectiveOrderId, '(skipping)');
+      return;
+    }
+
+    // DETERMINISTIC event_id: same order always generates same event_id
+    // This ensures browser eventID matches server event_id for deduplication
+    const eventId = `purchase_${effectiveOrderId}`;
 
     // Meta Pixel Purchase with full Advanced Matching data
     trackMetaPurchase({
@@ -108,6 +145,9 @@ const ThankYou = () => {
         data_source: locationState?.orderId ? 'location.state' : 'localStorage',
       });
       
+      // Mark as tracked AFTER successful send to prevent re-firing on refresh
+      markOrderAsTracked(effectiveOrderId);
+      
       // Clear localStorage after successful tracking
       clearCheckoutData();
     });
@@ -125,7 +165,7 @@ const ThankYou = () => {
     // Clear UTM params after successful purchase
     clearUTMParams();
 
-    console.log('ThankYou: Purchase tracked (Meta + TikTok)', { orderId, amount, eventId });
+    console.log('ThankYou: Purchase tracked (Meta + TikTok)', { orderId, amount, eventId, dedup_key: effectiveOrderId });
   }, [amount, orderId, transactionId, orderDetails, locationState]);
  
    return (

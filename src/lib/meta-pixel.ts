@@ -388,6 +388,10 @@ export async function trackMetaPurchase(params: {
         Object.assign(eventData, amData);
       }
 
+      // Add external_id for secondary deduplication (fbp/external_id method)
+      // Must match the external_id sent via CAPI for Meta to deduplicate
+      eventData.external_id = params.order_id;
+
       window.fbq('track', 'Purchase', eventData, { eventID: eventId });
       
       console.log('Meta Pixel: Purchase tracked (browser)', { 
