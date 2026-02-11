@@ -54,11 +54,6 @@ serve(async (req) => {
       }
 
       const firstName = order.customer_name.split(' ')[0];
-      const amountBRL = (order.amount / 100).toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-      });
-
       const message = `Oi, ${firstName}! 💚
 
 Passando aqui porque notei que seu *${order.product_name}* ainda está esperando por você! 🧴✨
@@ -66,8 +61,6 @@ Passando aqui porque notei que seu *${order.product_name}* ainda está esperando
 Milhares de mulheres já estão transformando seus cabelos com o Kit SOS — e o seu está *reservado* e pronto pra sair!
 
 ⏳ Mas atenção: *seu PIX expira em poucos minutos* e não conseguimos garantir o estoque por muito tempo.
-
-💰 Valor: *${amountBRL}* com *frete grátis* pra todo o Brasil!
 
 👉 É só abrir o app do banco, colar o código PIX e pronto — seu kit já entra na fila de envio *hoje mesmo*!
 
