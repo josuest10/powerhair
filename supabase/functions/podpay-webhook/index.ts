@@ -417,6 +417,7 @@ async function sendPaymentConfirmationEmail(order: OrderData) {
   } catch (error) {
     console.error('❌ Error sending payment confirmation email:', error);
     // Don't throw - this is non-critical
+  }
 }
 
 async function sendTikTokEvent(order: OrderData) {
@@ -446,11 +447,13 @@ async function sendTikTokEvent(order: OrderData) {
 
     const eventData = {
       pixel_code: pixelId,
-      partner_name: 'PowerHair',
       event: 'CompletePayment',
       event_id: `tiktok_purchase_${order.transaction_id}`,
       timestamp: new Date().toISOString(),
       context: {
+        page: {
+          url: 'https://powerhair.lovable.app/obrigado',
+        },
         user: {
           ...(emailHash && { email: emailHash }),
           ...(phoneHash && { phone: phoneHash }),
@@ -493,5 +496,4 @@ async function sendTikTokEvent(order: OrderData) {
   } catch (error) {
     console.error('❌ Error sending TikTok event:', error);
   }
-}
 }
