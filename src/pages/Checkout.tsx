@@ -3,7 +3,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Copy, Check, Clock, Shield, Truck, Lock, Loader2, AlertCircle, Sparkles, Gift, CheckCircle2, MapPin, Facebook, Instagram, Youtube, Twitter, Mail, Phone, Star, CreditCard } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -81,6 +81,8 @@ import OrderBump from "@/components/checkout/OrderBump";
  const Checkout = () => {
    const { toast } = useToast();
    const navigate = useNavigate();
+   const location = useLocation();
+   const kitState = location.state as { kitId?: string; kitPrice?: number; kitOriginalPrice?: number; kitProductName?: string; kitProductDescription?: string } | undefined;
    const [step, setStep] = useState<"form" | "pix" | "success">(isPreviewMode ? "pix" : "form");
    const [copied, setCopied] = useState(false);
    const [timeLeft, setTimeLeft] = useState(1800); // 30 minutes in seconds
@@ -114,8 +116,8 @@ import OrderBump from "@/components/checkout/OrderBump";
     sedex: { label: "Sedex", price: 9.41, days: "4 a 7 dias úteis" },
   };
 
-   const originalPrice = 179.90;
-   const productPrice = 77.91;
+   const originalPrice = kitState?.kitOriginalPrice || 179.90;
+   const productPrice = kitState?.kitPrice || 77.91;
    const shippingPrice = shippingOptions[selectedShipping].price;
     const bumpTotal = orderBumpSelected ? orderBumpPrice : 0;
     const subtotalWithShipping = productPrice + shippingPrice + bumpTotal;
@@ -453,8 +455,8 @@ import OrderBump from "@/components/checkout/OrderBump";
          },
           items: [
             {
-              name: orderBumpSelected ? "Kit SOS Crescimento e Antiqueda + Condicionador" : "Kit SOS Crescimento e Antiqueda",
-              description: orderBumpSelected ? "Shampoo + Máscara + Tônico + Condicionador" : "Shampoo + Máscara + Tônico",
+              name: (kitState?.kitProductName || "Kit SOS Crescimento e Antiqueda") + (orderBumpSelected ? " + Condicionador" : ""),
+              description: (kitState?.kitProductDescription || "Shampoo + Máscara + Tônico") + (orderBumpSelected ? " + Condicionador" : ""),
               quantity: 1,
               amount: amountInCents,
             },
