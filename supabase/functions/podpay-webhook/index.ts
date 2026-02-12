@@ -445,34 +445,37 @@ async function sendTikTokEvent(order: OrderData) {
       phoneWithCountry ? sha256(phoneWithCountry) : Promise.resolve(null),
     ]);
 
-    const eventData = {
-      pixel_code: pixelId,
-      event: 'CompletePayment',
-      event_id: `tiktok_purchase_${order.transaction_id}`,
-      timestamp: new Date().toISOString(),
-      context: {
-        page: {
-          url: 'https://powerhair.lovable.app/obrigado',
-        },
-        user: {
-          ...(emailHash && { email: emailHash }),
-          ...(phoneHash && { phone: phoneHash }),
-        },
-      },
-      properties: {
-        contents: [
-          {
-            content_id: 'kit-sos-crescimento',
-            content_name: order.product_name,
-            content_type: 'product',
-            quantity: 1,
-            price: order.amount / 100,
+    const payload = {
+      event_source: 'web',
+      event_source_id: pixelId,
+      data: [
+        {
+          event: 'CompletePayment',
+          event_id: `tiktok_purchase_${order.transaction_id}`,
+          event_time: Math.floor(Date.now() / 1000),
+          user: {
+            ...(emailHash && { email: emailHash }),
+            ...(phoneHash && { phone: phoneHash }),
+            external_id: order.transaction_id,
           },
-        ],
-        value: order.amount / 100,
-        currency: 'BRL',
-        order_id: order.transaction_id,
-      },
+          properties: {
+            contents: [
+              {
+                content_id: 'kit-sos-crescimento',
+                content_name: order.product_name,
+                content_type: 'product',
+                quantity: 1,
+                price: order.amount / 100,
+              },
+            ],
+            value: order.amount / 100,
+            currency: 'BRL',
+          },
+          page: {
+            url: 'https://powerhair.lovable.app/obrigado',
+          },
+        },
+      ],
     };
 
     console.log('📤 Sending TikTok Events API for order:', order.transaction_id);
@@ -483,7 +486,7 @@ async function sendTikTokEvent(order: OrderData) {
         'Content-Type': 'application/json',
         'Access-Token': TIKTOK_ACCESS_TOKEN,
       },
-      body: JSON.stringify({ data: [eventData] }),
+      body: JSON.stringify(payload),
     });
 
     const result = await response.json();
