@@ -61,12 +61,12 @@ const OrderBump = ({ isSelected, onToggle }: OrderBumpProps) => {
         {/* Price Row - separate for better mobile layout */}
         <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/50">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground line-through">R$ 59,90</span>
+            <span className="text-xs text-muted-foreground line-through">R$ 49,90</span>
             <span className="text-[10px] font-semibold text-primary-foreground bg-primary px-1.5 py-0.5 rounded">
-              50% OFF
+              60% OFF
             </span>
           </div>
-          <span className="text-xl font-bold text-primary">R$ 29,90</span>
+          <span className="text-xl font-bold text-primary">R$ 19,90</span>
         </div>
 
         {isSelected && (

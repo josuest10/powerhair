@@ -109,7 +109,7 @@ import OrderBump from "@/components/checkout/OrderBump";
      const [appliedCoupon, setAppliedCoupon] = useState<string | null>(initialCoupon);
     const [couponError, setCouponError] = useState<string | null>(null);
     const [orderBumpSelected, setOrderBumpSelected] = useState(false);
-    const orderBumpPrice = 29.90;
+    const orderBumpPrice = 19.90;
 
   const shippingOptions = {
     free: { label: "Frete Grátis", price: 0, days: "5 a 9 dias úteis" },
