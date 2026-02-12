@@ -246,18 +246,6 @@ const ProductInfo = ({
         )}
       </Button>
 
-      {/* Payment Methods */}
-      <div className="text-center space-y-2">
-        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-          Formas de Pagamento
-        </p>
-        <div className="flex items-center justify-center gap-3 text-muted-foreground/60">
-          <span className="text-xs border border-border rounded px-2 py-1 font-medium">VISA</span>
-          <span className="text-xs border border-border rounded px-2 py-1 font-medium">MASTER</span>
-          <span className="text-xs border border-border rounded px-2 py-1 font-medium">ELO</span>
-          <span className="text-xs border border-border rounded px-2 py-1 font-medium">PIX</span>
-        </div>
-      </div>
 
       {/* Trust Elements */}
       <div className="space-y-3 pt-2">
