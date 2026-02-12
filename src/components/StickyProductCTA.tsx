@@ -7,9 +7,12 @@ interface StickyProductCTAProps {
   price: number;
   originalPrice: number;
   isVisible: boolean;
+  kitId: string;
+  kitProductName: string;
+  kitProductDescription: string;
 }
 
-const StickyProductCTA = ({ price, originalPrice, isVisible }: StickyProductCTAProps) => {
+const StickyProductCTA = ({ price, originalPrice, isVisible, kitId, kitProductName, kitProductDescription }: StickyProductCTAProps) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   
@@ -18,7 +21,15 @@ const StickyProductCTA = ({ price, originalPrice, isVisible }: StickyProductCTAP
   const handleBuyClick = () => {
     setIsLoading(true);
     setTimeout(() => {
-      navigate("/checkout", { state: { quantity: 1 } });
+      navigate("/checkout", {
+        state: {
+          kitId,
+          kitPrice: price,
+          kitOriginalPrice: originalPrice,
+          kitProductName,
+          kitProductDescription,
+        },
+      });
     }, 800);
   };
 
@@ -28,7 +39,6 @@ const StickyProductCTA = ({ price, originalPrice, isVisible }: StickyProductCTAP
     <div className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-card/95 backdrop-blur-md border-t-2 border-primary/20 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] animate-slide-up">
       <div className="container max-w-4xl mx-auto px-4 py-3">
         <div className="flex items-center gap-3">
-          {/* Price Summary */}
           <div className="flex-1 min-w-0">
             <div className="flex items-baseline gap-2">
               <span className="text-xs text-muted-foreground line-through">
@@ -42,14 +52,11 @@ const StickyProductCTA = ({ price, originalPrice, isVisible }: StickyProductCTAP
               <span className="text-xl font-bold text-foreground">
                 R$ {price.toFixed(2).replace(".", ",")}
               </span>
-              <span className="text-xs text-primary font-medium">
-                no PIX
-              </span>
+              <span className="text-xs text-primary font-medium">no PIX</span>
             </div>
           </div>
-          
-          {/* CTA Button */}
-          <Button 
+
+          <Button
             onClick={handleBuyClick}
             disabled={isLoading}
             className="h-12 px-6 text-sm font-bold bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/30 animate-pulse-subtle"
