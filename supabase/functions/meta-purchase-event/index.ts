@@ -189,36 +189,63 @@ serve(async (req) => {
     let enrichedState = body.state;
     let enrichedZipCode = body.zip_code;
 
-    if (!enrichedEmail || !enrichedPhone) {
-      console.log('📥 Browser missing user data, enriching from orders table...');
-      const { data: orderData } = await supabase
-        .from('orders')
-        .select('customer_email, customer_phone, customer_name, shipping_city, shipping_state, shipping_cep')
-        .eq('transaction_id', body.order_id)
-        .maybeSingle();
-
-      if (orderData) {
-        if (!enrichedEmail && orderData.customer_email) enrichedEmail = orderData.customer_email;
-        if (!enrichedPhone && orderData.customer_phone) enrichedPhone = orderData.customer_phone;
-        if (!enrichedFirstName && orderData.customer_name) {
-          const parts = orderData.customer_name.trim().split(/\s+/);
-          enrichedFirstName = parts[0];
-          if (parts.length > 1) enrichedLastName = parts.slice(1).join(' ');
-        }
-        if (!enrichedCity && orderData.shipping_city) enrichedCity = orderData.shipping_city;
-        if (!enrichedState && orderData.shipping_state) enrichedState = orderData.shipping_state;
-        if (!enrichedZipCode && orderData.shipping_cep) enrichedZipCode = orderData.shipping_cep;
+    // ENRICHMENT: ALWAYS look up from orders table to fill missing fields
+    // Browser often sends PWH-format IDs, so we need multiple lookup strategies
+    console.log('📥 Enriching user data from orders table...');
+    
+    // Strategy 1: Direct match on transaction_id
+    let orderData = null;
+    const { data: directMatch } = await supabase
+      .from('orders')
+      .select('customer_email, customer_phone, customer_name, shipping_city, shipping_state, shipping_cep')
+      .eq('transaction_id', body.order_id)
+      .maybeSingle();
+    
+    if (directMatch) {
+      orderData = directMatch;
+    } else {
+      // Strategy 2: PWH format - extract suffix and try matching end of transaction_id
+      // PWH12345678 → look for transaction_id ending in "12345678"
+      const pwhMatch = body.order_id.match(/^PWH(\d+)$/);
+      if (pwhMatch) {
+        const suffix = pwhMatch[1];
+        const { data: suffixMatch } = await supabase
+          .from('orders')
+          .select('customer_email, customer_phone, customer_name, shipping_city, shipping_state, shipping_cep')
+          .like('transaction_id', `%${suffix}`)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
         
-        console.log('✅ Enriched from orders table:', {
-          email: !!enrichedEmail,
-          phone: !!enrichedPhone,
-          name: !!(enrichedFirstName || enrichedLastName),
-          city: !!enrichedCity,
-          state: !!enrichedState,
-        });
-      } else {
-        console.log('⚠️ Order not found in DB for enrichment:', body.order_id);
+        if (suffixMatch) {
+          orderData = suffixMatch;
+          console.log('✅ Found order via PWH suffix match');
+        }
       }
+    }
+
+    if (orderData) {
+      if (!enrichedEmail && orderData.customer_email) enrichedEmail = orderData.customer_email;
+      if (!enrichedPhone && orderData.customer_phone) enrichedPhone = orderData.customer_phone;
+      if (!enrichedFirstName && orderData.customer_name) {
+        const parts = orderData.customer_name.trim().split(/\s+/);
+        enrichedFirstName = parts[0];
+        if (parts.length > 1) enrichedLastName = parts.slice(1).join(' ');
+      }
+      if (!enrichedCity && orderData.shipping_city) enrichedCity = orderData.shipping_city;
+      if (!enrichedState && orderData.shipping_state) enrichedState = orderData.shipping_state;
+      if (!enrichedZipCode && orderData.shipping_cep) enrichedZipCode = orderData.shipping_cep;
+      
+      console.log('✅ Enriched from orders table:', {
+        email: !!enrichedEmail,
+        phone: !!enrichedPhone,
+        name: !!(enrichedFirstName || enrichedLastName),
+        city: !!enrichedCity,
+        state: !!enrichedState,
+        zip: !!enrichedZipCode,
+      });
+    } else {
+      console.log('⚠️ Order not found in DB for enrichment:', body.order_id);
     }
 
     // Normalize all user data per Meta documentation
