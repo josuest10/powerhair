@@ -93,12 +93,11 @@ interface OrderData {
      // Send server-side events if payment was confirmed
      if (status === 'paid' && data && data.length > 0) {
        const order = data[0];
-       await Promise.all([
-         sendTikTokEvent(order as OrderData),
-         sendMetaEvent(order as OrderData),
-         sendUtmifyEvent(order as OrderData, 'paid'),
-         sendPaymentConfirmationEmail(order as OrderData),
-       ]);
+        await Promise.all([
+          sendMetaEvent(order as OrderData),
+          sendUtmifyEvent(order as OrderData, 'paid'),
+          sendPaymentConfirmationEmail(order as OrderData),
+        ]);
      }
 
      // Send waiting_payment event to UTMify for PIX generated
@@ -121,80 +120,6 @@ interface OrderData {
    }
  });
  
-async function sendTikTokEvent(order: OrderData) {
-  try {
-    const TIKTOK_ACCESS_TOKEN = Deno.env.get('TIKTOK_ACCESS_TOKEN');
-    if (!TIKTOK_ACCESS_TOKEN) {
-      console.warn('⚠️ TikTok access token not configured, skipping event');
-      return;
-    }
-
-    const pixelId = 'D61CDMRC77UAR2VU6H60';
-    
-    // Hash email and phone for privacy
-    const email = order.customer_email;
-    const phone = order.customer_phone?.replace(/\D/g, '');
-    
-    const encoder = new TextEncoder();
-    const emailHash = email ? await crypto.subtle.digest('SHA-256', encoder.encode(email.toLowerCase().trim())).then(buf => 
-      Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
-    ) : undefined;
-    const phoneHash = phone ? await crypto.subtle.digest('SHA-256', encoder.encode(phone)).then(buf =>
-      Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
-    ) : undefined;
-
-    const eventPayload = {
-      pixel_code: pixelId,
-      event: 'CompletePayment',
-      event_id: `purchase_${order.transaction_id}`, // Same format as client-side for deduplication
-      timestamp: new Date().toISOString(),
-      context: {
-        user: {
-          email: emailHash,
-          phone: phoneHash,
-        },
-      },
-      properties: {
-        value: order.amount / 100, // Convert from cents
-        currency: 'BRL',
-        content_id: 'kit-sos-crescimento',
-        content_name: order.product_name,
-        content_type: 'product',
-        order_id: order.transaction_id,
-      },
-    };
-
-    console.log('📤 Sending TikTok server event for order:', order.transaction_id);
-
-    const response = await fetch('https://business-api.tiktok.com/open_api/v1.3/event/track/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Token': TIKTOK_ACCESS_TOKEN,
-      },
-      body: JSON.stringify({
-        pixel_code: pixelId,
-        event: 'CompletePayment',
-        event_id: `purchase_${order.transaction_id}`, // Same format as client-side for deduplication
-        timestamp: new Date().toISOString(),
-        context: eventPayload.context,
-        properties: eventPayload.properties,
-      }),
-    });
-
-    const result = await response.json();
-    
-    if (response.ok && result.code === 0) {
-      console.log('✅ TikTok event sent successfully for order:', order.transaction_id);
-    } else {
-      console.error('❌ TikTok API error:', JSON.stringify(result, null, 2));
-    }
-  } catch (error) {
-    console.error('❌ Error sending TikTok event:', error);
-    // Don't throw - this is non-critical
-  }
-}
-
 async function sendMetaEvent(order: OrderData) {
   try {
     const META_ACCESS_TOKEN = Deno.env.get('META_ACCESS_TOKEN');

@@ -11,7 +11,6 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { QRCodeSVG } from "qrcode.react";
 import { validateCPF } from "@/lib/cpf-validator";
-import { trackInitiateCheckout, identifyUser } from "@/lib/tiktok-pixel";
 import { trackMetaInitiateCheckout, trackMetaLead, updateMetaAdvancedMatching } from "@/lib/meta-pixel";
 import { getStoredUTMParams } from "@/lib/utm-tracker";
 import { saveCheckoutData } from "@/lib/checkout-storage";
@@ -207,9 +206,6 @@ import OrderBump from "@/components/checkout/OrderBump";
         userData,
       });
       
-      // Also identify user for TikTok
-      identifyUser({ email, phone: formData.phone });
-      
       console.log('Lead event fired', { hasEmail: true, hasName: true });
     }
   };
@@ -219,13 +215,6 @@ import OrderBump from "@/components/checkout/OrderBump";
       hasTrackedInitiateCheckout.current = true;
       // Use base product price to avoid variation from shipping options
       const basePrice = productPrice; // Base product price
-      // TikTok InitiateCheckout
-      trackInitiateCheckout({
-        value: basePrice,
-        currency: 'BRL',
-        content_id: 'kit-sos-crescimento',
-        content_name: 'Kit SOS Crescimento e Antiqueda',
-      });
       // Meta InitiateCheckout
       trackMetaInitiateCheckout({
         value: basePrice,
@@ -552,7 +541,7 @@ import OrderBump from "@/components/checkout/OrderBump";
       return;
     }
     
-    // Pass transactionId + customer data for Meta/TikTok deduplication and advanced matching
+    // Pass transactionId + customer data for Meta deduplication and advanced matching
     // Use saved form data (form is unmounted when step=pix)
     const formData = savedFormDataRef.current;
     
