@@ -11,6 +11,7 @@ import ProductFAQ from "@/components/ProductFAQ";
 import Footer from "@/components/Footer";
 import StickyProductCTA from "@/components/StickyProductCTA";
 import { trackMetaViewContent } from "@/lib/meta-pixel";
+import { trackTikTokViewContent } from "@/lib/tiktok-pixel";
 import productGallery5 from "@/assets/product-gallery-5.png";
 
 const PRODUCT_PRICE = 77.91;
@@ -44,6 +45,11 @@ const Index = () => {
         currency: 'BRL',
         content_ids: ['kit-sos-crescimento'],
         content_name: 'Kit SOS Crescimento e Antiqueda',
+      });
+      // TikTok ViewContent
+      trackTikTokViewContent({
+        value: PRODUCT_PRICE,
+        currency: 'BRL',
       });
     }
   }, []);

@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { trackMetaPageView } from "@/lib/meta-pixel";
 import { captureUTMParams } from "@/lib/utm-tracker";
 import { captureFbclid } from "@/lib/fbc-capture";
+import { trackTikTokPageView } from "@/lib/tiktok-pixel";
 
 const ScrollToTop = () => {
   const { pathname, search } = useLocation();
@@ -18,6 +19,9 @@ const ScrollToTop = () => {
 
     // Meta Pixel: track PageView on route changes for SPA
     trackMetaPageView();
+    
+    // TikTok Pixel: track PageView on route changes for SPA
+    trackTikTokPageView();
   }, [pathname, search]);
 
   return null;

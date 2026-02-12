@@ -3,6 +3,7 @@ import { Check, Shield, Truck, PartyPopper, Mail, Clock, ArrowLeft, Package } fr
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { trackMetaPurchase } from "@/lib/meta-pixel";
+import { trackTikTokCompletePayment, identifyTikTokUser } from "@/lib/tiktok-pixel";
 import { clearUTMParams } from "@/lib/utm-tracker";
 import { getCheckoutData, clearCheckoutData, CheckoutUserData } from "@/lib/checkout-storage";
 
@@ -122,7 +123,6 @@ const ThankYou = () => {
       num_items: 1,
       order_id: transactionId || orderId,
       event_id: eventId,
-      // Full user data for 90%+ Advanced Matching
       email: orderDetails?.email,
       phone: orderDetails?.phone,
       firstName: orderDetails?.firstName,
@@ -131,8 +131,6 @@ const ThankYou = () => {
       state: orderDetails?.state,
       zipCode: orderDetails?.zipCode,
       country: 'br',
-      // Uncomment to test in Meta Events Manager:
-      // test_event_code: 'TEST12345',
     }).then(({ event_id }) => {
       console.log('ThankYou: Meta Purchase tracked with Advanced Matching', { 
         order_id: transactionId || orderId, 
@@ -151,10 +149,23 @@ const ThankYou = () => {
       clearCheckoutData();
     });
 
+    // TikTok: Identify user + CompletePayment
+    if (orderDetails?.email || orderDetails?.phone) {
+      identifyTikTokUser({
+        email: orderDetails?.email,
+        phone: orderDetails?.phone,
+      });
+    }
+    trackTikTokCompletePayment({
+      value: amount,
+      currency: 'BRL',
+      order_id: transactionId || orderId,
+    });
+
     // Clear UTM params after successful purchase
     clearUTMParams();
 
-    console.log('ThankYou: Purchase tracked (Meta)', { orderId, amount, eventId, dedup_key: effectiveOrderId });
+    console.log('ThankYou: Purchase tracked (Meta + TikTok)', { orderId, amount, eventId, dedup_key: effectiveOrderId });
   }, [amount, orderId, transactionId, orderDetails, locationState]);
  
    return (
