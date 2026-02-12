@@ -84,7 +84,7 @@ serve(async (req) => {
 
     // Get the project URL for webhook
     const projectId = SUPABASE_URL.match(/https:\/\/([^.]+)\./)?.[1] || '';
-    const webhookUrl = `https://${projectId}.supabase.co/functions/v1/podpay-webhook`;
+    const webhookUrl = `https://${projectId}.supabase.co/functions/v1/bestfy-webhook`;
 
     // Build Bestfy payload
     const payload = {
