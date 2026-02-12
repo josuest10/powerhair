@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { Check, Shield, Truck, PartyPopper, Mail, Clock, ArrowLeft, Package } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { trackMetaPurchase } from "@/lib/meta-pixel";
+import { trackMetaPurchase, updateMetaAdvancedMatching } from "@/lib/meta-pixel";
 import { trackTikTokCompletePayment, identifyTikTokUser } from "@/lib/tiktok-pixel";
 import { clearUTMParams } from "@/lib/utm-tracker";
 import { getCheckoutData, clearCheckoutData, CheckoutUserData } from "@/lib/checkout-storage";
@@ -108,6 +108,21 @@ const ThankYou = () => {
     if (isOrderAlreadyTracked(effectiveOrderId)) {
       console.log('ThankYou: Purchase already tracked for order', effectiveOrderId, '(skipping)');
       return;
+    }
+
+    // CRITICAL: Re-initialize fbq with Advanced Matching data BEFORE firing Purchase
+    // This ensures Meta receives em, ph, fn, ln, ct, st, zp, country via fbq('init')
+    if (orderDetails) {
+      updateMetaAdvancedMatching({
+        email: orderDetails.email,
+        phone: orderDetails.phone,
+        firstName: orderDetails.firstName,
+        lastName: orderDetails.lastName,
+        city: orderDetails.city,
+        state: orderDetails.state,
+        zipCode: orderDetails.zipCode,
+        country: 'br',
+      });
     }
 
     // DETERMINISTIC event_id: same order always generates same event_id
