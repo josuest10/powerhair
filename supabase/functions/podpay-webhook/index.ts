@@ -91,14 +91,15 @@ interface OrderData {
      console.log('✅ Order updated in database:', data);
  
      // Send server-side events if payment was confirmed
-     if (status === 'paid' && data && data.length > 0) {
-       const order = data[0];
-        await Promise.all([
-          sendMetaEvent(order as OrderData),
-          sendUtmifyEvent(order as OrderData, 'paid'),
-          sendPaymentConfirmationEmail(order as OrderData),
-        ]);
-     }
+    if (status === 'paid' && data && data.length > 0) {
+        const order = data[0];
+         await Promise.all([
+           sendMetaEvent(order as OrderData),
+           sendTikTokEvent(order as OrderData),
+           sendUtmifyEvent(order as OrderData, 'paid'),
+           sendPaymentConfirmationEmail(order as OrderData),
+         ]);
+      }
 
      // Send waiting_payment event to UTMify for PIX generated
      if (status === 'waiting_payment' && data && data.length > 0) {
@@ -416,5 +417,81 @@ async function sendPaymentConfirmationEmail(order: OrderData) {
   } catch (error) {
     console.error('❌ Error sending payment confirmation email:', error);
     // Don't throw - this is non-critical
+}
+
+async function sendTikTokEvent(order: OrderData) {
+  try {
+    const TIKTOK_ACCESS_TOKEN = Deno.env.get('TIKTOK_ACCESS_TOKEN');
+    if (!TIKTOK_ACCESS_TOKEN) {
+      console.log('⚠️ TikTok access token not configured, skipping event');
+      return;
+    }
+
+    const pixelId = 'D66JST3C77U7RUMK7J0G';
+    const encoder = new TextEncoder();
+
+    const sha256 = async (value: string): Promise<string> => {
+      const buf = await crypto.subtle.digest('SHA-256', encoder.encode(value));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+    };
+
+    const email = order.customer_email?.trim().toLowerCase();
+    const phone = order.customer_phone?.replace(/\D/g, '');
+    const phoneWithCountry = phone ? (phone.length === 10 || phone.length === 11 ? `+55${phone}` : `+${phone}`) : null;
+
+    const [emailHash, phoneHash] = await Promise.all([
+      email ? sha256(email) : Promise.resolve(null),
+      phoneWithCountry ? sha256(phoneWithCountry) : Promise.resolve(null),
+    ]);
+
+    const eventData = {
+      pixel_code: pixelId,
+      partner_name: 'PowerHair',
+      event: 'CompletePayment',
+      event_id: `tiktok_purchase_${order.transaction_id}`,
+      timestamp: new Date().toISOString(),
+      context: {
+        user: {
+          ...(emailHash && { email: emailHash }),
+          ...(phoneHash && { phone: phoneHash }),
+        },
+      },
+      properties: {
+        contents: [
+          {
+            content_id: 'kit-sos-crescimento',
+            content_name: order.product_name,
+            content_type: 'product',
+            quantity: 1,
+            price: order.amount / 100,
+          },
+        ],
+        value: order.amount / 100,
+        currency: 'BRL',
+        order_id: order.transaction_id,
+      },
+    };
+
+    console.log('📤 Sending TikTok Events API for order:', order.transaction_id);
+
+    const response = await fetch('https://business-api.tiktok.com/open_api/v1.3/event/track/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Token': TIKTOK_ACCESS_TOKEN,
+      },
+      body: JSON.stringify({ data: [eventData] }),
+    });
+
+    const result = await response.json();
+
+    if (response.ok && result.code === 0) {
+      console.log('✅ TikTok Events API sent for order:', order.transaction_id);
+    } else {
+      console.error('❌ TikTok Events API error:', JSON.stringify(result, null, 2));
+    }
+  } catch (error) {
+    console.error('❌ Error sending TikTok event:', error);
   }
+}
 }

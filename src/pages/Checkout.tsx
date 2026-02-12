@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { QRCodeSVG } from "qrcode.react";
 import { validateCPF } from "@/lib/cpf-validator";
 import { trackMetaInitiateCheckout, trackMetaLead, updateMetaAdvancedMatching } from "@/lib/meta-pixel";
+import { trackTikTokInitiateCheckout, identifyTikTokUser } from "@/lib/tiktok-pixel";
 import { getStoredUTMParams } from "@/lib/utm-tracker";
 import { saveCheckoutData } from "@/lib/checkout-storage";
 import CheckoutReviews from "@/components/CheckoutReviews";
@@ -206,6 +207,9 @@ import OrderBump from "@/components/checkout/OrderBump";
         userData,
       });
       
+      // TikTok identify user
+      identifyTikTokUser({ email, phone: formData.phone });
+      
       console.log('Lead event fired', { hasEmail: true, hasName: true });
     }
   };
@@ -222,6 +226,11 @@ import OrderBump from "@/components/checkout/OrderBump";
         content_ids: ['kit-sos-crescimento'],
         content_name: 'Kit SOS Crescimento e Antiqueda',
         num_items: 1,
+      });
+      // TikTok InitiateCheckout
+      trackTikTokInitiateCheckout({
+        value: basePrice,
+        currency: 'BRL',
       });
     }
 
