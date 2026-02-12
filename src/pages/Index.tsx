@@ -1,10 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import PromoBanner from "@/components/PromoBanner";
 import Header from "@/components/Header";
-import Breadcrumb from "@/components/Breadcrumb";
 import ProductGallery from "@/components/ProductGallery";
 import ProductInfo, { KitOption } from "@/components/ProductInfo";
-import ProductAttributes from "@/components/ProductAttributes";
 import ProductDescription from "@/components/ProductDescription";
 import ProductReviews from "@/components/ProductReviews";
 import ProductFAQ from "@/components/ProductFAQ";
@@ -71,13 +69,6 @@ const Index = () => {
     }
   }, []);
 
-  const breadcrumbItems = [
-    { label: "Home", href: "#" },
-    { label: "Cabelos", href: "#" },
-    { label: "Crescimento Capilar", href: "#" },
-    { label: "Kit SOS Crescimento e Antiqueda | Lizzante Profissional" },
-  ];
-
   const productImages = [
     "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg",
     "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg",
@@ -86,25 +77,15 @@ const Index = () => {
     productGallery5,
   ];
 
-  const attributes = [
-    { label: "Marca", value: "Lizzante Profissional" },
-    { label: "Indicação", value: "Queda e Crescimento Capilar" },
-    { label: "Público", value: "Homens e Mulheres" },
-    { label: "Tratamento", value: "Alopecia e Fortalecimento" },
-    { label: "Origem", value: "Fitoterápico Natural" },
-    { label: "Propriedades", value: "Não Testado em Animais" },
-  ];
-
   return (
     <div className="min-h-screen bg-background">
       <PromoBanner />
       <Header />
-      <Breadcrumb items={breadcrumbItems} />
 
       <main className="container max-w-7xl mx-auto px-4 md:px-6 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
           <div>
-            <ProductGallery images={productImages} productCode="2SXG7Z3DQ" />
+            <ProductGallery images={productImages} />
           </div>
 
           <div ref={productInfoRef}>
@@ -121,9 +102,13 @@ const Index = () => {
           </div>
         </div>
 
-        <ProductAttributes attributes={attributes} />
+        {/* Description - editorial style */}
         <ProductDescription />
+
+        {/* Reviews */}
         <ProductReviews />
+
+        {/* FAQ */}
         <ProductFAQ />
       </main>
 
