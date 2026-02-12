@@ -96,7 +96,7 @@ export function trackTikTokCompletePayment(params: {
   order_id?: string;
 }) {
   if (typeof window !== 'undefined' && window.ttq) {
-    window.ttq.track('CompletePayment', {
+    window.ttq.track('Purchase', {
       value: params.value,
       currency: params.currency || 'BRL',
       content_id: params.content_id || 'kit-sos-crescimento',

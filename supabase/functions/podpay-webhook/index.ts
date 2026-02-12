@@ -450,7 +450,7 @@ async function sendTikTokEvent(order: OrderData) {
       event_source_id: pixelId,
       data: [
         {
-          event: 'CompletePayment',
+          event: 'Purchase',
           event_id: `tiktok_purchase_${order.transaction_id}`,
           event_time: Math.floor(Date.now() / 1000),
           user: {
