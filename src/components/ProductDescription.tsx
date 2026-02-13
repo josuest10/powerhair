@@ -1,19 +1,15 @@
 import { useState } from "react";
 import { Check, Sparkles, X } from "lucide-react";
 
-import result1 from "@/assets/results/result-1.png";
-import result2 from "@/assets/results/result-2.png";
-import result3 from "@/assets/results/result-3.png";
-import result4 from "@/assets/results/result-4.png";
+import resultAntes from "@/assets/results/result-antes.png";
+import resultDepois from "@/assets/results/result-depois.png";
 
 const ProductDescription = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const resultImages = [
-    { src: result1, name: "Ana Paula", time: "45 dias" },
-    { src: result2, name: "Fernanda", time: "60 dias" },
-    { src: result3, name: "Juliana", time: "5 meses" },
-    { src: result4, name: "Mariana", time: "90 dias" },
+    { src: resultAntes, label: "Antes" },
+    { src: resultDepois, label: "Depois" },
   ];
 
   return (
@@ -42,19 +38,19 @@ const ProductDescription = () => {
       {/* Hero Section */}
       <div className="text-center max-w-2xl mx-auto space-y-4">
         <h2 className="text-2xl md:text-3xl font-bold text-foreground">
-          O ÚNICO KIT QUE COMBATE A QUEDA E ACELERA O CRESCIMENTO — TUDO EM 1 SÓ!
+          HIDRATAÇÃO INTENSA QUE SUAVIZA ESTRIAS E TRANSFORMA SUA PELE
         </h2>
       </div>
 
-      {/* Benefits List - ForPatas editorial style */}
+      {/* Benefits List */}
       <div className="max-w-2xl mx-auto space-y-3">
         {[
-          { emoji: "💪", text: "Fortalece os fios desde a raiz — reduz a queda em até 90%" },
-          { emoji: "🌿", text: "Fórmula 100% fitoterápica com Biotina, Pantenol e Extrato de Bambu" },
-          { emoji: "💧", text: "Hidrata profundamente — fios macios, sedosos e com brilho natural" },
-          { emoji: "✨", text: "Crescimento visível em 30 dias de uso contínuo" },
-          { emoji: "🧴", text: "Kit completo: Shampoo 300ml + Máscara 300g + Tônico 100ml" },
-          { emoji: "💛", text: "Unissex — funciona para homens e mulheres, todos os tipos de cabelo" },
+          { emoji: "✨", text: "Hidratação intensa e duradoura — pele macia o dia todo" },
+          { emoji: "🌿", text: "Fórmula com Algisium C, Óleo de Rosa Mosqueta, Pantenol e Vitamina E" },
+          { emoji: "💧", text: "Toque sedoso e confortável — sem pegajosidade" },
+          { emoji: "🌟", text: "Melhora a textura e uniformidade da pele com uso contínuo" },
+          { emoji: "🧴", text: "Embalagem de 200g — rendimento para protocolo completo" },
+          { emoji: "💛", text: "100% natural — sem parabenos, corantes artificiais ou corticoides" },
         ].map((item, i) => (
           <div key={i} className="flex items-start gap-3 text-base md:text-lg text-muted-foreground">
             <span className="text-xl flex-shrink-0">{item.emoji}</span>
@@ -66,26 +62,26 @@ const ProductDescription = () => {
       {/* Emotional Section */}
       <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6 md:p-8 max-w-2xl mx-auto">
         <h3 className="text-xl md:text-2xl font-bold text-foreground mb-4">
-          Porque seu cabelo merece cuidado de verdade
+          Porque sua pele merece cuidado de verdade
         </h3>
         <p className="text-base text-muted-foreground leading-relaxed mb-4">
-          Sabemos como a queda de cabelo pode afetar sua autoestima. O medo de passar a mão nos fios, a insegurança ao sair de casa, a frustração de ver cada vez menos volume...
+          Sabemos como as estrias podem afetar sua autoestima. A insegurança ao olhar no espelho, evitar certas roupas, a frustração de tentar produtos que não funcionam...
         </p>
         <p className="text-base text-muted-foreground leading-relaxed">
-          O <strong className="text-foreground">Kit SOS Crescimento</strong> foi criado para devolver não apenas seus cabelos, mas sua <strong className="text-foreground">confiança e autoestima</strong>. Com ingredientes naturais e fitoterápicos, nosso tratamento ataca a queda na raiz e estimula fios novos, mais fortes e saudáveis.
+          O <strong className="text-foreground">Lummina Gest</strong> foi desenvolvido para devolver não apenas a saúde da sua pele, mas sua <strong className="text-foreground">confiança e autoestima</strong>. Com Algisium C aliado a óleos e vitaminas, nosso dermocosmético entrega hidratação prolongada e nutrição profunda, ajudando a suavizar a aparência das estrias.
         </p>
         <p className="text-base text-primary font-medium mt-4">
-          ✨ Mais de 10.000 pessoas já recuperaram a confiança com o Kit SOS.
+          ✨ Mais de 10.000 mulheres já recuperaram a confiança com o Lummina Gest.
         </p>
       </div>
 
-      {/* Results Gallery */}
+      {/* Results Gallery - Before/After */}
       <div className="space-y-6">
         <h3 className="text-xl md:text-2xl font-bold text-foreground text-center">
           💬 Resultados reais de quem já usou:
         </h3>
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="grid grid-cols-2 gap-3 max-w-2xl mx-auto">
           {resultImages.map((result, index) => (
             <div 
               key={index}
@@ -95,15 +91,14 @@ const ProductDescription = () => {
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
                   src={result.src} 
-                  alt={`Resultado de ${result.name}`}
+                  alt={result.label}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                   loading="lazy"
                 />
               </div>
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
-                <p className="text-white font-medium text-sm">{result.name}</p>
-                <p className="text-white/80 text-xs flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" /> {result.time} de uso
+                <p className="text-white font-bold text-sm flex items-center gap-1">
+                  <Sparkles className="w-3 h-3" /> {result.label}
                 </p>
               </div>
             </div>
@@ -115,16 +110,39 @@ const ProductDescription = () => {
         </p>
       </div>
 
-      {/* How to Use - Clean */}
+      {/* The truth about traditional creams */}
+      <div className="max-w-2xl mx-auto space-y-4">
+        <h3 className="text-xl md:text-2xl font-bold text-foreground">
+          A verdade sobre cremes tradicionais para estrias…
+        </h3>
+        <p className="text-base text-muted-foreground leading-relaxed">
+          Muitos produtos até "dão brilho" na primeira aplicação, mas falham no que mais importa: manter hidratação por tempo suficiente e nutrir a pele de verdade.
+        </p>
+        <div className="space-y-2">
+          {[
+            "Hidratação curta que some em poucas horas",
+            "Fórmulas que só \"maquiam\" o ressecamento",
+            "Sensação pegajosa que incomoda e desanima o uso diário",
+            "Pouca nutrição: falta de óleos e vitaminas que sustentem o cuidado",
+          ].map((item, i) => (
+            <div key={i} className="flex items-center gap-2 text-base text-destructive/80">
+              <X className="w-4 h-4 flex-shrink-0" />
+              <span>{item}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* How to Use */}
       <div className="max-w-2xl mx-auto space-y-4">
         <h3 className="text-xl md:text-2xl font-bold text-foreground">
           📏 Como usar:
         </h3>
         <div className="space-y-3">
           {[
-            { emoji: "🧴", text: "Shampoo: Aplique sobre os cabelos molhados, massageie e enxágue. Use 3x por semana." },
-            { emoji: "💆", text: "Máscara: Aplique nos cabelos úmidos, deixe agir 5-20 minutos. Use 3x por semana." },
-            { emoji: "💧", text: "Tônico: Borrife na raiz diariamente. Este é o segredo dos resultados!" },
+            { emoji: "🧴", text: "Prepare a pele: Com a pele seca, espalhe uma quantidade suficiente nas áreas com estrias (barriga, quadris, coxas, glúteos e seios)." },
+            { emoji: "💆", text: "Massageie: Faça movimentos circulares até a absorção. A massagem melhora a sensação de maciez." },
+            { emoji: "✨", text: "Use diariamente: De preferência 2x ao dia. Com o uso contínuo, a pele fica mais hidratada, uniforme e confortável." },
           ].map((item, i) => (
             <div key={i} className="flex items-start gap-3 text-base text-muted-foreground">
               <span className="text-xl flex-shrink-0">{item.emoji}</span>
@@ -141,11 +159,11 @@ const ProductDescription = () => {
         </h3>
         <div className="space-y-2">
           {[
-            "Quem sofre com queda de cabelo ou afinamento",
-            "Cabelos danificados por química (progressiva, coloração)",
-            "Queda pós-parto ou pós-estresse",
-            "Homens com calvície inicial ou afinamento",
-            "Quem quer acelerar o crescimento capilar",
+            "Quem busca hidratação prolongada e nutrição profunda",
+            "Pele com estrias na barriga, coxas, glúteos ou seios",
+            "Gestantes e pós-parto que desejam cuidar da pele",
+            "Quem quer melhorar a textura e uniformidade da pele",
+            "Quem busca um toque macio e confortável no dia a dia",
           ].map((item, i) => (
             <div key={i} className="flex items-center gap-2 text-base text-muted-foreground">
               <Check className="w-4 h-4 text-primary flex-shrink-0" />
@@ -161,26 +179,26 @@ const ProductDescription = () => {
           📦 Especificações:
         </h3>
         <div className="space-y-2 text-base text-muted-foreground">
-          <p>🧴 <strong className="text-foreground">Produto:</strong> Kit SOS Crescimento e Antiqueda</p>
-          <p>📦 <strong className="text-foreground">Contém:</strong> Shampoo 300ml + Máscara 300g + Tônico 100ml</p>
-          <p>🧪 <strong className="text-foreground">Ingredientes:</strong> Biotina, Pantenol, Extrato de Bambu, Óleo de Rícino, Keratina, Extrato de Bardana</p>
-          <p>🐾 <strong className="text-foreground">Indicação:</strong> Todos os tipos de cabelo</p>
-          <p>🌿 <strong className="text-foreground">Origem:</strong> Fitoterápico Natural — Não testado em animais</p>
+          <p>🧴 <strong className="text-foreground">Produto:</strong> Lummina Gest — Creme para Estrias</p>
+          <p>📦 <strong className="text-foreground">Conteúdo:</strong> 200g</p>
+          <p>🧪 <strong className="text-foreground">Ingredientes:</strong> Algisium C, Óleo de Rosa Mosqueta, Pantenol, Vitamina E e agentes hidratantes</p>
+          <p>🐾 <strong className="text-foreground">Indicação:</strong> Todos os tipos de pele</p>
+          <p>🌿 <strong className="text-foreground">Livre de:</strong> Parabenos, Óleo Mineral, Corantes Artificiais, Corticoides</p>
         </div>
       </div>
 
       {/* Extras */}
       <div className="max-w-2xl mx-auto bg-muted/50 rounded-2xl p-6 space-y-3">
-        <h3 className="text-lg font-bold text-foreground">🚚 Extras da Power Hair:</h3>
+        <h3 className="text-lg font-bold text-foreground">🚚 Extras:</h3>
         <div className="space-y-2 text-base text-muted-foreground">
           <p>✔ Frete Grátis para todo o Brasil</p>
-          <p>✔ Parcele em até 12x no cartão</p>
+          <p>✔ Parcele em até 3x sem juros</p>
           <p>✔ Produto físico com envio imediato</p>
           <p>✔ Estoque Nacional</p>
           <p>✔ Garantia de satisfação de 7 dias</p>
         </div>
         <p className="text-base text-foreground font-medium pt-2">
-          Chega de adiar o cuidado com seu cabelo. Compre agora e transforme seus fios! 🌿
+          Chega de adiar o cuidado com sua pele. Compre agora e transforme sua autoestima! 🌿
         </p>
       </div>
     </div>

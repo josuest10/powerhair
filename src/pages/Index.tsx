@@ -10,27 +10,31 @@ import Footer from "@/components/Footer";
 import StickyProductCTA from "@/components/StickyProductCTA";
 import { trackMetaViewContent } from "@/lib/meta-pixel";
 import { trackTikTokViewContent } from "@/lib/tiktok-pixel";
-import productGallery5 from "@/assets/product-gallery-5.png";
+import productLummina1 from "@/assets/product-lummina-1.png";
+import productLummina2 from "@/assets/product-lummina-2.png";
+import productLummina3 from "@/assets/product-lummina-3.png";
+import productLummina4 from "@/assets/product-lummina-4.png";
+import productLummina5 from "@/assets/product-lummina-5.png";
 
 const KITS: KitOption[] = [
   {
     id: "1-kit",
-    label: "1 Kit",
-    subtitle: "Shampoo + Máscara + Tônico",
-    price: 69.90,
-    originalPrice: 179.90,
-    productName: "Kit SOS Crescimento e Antiqueda",
-    productDescription: "Shampoo + Máscara + Tônico",
+    label: "1 Unidade",
+    subtitle: "Lummina Gest 200g",
+    price: 197.97,
+    originalPrice: 297.97,
+    productName: "Lummina Gest - Creme para Estrias",
+    productDescription: "Lummina Gest 200g",
   },
   {
     id: "2-kits",
-    label: "2 Kits",
-    subtitle: "Leve 2 com desconto exclusivo",
-    price: 119.90,
-    originalPrice: 359.80,
+    label: "2 Unidades",
+    subtitle: "Leve 2 com 50% OFF",
+    price: 297.36,
+    originalPrice: 595.94,
     badge: "Mais Vendido",
-    productName: "2x Kit SOS Crescimento e Antiqueda",
-    productDescription: "2x (Shampoo + Máscara + Tônico)",
+    productName: "2x Lummina Gest - Creme para Estrias",
+    productDescription: "2x Lummina Gest 200g",
   },
 ];
 
@@ -59,8 +63,8 @@ const Index = () => {
       trackMetaViewContent({
         value: KITS[0].price,
         currency: "BRL",
-        content_ids: ["kit-sos-crescimento"],
-        content_name: "Kit SOS Crescimento e Antiqueda",
+        content_ids: ["lummina-gest"],
+        content_name: "Lummina Gest - Creme para Estrias",
       });
       trackTikTokViewContent({
         value: KITS[0].price,
@@ -70,11 +74,11 @@ const Index = () => {
   }, []);
 
   const productImages = [
-    "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg",
-    "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg",
-    "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg",
-    "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--3--ih0818emza-mu3hsn7l0f.jpeg",
-    productGallery5,
+    productLummina1,
+    productLummina2,
+    productLummina3,
+    productLummina4,
+    productLummina5,
   ];
 
   return (
@@ -90,8 +94,8 @@ const Index = () => {
 
           <div ref={productInfoRef}>
             <ProductInfo
-              title="Kit SOS Crescimento e Antiqueda: Shampoo 300ml + Máscara 300g + Tônico Fortalecedor 100ml"
-              brand="LIZZANTE"
+              title="Lummina Gest — Creme para Estrias com Algisium C, Rosa Mosqueta, Pantenol e Vitamina E | 200g"
+              brand="LUMMI BRAZIL"
               rating={5}
               reviewCount={847}
               kits={KITS}
