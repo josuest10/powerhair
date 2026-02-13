@@ -20,6 +20,7 @@ const KITS: KitOption[] = [
     originalPrice: 197.97,
     productName: "Lummina Gest — Creme para Estrias 200g",
     productDescription: "Lummina Gest 200g",
+    productSlug: "lummina-gest",
   },
   {
     id: "2-kits",
@@ -30,6 +31,7 @@ const KITS: KitOption[] = [
     badge: "Mais Vendido",
     productName: "2x Lummina Gest — Creme para Estrias 200g",
     productDescription: "2x Lummina Gest 200g + Brindes",
+    productSlug: "lummina-gest",
   },
 ];
 
@@ -115,6 +117,7 @@ const Promo = () => {
         kitId={activeKit.id}
         kitProductName={activeKit.productName}
         kitProductDescription={activeKit.productDescription}
+        productSlug={activeKit.productSlug}
       />
     </div>
   );

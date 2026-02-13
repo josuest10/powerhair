@@ -10,9 +10,10 @@ interface StickyProductCTAProps {
   kitId: string;
   kitProductName: string;
   kitProductDescription: string;
+  productSlug?: string;
 }
 
-const StickyProductCTA = ({ price, originalPrice, isVisible, kitId, kitProductName, kitProductDescription }: StickyProductCTAProps) => {
+const StickyProductCTA = ({ price, originalPrice, isVisible, kitId, kitProductName, kitProductDescription, productSlug }: StickyProductCTAProps) => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   
@@ -28,6 +29,7 @@ const StickyProductCTA = ({ price, originalPrice, isVisible, kitId, kitProductNa
           kitOriginalPrice: originalPrice,
           kitProductName,
           kitProductDescription,
+          productSlug,
         },
       });
     }, 800);
