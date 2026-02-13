@@ -17,6 +17,7 @@ import OrderTracking from "./pages/OrderTracking";
 import Checkout from "./pages/Checkout";
 import ThankYou from "./pages/ThankYou";
 import EmailPreview from "./pages/EmailPreview";
+import Promo from "./pages/Promo";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
         <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/promo" element={<Promo />} />
           <Route path="/inicio" element={<Home />} />
           <Route path="/termos-de-uso" element={<TermsOfUse />} />
           <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
