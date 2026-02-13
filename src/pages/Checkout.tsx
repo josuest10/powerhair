@@ -1101,10 +1101,12 @@ import OrderBump from "@/components/checkout/OrderBump";
                 )}
               </div>
 
-              {/* Reviews Section */}
-              <div className="bg-card border border-border rounded-2xl p-5 transition-all duration-300 hover:shadow-md animate-fade-in" style={{ animationDelay: '400ms' }}>
-                <CheckoutReviews />
-              </div>
+              {/* Reviews Section - only for Power Hair */}
+              {!isLumminaGest && (
+               <div className="bg-card border border-border rounded-2xl p-5 transition-all duration-300 hover:shadow-md animate-fade-in" style={{ animationDelay: '400ms' }}>
+                 <CheckoutReviews />
+               </div>
+              )}
               
            </form>
           </div>
