@@ -3,34 +3,33 @@ import PromoBanner from "@/components/PromoBanner";
 import Header from "@/components/Header";
 import ProductGallery from "@/components/ProductGallery";
 import ProductInfo, { KitOption } from "@/components/ProductInfo";
-import ProductDescription from "@/components/ProductDescription";
-import ProductReviews from "@/components/ProductReviews";
-import ProductFAQ from "@/components/ProductFAQ";
+import PromoDescription from "@/components/promo/PromoDescription";
+import PromoReviews from "@/components/promo/PromoReviews";
+import PromoFAQ from "@/components/promo/PromoFAQ";
 import Footer from "@/components/Footer";
 import StickyProductCTA from "@/components/StickyProductCTA";
 import { trackMetaViewContent } from "@/lib/meta-pixel";
 import { trackTikTokViewContent } from "@/lib/tiktok-pixel";
-import productGallery5 from "@/assets/product-gallery-5.png";
 
 const KITS: KitOption[] = [
   {
     id: "1-kit",
-    label: "1 Kit",
-    subtitle: "Shampoo + Máscara + Tônico",
+    label: "1 Mês de Protocolo",
+    subtitle: "Lummina Gest 200g",
     price: 59.90,
-    originalPrice: 179.90,
-    productName: "Kit SOS Crescimento e Antiqueda",
-    productDescription: "Shampoo + Máscara + Tônico",
+    originalPrice: 197.97,
+    productName: "Lummina Gest — Creme para Estrias 200g",
+    productDescription: "Lummina Gest 200g",
   },
   {
     id: "2-kits",
-    label: "2 Kits",
-    subtitle: "Leve 2 com desconto exclusivo",
+    label: "2 Meses de Protocolo",
+    subtitle: "2x Lummina Gest 200g + Brindes",
     price: 99.90,
-    originalPrice: 359.80,
+    originalPrice: 395.94,
     badge: "Mais Vendido",
-    productName: "2x Kit SOS Crescimento e Antiqueda",
-    productDescription: "2x (Shampoo + Máscara + Tônico)",
+    productName: "2x Lummina Gest — Creme para Estrias 200g",
+    productDescription: "2x Lummina Gest 200g + Brindes",
   },
 ];
 
@@ -59,8 +58,8 @@ const Promo = () => {
       trackMetaViewContent({
         value: KITS[0].price,
         currency: "BRL",
-        content_ids: ["kit-sos-crescimento"],
-        content_name: "Kit SOS Crescimento e Antiqueda",
+        content_ids: ["lummina-gest"],
+        content_name: "Lummina Gest — Creme para Estrias",
       });
       trackTikTokViewContent({
         value: KITS[0].price,
@@ -70,11 +69,11 @@ const Promo = () => {
   }, []);
 
   const productImages = [
-    "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg",
-    "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg",
-    "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg",
-    "https://cdn.awsli.com.br/2500x2500/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--3--ih0818emza-mu3hsn7l0f.jpeg",
-    productGallery5,
+    "https://lummibrazil.com.br/cdn/shop/files/qwdefwdvfs.png?v=1770227420&width=1946",
+    "https://lummibrazil.com.br/cdn/shop/files/modelo-lummina_ad86381d-27f9-417f-8136-fa883d730304.png?v=1770227420&width=1946",
+    "https://lummibrazil.com.br/cdn/shop/files/lummina-ativos_a0c5670b-8072-47c3-9cb7-937a0946291e.png?v=1770227420&width=1946",
+    "https://lummibrazil.com.br/cdn/shop/files/ativos-2_69d6f564-b683-48f0-8380-86b636398ae8.png?v=1770227420&width=1946",
+    "https://lummibrazil.com.br/cdn/shop/files/textura.png?v=1770227420&width=1946",
   ];
 
   return (
@@ -90,21 +89,21 @@ const Promo = () => {
 
           <div ref={productInfoRef}>
             <ProductInfo
-              title="Kit SOS Crescimento e Antiqueda: Shampoo 300ml + Máscara 300g + Tônico Fortalecedor 100ml"
-              brand="LIZZANTE"
+              title="Lummina Gest — Creme para Estrias 200g: Hidratante Dermocosmético com Algisium C"
+              brand="LUMMI BRAZIL"
               rating={5}
-              reviewCount={847}
+              reviewCount={20}
               kits={KITS}
               selectedKit={selectedKit}
               onSelectKit={setSelectedKit}
-              installmentCount={4}
+              installmentCount={3}
             />
           </div>
         </div>
 
-        <ProductDescription />
-        <ProductReviews />
-        <ProductFAQ />
+        <PromoDescription />
+        <PromoReviews />
+        <PromoFAQ />
       </main>
 
       <Footer />
