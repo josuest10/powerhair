@@ -37,7 +37,6 @@ interface OrderDetails {
   orderId: string;
   amount: number;
   transactionId?: string;
-  // User data for Meta Advanced Matching
   email?: string;
   phone?: string;
   firstName?: string;
@@ -45,6 +44,7 @@ interface OrderDetails {
   city?: string;
   state?: string;
   zipCode?: string;
+  productSlug?: string;
 }
 
 const ThankYou = () => {
@@ -60,6 +60,7 @@ const ThankYou = () => {
   const orderId = orderDetails?.orderId || `PWH${Date.now().toString().slice(-8)}`;
   const amount = orderDetails?.amount || 77.91;
   const transactionId = orderDetails?.transactionId;
+  const isLumminaGest = orderDetails?.productSlug === 'lummina-gest';
 
   /**
    * Check if this order was already tracked (persists across page refreshes)
@@ -133,8 +134,8 @@ const ThankYou = () => {
     trackMetaPurchase({
       value: amount,
       currency: 'BRL',
-      content_ids: ['kit-sos-crescimento'],
-      content_name: 'Kit SOS Crescimento e Antiqueda',
+      content_ids: [isLumminaGest ? 'lummina-gest' : 'kit-sos-crescimento'],
+      content_name: isLumminaGest ? 'Lummina Gest — Creme para Estrias' : 'Kit SOS Crescimento e Antiqueda',
       num_items: 1,
       order_id: transactionId || orderId,
       event_id: eventId,
@@ -235,22 +236,29 @@ const ThankYou = () => {
            {/* Order Details */}
            <div className="p-6 space-y-4">
              {/* Product */}
-             <div className="flex items-center gap-4 pb-4 border-b border-border">
-               <div className="w-16 h-16 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
-                 <img
-                   src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg"
-                   alt="Kit SOS Crescimento"
-                   className="w-full h-full object-contain"
-                 />
-               </div>
-               <div className="flex-1 min-w-0">
-                 <p className="font-medium text-foreground">Kit SOS Crescimento e Antiqueda</p>
-                 <p className="text-sm text-muted-foreground">Shampoo + Máscara + Tônico</p>
-               </div>
-               <p className="font-bold text-foreground">
-                 R$ {amount.toFixed(2).replace(".", ",")}
-               </p>
-             </div>
+              <div className="flex items-center gap-4 pb-4 border-b border-border">
+                <div className="w-16 h-16 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+                  <img
+                    src={isLumminaGest 
+                      ? "https://lummibrazil.com.br/cdn/shop/files/qwdefwdvfs.png?v=1770227420&width=1946"
+                      : "https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg"
+                    }
+                    alt={isLumminaGest ? "Lummina Gest" : "Kit SOS Crescimento"}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-foreground">
+                    {isLumminaGest ? "Lummina Gest — Creme para Estrias" : "Kit SOS Crescimento e Antiqueda"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {isLumminaGest ? "Creme Dermocosmético 200g" : "Shampoo + Máscara + Tônico"}
+                  </p>
+                </div>
+                <p className="font-bold text-foreground">
+                  R$ {amount.toFixed(2).replace(".", ",")}
+                </p>
+              </div>
  
              {/* Info Grid */}
              <div className="grid grid-cols-2 gap-4">

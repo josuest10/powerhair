@@ -13,6 +13,7 @@ export interface KitOption {
   badge?: string;
   productName: string;
   productDescription: string;
+  productSlug?: string;
 }
 
 interface ProductInfoProps {
@@ -64,6 +65,7 @@ const ProductInfo = ({
           kitOriginalPrice: activeKit.originalPrice,
           kitProductName: activeKit.productName,
           kitProductDescription: activeKit.productDescription,
+          productSlug: activeKit.productSlug,
         },
       });
     }, 800);

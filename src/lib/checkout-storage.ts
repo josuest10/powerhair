@@ -22,6 +22,7 @@ export interface CheckoutUserData {
   city?: string;
   state?: string;
   zipCode?: string;
+  productSlug?: string;
   timestamp: number;
 }
 

@@ -82,7 +82,8 @@ import OrderBump from "@/components/checkout/OrderBump";
    const { toast } = useToast();
    const navigate = useNavigate();
    const location = useLocation();
-   const kitState = location.state as { kitId?: string; kitPrice?: number; kitOriginalPrice?: number; kitProductName?: string; kitProductDescription?: string } | undefined;
+    const kitState = location.state as { kitId?: string; kitPrice?: number; kitOriginalPrice?: number; kitProductName?: string; kitProductDescription?: string; productSlug?: string } | undefined;
+    const isLumminaGest = kitState?.productSlug === 'lummina-gest';
    const [step, setStep] = useState<"form" | "pix" | "success">(isPreviewMode ? "pix" : "form");
    const [copied, setCopied] = useState(false);
    const [timeLeft, setTimeLeft] = useState(1800); // 30 minutes in seconds
@@ -116,8 +117,8 @@ import OrderBump from "@/components/checkout/OrderBump";
     sedex: { label: "Sedex", price: 9.41, days: "4 a 7 dias úteis" },
   };
 
-   const originalPrice = kitState?.kitOriginalPrice || 179.90;
-   const productPrice = kitState?.kitPrice || 77.91;
+   const originalPrice = kitState?.kitOriginalPrice || (isLumminaGest ? 197.97 : 179.90);
+   const productPrice = kitState?.kitPrice || (isLumminaGest ? 59.90 : 77.91);
    const shippingPrice = shippingOptions[selectedShipping].price;
     const bumpTotal = orderBumpSelected ? orderBumpPrice : 0;
     const subtotalWithShipping = productPrice + shippingPrice + bumpTotal;
@@ -225,8 +226,8 @@ import OrderBump from "@/components/checkout/OrderBump";
       trackMetaInitiateCheckout({
         value: basePrice,
         currency: 'BRL',
-        content_ids: ['kit-sos-crescimento'],
-        content_name: 'Kit SOS Crescimento e Antiqueda',
+        content_ids: [isLumminaGest ? 'lummina-gest' : 'kit-sos-crescimento'],
+        content_name: kitState?.kitProductName || 'Kit SOS Crescimento e Antiqueda',
         num_items: 1,
       });
       // TikTok InitiateCheckout
@@ -411,18 +412,19 @@ import OrderBump from "@/components/checkout/OrderBump";
                  const firstName = nameParts[0] || '';
                  const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
                  
-                 const orderData = {
-                   orderId: `PWH${transactionId.toString().slice(-8)}`,
-                   amount: finalPrice,
-                   transactionId: transactionId,
-                   email: formData?.email,
-                   phone: formData?.phone,
-                   firstName,
-                   lastName,
-                   city: formData?.city,
-                   state: formData?.state,
-                   zipCode: formData?.cep,
-                 };
+                  const orderData = {
+                    orderId: `PWH${transactionId.toString().slice(-8)}`,
+                    amount: finalPrice,
+                    transactionId: transactionId,
+                    email: formData?.email,
+                    phone: formData?.phone,
+                    firstName,
+                    lastName,
+                    city: formData?.city,
+                    state: formData?.state,
+                    zipCode: formData?.cep,
+                    productSlug: kitState?.productSlug,
+                  };
                 
                 // Save to localStorage as fallback before navigating
                 saveCheckoutData(orderData);
@@ -561,18 +563,19 @@ import OrderBump from "@/components/checkout/OrderBump";
     const firstName = nameParts[0] || '';
     const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
     
-    const orderData = {
-      orderId: pixData?.transactionId ? `PWH${pixData.transactionId.toString().slice(-8)}` : undefined,
-      amount: finalPrice,
-      transactionId: pixData?.transactionId,
-      email: formData?.email,
-      phone: formData?.phone,
-      firstName,
-      lastName,
-      city: formData?.city,
-      state: formData?.state,
-      zipCode: formData?.cep,
-    };
+     const orderData = {
+       orderId: pixData?.transactionId ? `PWH${pixData.transactionId.toString().slice(-8)}` : undefined,
+       amount: finalPrice,
+       transactionId: pixData?.transactionId,
+       email: formData?.email,
+       phone: formData?.phone,
+       firstName,
+       lastName,
+       city: formData?.city,
+       state: formData?.state,
+       zipCode: formData?.cep,
+       productSlug: kitState?.productSlug,
+     };
     
     // Save to localStorage as fallback before navigating
     saveCheckoutData(orderData);
@@ -627,71 +630,98 @@ import OrderBump from "@/components/checkout/OrderBump";
                </svg>
              </summary>
               
-              <div className="p-4 space-y-4">
-                {/* Kit quantity label */}
-                {kitState?.kitId === "2-kits" && (
-                  <p className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full w-fit">2x Kit Completo</p>
-                )}
-                {/* Kit Items */}
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
-                      <img
-                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg"
-                        alt="Shampoo SOS"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">Shampoo SOS Crescimento {kitState?.kitId === "2-kits" ? "(x2)" : ""}</p>
-                      <p className="text-xs text-muted-foreground">300ml</p>
-                    </div>
-                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                  </div>
+               <div className="p-4 space-y-4">
+                 {/* Kit quantity label */}
+                 {kitState?.kitId === "2-kits" && (
+                   <p className="text-xs font-semibold text-primary bg-primary/10 px-3 py-1 rounded-full w-fit">
+                     {isLumminaGest ? "2x Lummina Gest" : "2x Kit Completo"}
+                   </p>
+                 )}
+                 {/* Kit Items */}
+                 <div className="space-y-3">
+                   {isLumminaGest ? (
+                     /* Lummina Gest Product */
+                     <div className="flex items-center gap-3">
+                       <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+                         <img
+                           src="https://lummibrazil.com.br/cdn/shop/files/qwdefwdvfs.png?v=1770227420&width=1946"
+                           alt="Lummina Gest"
+                           className="w-full h-full object-contain"
+                         />
+                       </div>
+                       <div className="flex-1 min-w-0">
+                         <p className="text-sm font-medium text-foreground">
+                           {kitState?.kitProductName || "Lummina Gest — Creme para Estrias 200g"}
+                         </p>
+                         <p className="text-xs text-muted-foreground">{kitState?.kitProductDescription || "Lummina Gest 200g"}</p>
+                       </div>
+                       <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                     </div>
+                   ) : (
+                     /* Power Hair Products */
+                     <>
+                       <div className="flex items-center gap-3">
+                         <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+                           <img
+                             src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-41-32-eaicsvr39k-ylddlj70fy.jpeg"
+                             alt="Shampoo SOS"
+                             className="w-full h-full object-contain"
+                           />
+                         </div>
+                         <div className="flex-1 min-w-0">
+                           <p className="text-sm font-medium text-foreground">Shampoo SOS Crescimento {kitState?.kitId === "2-kits" ? "(x2)" : ""}</p>
+                           <p className="text-xs text-muted-foreground">300ml</p>
+                         </div>
+                         <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                       </div>
+                       
+                       <div className="flex items-center gap-3">
+                         <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+                           <img
+                             src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg"
+                             alt="Tônico SOS"
+                             className="w-full h-full object-contain"
+                           />
+                         </div>
+                         <div className="flex-1 min-w-0">
+                           <p className="text-sm font-medium text-foreground">Tônico Fortalecedor SOS {kitState?.kitId === "2-kits" ? "(x2)" : ""}</p>
+                           <p className="text-xs text-muted-foreground">100ml</p>
+                         </div>
+                         <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                       </div>
+                       
+                       <div className="flex items-center gap-3">
+                         <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
+                           <img
+                             src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg"
+                             alt="Máscara SOS"
+                             className="w-full h-full object-contain"
+                           />
+                         </div>
+                         <div className="flex-1 min-w-0">
+                           <p className="text-sm font-medium text-foreground">Máscara SOS Crescimento {kitState?.kitId === "2-kits" ? "(x2)" : ""}</p>
+                           <p className="text-xs text-muted-foreground">300g</p>
+                         </div>
+                         <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                       </div>
+                     </>
+                   )}
                   
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
-                      <img
-                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--1--nhlvvncapn-216zxetspe.jpeg"
-                        alt="Tônico SOS"
-                        className="w-full h-full object-contain"
-                      />
+                  {/* Brinde Extra - only for Power Hair */}
+                  {!isLumminaGest && (
+                  <div className="flex items-center gap-3 p-2 bg-primary/5 rounded-lg border border-primary/20">
+                    <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0">
+                      <Gift className="w-7 h-7 text-primary" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">Tônico Fortalecedor SOS {kitState?.kitId === "2-kits" ? "(x2)" : ""}</p>
-                      <p className="text-xs text-muted-foreground">100ml</p>
+                      <p className="text-sm font-medium text-primary">🎁 BRINDE EXCLUSIVO</p>
+                      <p className="text-xs text-muted-foreground">Pente Massageador para Couro Cabeludo</p>
                     </div>
-                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
+                    <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">GRÁTIS</span>
                   </div>
-                  
-                  <div className="flex items-center gap-3">
-                    <div className="w-14 h-14 rounded-lg bg-secondary overflow-hidden flex-shrink-0">
-                      <img
-                        src="https://cdn.awsli.com.br/400x400/2814/2814407/produto/347799082/whatsapp-image-2023-09-06-at-10-35-03--2--ikuz221p1v-ucdpgudncg.jpeg"
-                        alt="Máscara SOS"
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">Máscara SOS Crescimento {kitState?.kitId === "2-kits" ? "(x2)" : ""}</p>
-                      <p className="text-xs text-muted-foreground">300g</p>
-                    </div>
-                    <CheckCircle2 className="w-4 h-4 text-primary flex-shrink-0" />
-                  </div>
-                 
-                 {/* Brinde Extra */}
-                 <div className="flex items-center gap-3 p-2 bg-primary/5 rounded-lg border border-primary/20">
-                   <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center flex-shrink-0">
-                     <Gift className="w-7 h-7 text-primary" />
-                   </div>
-                   <div className="flex-1 min-w-0">
-                     <p className="text-sm font-medium text-primary">🎁 BRINDE EXCLUSIVO</p>
-                     <p className="text-xs text-muted-foreground">Pente Massageador para Couro Cabeludo</p>
-                   </div>
-                   <span className="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">GRÁTIS</span>
-                 </div>
-               </div>
-             </div>
+                  )}
+                </div>
+              </div>
            </details>
  
             {/* Form */}
@@ -920,11 +950,13 @@ import OrderBump from "@/components/checkout/OrderBump";
                 </div>
               </div>
 
-              {/* Order Bump */}
-              <OrderBump 
-                isSelected={orderBumpSelected} 
-                onToggle={setOrderBumpSelected} 
-              />
+              {/* Order Bump - only for Power Hair */}
+              {!isLumminaGest && (
+               <OrderBump 
+                 isSelected={orderBumpSelected} 
+                 onToggle={setOrderBumpSelected} 
+               />
+              )}
 
               {/* Summary and Submit */}
               <div className="bg-gradient-to-b from-card to-secondary/30 border-2 border-primary/20 rounded-2xl p-5 transition-all duration-300 shadow-lg animate-fade-in" style={{ animationDelay: '300ms' }}>
